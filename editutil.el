@@ -650,8 +650,8 @@
   (define-key my/ctrl-q-map (kbd "s") 'editutil-unwrap-at-point)
   (define-key my/ctrl-q-map (kbd "r") 'editutil-replace-wrapped-string)
 
-  (define-key my/ctrl-q-map (kbd "h") 'editutil-move-left-hand-side)
-  (define-key my/ctrl-q-map (kbd "l") 'editutil-move-right-hand-side)
+  (define-key my/ctrl-q-map (kbd "C-h") 'editutil-move-left-hand-side)
+  (define-key my/ctrl-q-map (kbd "C-l") 'editutil-move-right-hand-side)
   (define-key my/ctrl-q-map (kbd "?") 'editutil-show-here-function)
 
   (when window-system
