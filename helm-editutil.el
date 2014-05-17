@@ -22,7 +22,9 @@
 
 ;;; Code:
 
+(require 'cl-lib)
 (require 'helm)
+(require 'helm-tags)
 
 (defgroup helm-editutil nil
   "My own editing utilities with helm"
