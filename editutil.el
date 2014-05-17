@@ -23,7 +23,8 @@
 ;;; Code:
 
 (eval-when-compile
-  (defvar my/ctrl-q-map))
+  (defvar my/ctrl-q-map)
+  (defvar git-gutter-mode))
 
 (require 'cl-lib)
 (require 'thingatpt)
@@ -33,6 +34,7 @@
 (declare-function smartrep-define-key "smartrep")
 (declare-function subword-forward "subword")
 (declare-function subword-backward "subword")
+(declare-function git-gutter "git-gutter")
 
 (defgroup editutil nil
   "My own editing utilities"
@@ -607,7 +609,8 @@
     (unless (zerop (call-process-shell-command cmd))
       (error "Failed: %s" cmd))
     (message "Success: %s" cmd))
-  (git-gutter))
+  (when git-gutter-mode
+    (git-gutter)))
 
 ;;;###autoload
 (defun editutil-default-setup ()
