@@ -643,11 +643,11 @@
   (global-set-key (kbd "C-M-SPC") 'editutil-copy-sexp)
   (global-set-key (kbd "M-I") 'editutil-indent-same-as-previous-line)
   (global-set-key (kbd "M-(") 'editutil-insert-parentheses)
+  (global-set-key (kbd "C-x l") 'editutil-copy-line)
 
   (global-set-key (kbd "C-x v N") 'editutil-git-intent-to-add)
 
   ;; C-q map
-  (define-key my/ctrl-q-map (kbd "C-l") 'editutil-copy-line)
   (define-key my/ctrl-q-map (kbd ".") 'editutil-highlight-symbol-in-defun)
   (define-key my/ctrl-q-map (kbd ",") 'editutil-highlight-clear-overlays)
   (define-key my/ctrl-q-map (kbd "s") 'editutil-unwrap-at-point)
