@@ -198,7 +198,8 @@
   (interactive)
   (let ((arg (prefix-numeric-value current-prefix-arg))
         (char (read-char "Zap to char: " t))
-        (curpoint (point)))
+        (curpoint (point))
+        (case-fold-search nil))
     (save-excursion
       (when (search-backward (char-to-string char) nil t)
         (delete-region (1+ (point)) curpoint)))))
