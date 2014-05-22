@@ -307,9 +307,11 @@
 
 (defun editutil--forward-next-space ()
   (save-excursion
-    (skip-chars-forward " \t")
-    (skip-chars-forward "^ \t")
-    (point)))
+    (let ((space-p (looking-at-p "[ \t\r\n]")))
+      (skip-chars-forward " \t")
+      (unless space-p
+        (skip-chars-forward "^ \t"))
+      (point))))
 
 ;;;###autoload
 (defun editutil-delete-word (arg)
