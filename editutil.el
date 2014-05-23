@@ -367,7 +367,7 @@
 (defun editutil-copy-sexp ()
   (interactive)
   (copy-sexp)
-  (message "%s" (thing-at-point 'sexp)))
+  (message "%s" (substring-no-properties (thing-at-point 'sexp))))
 
 ;;;###autoload
 (defun editutil-duplicate-thing (n)
