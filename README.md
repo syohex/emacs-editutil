@@ -21,3 +21,15 @@ My configuration is:
 ```
 
 ## helm-editutil.el
+
+#### `helm-editutil-git-ls-files`
+
+`git ls-files` with helm interface
+
+#### `helm-editutil-etags-select`
+
+Select `etags` candidates with helm interface
+
+#### `helm-editutil-yas-prompt`
+
+Select `yasnippet` candidates with helm interface
