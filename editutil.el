@@ -634,7 +634,6 @@
   (global-set-key (kbd "M-O") 'editutil-edit-previous-line)
   (global-set-key (kbd "M-s") 'editutil-unwrap-at-point)
   (global-set-key (kbd "M-r") 'editutil-replace-wrapped-string)
-  (global-set-key (kbd "M-z") 'editutil-zap-to-char)
   (global-set-key (kbd "M-n") 'editutil-next-symbol)
   (global-set-key (kbd "M-p") 'editutil-previous-symbol)
   (global-set-key (kbd "M-k") 'editutil-delete-following-spaces)
