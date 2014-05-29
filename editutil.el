@@ -525,7 +525,8 @@
   (interactive)
   (when (one-window-p)
     (split-window-right))
-  (other-window 1))
+  (unless current-prefix-arg
+    (other-window 1)))
 
 (defface editutils-highlight
   '((((class color) (background light))
