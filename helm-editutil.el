@@ -4,6 +4,7 @@
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; Version: 0.01
+;; Package-Requires: ((helm "1.0") (cl-lib "0.5"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -30,6 +31,9 @@
   "My own editing utilities with helm"
   :group 'editutil)
 
+(defun helm-editutil--open-dired (file)
+  (dired (file-name-directory file)))
+
 (defun helm-editutil--git-ls-files-source (pwd)
   (cl-loop for (description . option) in
            '(("Modified Files" . "--modified")
@@ -43,8 +47,7 @@
                          (call-process-shell-command ,cmd nil t))))
              (candidates-in-buffer)
              (action . (("Open File" . find-file)
-                        ("Open Directory" . (lambda (file)
-                                              (dired (file-name-directory file))))
+                        ("Open Directory" . helm-editutil--open-dired)
                         ("Open File other window" . find-file-other-window)
                         ("Insert buffer" . insert-file))))))
 
@@ -87,6 +90,55 @@
     (if selected
         (nth (cl-position selected names :test 'equal) choices)
       (signal 'quit "user quit!"))))
+
+(defmacro helm-editutil--line-string ()
+  `(buffer-substring-no-properties
+    (line-beginning-position) (line-end-position)))
+
+(defun helm-editutil--ghq-root ()
+  (with-temp-buffer
+    (unless (zerop (call-process "git" nil t nil "config" "ghq.root"))
+      (error "Failed: Can't find ghq.root"))
+    (goto-char (point-min))
+    (expand-file-name (helm-editutil--line-string))))
+
+(defun helm-editutil--ghq-list-candidates ()
+  (with-temp-buffer
+    (unless (zerop (call-process "ghq" nil t nil "list" "--full-path"))
+      (error "Failed: ghq list --full-path'"))
+    (let ((ghq-root (helm-editutil--ghq-root))
+          paths)
+      (goto-char (point-min))
+      (while (not (eobp))
+        (let ((path (helm-editutil--line-string)))
+          (push (cons (file-relative-name path ghq-root) path) paths))
+        (forward-line 1))
+      (reverse paths))))
+
+(defun helm-editutil--ghq-list-ls-files ()
+  (with-current-buffer (helm-candidate-buffer 'global)
+    (unless (zerop (call-process "git" nil t nil "ls-files"))
+      (error "Failed: 'git ls-files'"))))
+
+(defun helm-editutil--ghq-source (repo)
+  (let ((name (file-name-nondirectory (directory-file-name repo))))
+    `((name . ,name)
+      (init . helm-editutil--ghq-list-ls-files)
+      (candidates-in-buffer)
+      (action . (("Open File" . find-file)
+                 ("Open File other window" . find-file-other-window)
+                 ("Open Directory" . helm-editutil--open-dired))))))
+
+;;;###autoload
+(defun helm-editutil-ghq-list ()
+  (interactive)
+  (let ((repo (helm-comp-read "ghq-list: "
+                              (helm-editutil--ghq-list-candidates)
+                              :name "ghq list"
+                              :must-match t)))
+    (let ((default-directory (file-name-as-directory repo)))
+      (helm :sources (helm-editutil--ghq-source default-directory)
+            :buffer "*helm-ghq-list*"))))
 
 (provide 'helm-editutil)
 
