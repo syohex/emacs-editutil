@@ -104,14 +104,13 @@
 
 (defun helm-editutil--ghq-list-candidates ()
   (with-temp-buffer
-    (unless (zerop (call-process "ghq" nil t nil "list" "--full-path"))
+    (unless (zerop (call-process "ghq" nil t nil "list"))
       (error "Failed: ghq list --full-path'"))
-    (let ((ghq-root (helm-editutil--ghq-root))
-          paths)
+    (let (paths)
       (goto-char (point-min))
       (while (not (eobp))
         (let ((path (helm-editutil--line-string)))
-          (push (cons (file-relative-name path ghq-root) path) paths))
+          (push path paths))
         (forward-line 1))
       (reverse paths))))
 
@@ -132,11 +131,12 @@
 ;;;###autoload
 (defun helm-editutil-ghq-list ()
   (interactive)
-  (let ((repo (helm-comp-read "ghq-list: "
+  (let ((root (file-name-as-directory (helm-editutil--ghq-root)))
+        (repo (helm-comp-read "ghq-list: "
                               (helm-editutil--ghq-list-candidates)
                               :name "ghq list"
                               :must-match t)))
-    (let ((default-directory (file-name-as-directory repo)))
+    (let ((default-directory (file-name-as-directory (concat root repo))))
       (helm :sources (helm-editutil--ghq-source default-directory)
             :buffer "*helm-ghq-list*"))))
 
