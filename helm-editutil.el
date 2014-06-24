@@ -1,4 +1,4 @@
-;;; helm-editutil.el --- My own editing utilities with helm
+;;; helm-editutil.el --- My own editing utilities with helm -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2014 by Syohei YOSHIDA
 

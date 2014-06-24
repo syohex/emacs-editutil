@@ -1,4 +1,4 @@
-;;; editutil.el --- My own Edit Utilities
+;;; editutil.el --- My own Edit Utilities -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2014 by Syohei YOSHIDA
 
