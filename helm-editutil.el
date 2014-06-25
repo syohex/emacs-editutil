@@ -119,14 +119,41 @@
     (unless (zerop (call-process "git" nil t nil "ls-files"))
       (error "Failed: 'git ls-files'"))))
 
-(defun helm-editutil--ghq-source (repo)
-  (let ((name (file-name-nondirectory (directory-file-name repo))))
+(defun helm-editutil--ghq-format (repo)
+  (cond ((string-match "\\`github.com\\(.+\\)" repo)
+         (match-string-no-properties 1 repo))
+        ((string-match "\\`code.google.com\\(.+\\)" repo)
+         (match-string-no-properties 1 repo))))
+
+(defun helm-editutil--ghq-update-repository (repo)
+  (let* ((proc-buf (get-buffer-create "*helm-editutil-ghq*"))
+         (proc (start-process "helm-editutil-ghq" proc-buf
+                              "ghq" "get" "-u"
+                              (helm-editutil--ghq-format repo))))
+    (set-process-query-on-exit-flag proc nil)
+    (set-process-sentinel
+     proc
+     (lambda (proc _event)
+       (when (eq (process-status proc) 'exit)
+         (let ((exit-status (process-exit-status proc)))
+           (if (zerop exit-status)
+               (message "Updated '%s' is successed" repo)
+             (message "Update '%s' is failed!!" repo))))))))
+
+(defun helm-editutil--ghq-source-open (repo-path)
+  (let ((name (file-name-nondirectory (directory-file-name repo-path))))
     `((name . ,name)
       (init . helm-editutil--ghq-list-ls-files)
       (candidates-in-buffer)
       (action . (("Open File" . find-file)
                  ("Open File other window" . find-file-other-window)
                  ("Open Directory" . helm-editutil--open-dired))))))
+
+(defun helm-editutil--ghq-source-update (repo)
+  `((name . "Update Repository")
+    (candidates . (" ")) ;; dummy
+    (action . (lambda (candidate)
+                (helm-editutil--ghq-update-repository ,repo)))))
 
 ;;;###autoload
 (defun helm-editutil-ghq-list ()
@@ -137,7 +164,8 @@
                               :name "ghq list"
                               :must-match t)))
     (let ((default-directory (file-name-as-directory (concat root repo))))
-      (helm :sources (helm-editutil--ghq-source default-directory)
+      (helm :sources (list (helm-editutil--ghq-source-open default-directory)
+                           (helm-editutil--ghq-source-update repo))
             :buffer "*helm-ghq-list*"))))
 
 (provide 'helm-editutil)
