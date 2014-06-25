@@ -105,7 +105,7 @@
 (defun helm-editutil--ghq-list-candidates ()
   (with-temp-buffer
     (unless (zerop (call-process "ghq" nil t nil "list"))
-      (error "Failed: ghq list --full-path'"))
+      (error "Failed: ghq list"))
     (let (paths)
       (goto-char (point-min))
       (while (not (eobp))
