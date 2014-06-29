@@ -120,25 +120,14 @@
       (error "Failed: 'git ls-files'"))))
 
 (defun helm-editutil--ghq-format (repo)
-  (cond ((string-match "\\`github.com\\(.+\\)" repo)
+  (cond ((string-match "\\`github.com/\\(.+\\)" repo)
          (match-string-no-properties 1 repo))
-        ((string-match "\\`code.google.com\\(.+\\)" repo)
+        ((string-match "\\`code.google.com/\\(.+\\)" repo)
          (match-string-no-properties 1 repo))))
 
 (defun helm-editutil--ghq-update-repository (repo)
-  (let* ((proc-buf (get-buffer-create "*helm-editutil-ghq*"))
-         (proc (start-process "helm-editutil-ghq" proc-buf
-                              "ghq" "get" "-u"
-                              (helm-editutil--ghq-format repo))))
-    (set-process-query-on-exit-flag proc nil)
-    (set-process-sentinel
-     proc
-     (lambda (proc _event)
-       (when (eq (process-status proc) 'exit)
-         (let ((exit-status (process-exit-status proc)))
-           (if (zerop exit-status)
-               (message "Updated '%s' is successed" repo)
-             (message "Update '%s' is failed!!" repo))))))))
+  (async-shell-command (concat "ghq get -u "
+                               (helm-editutil--ghq-format repo))))
 
 (defun helm-editutil--ghq-source-open (repo-path)
   (let ((name (file-name-nondirectory (directory-file-name repo-path))))
