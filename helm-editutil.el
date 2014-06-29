@@ -77,20 +77,6 @@
               :default (concat "\\_<" (thing-at-point 'symbol) "\\_>"))
       (message "Error: No tag file found, please create one with etags shell command."))))
 
-;;;###autoload
-(defun helm-editutil-yas-prompt (prompt choices &optional display-fn)
-  (let* ((names (cl-loop for choice in choices
-                         collect (or (and display-fn (funcall display-fn choice))
-                                     choice)))
-         (selected (helm-other-buffer
-                    `(((name . ,(format "%s" prompt))
-                       (candidates . names)
-                       (action . (("Insert snippet" . (lambda (arg) arg))))))
-                    "*helm yas-prompt*")))
-    (if selected
-        (nth (cl-position selected names :test 'equal) choices)
-      (signal 'quit "user quit!"))))
-
 (defmacro helm-editutil--line-string ()
   `(buffer-substring-no-properties
     (line-beginning-position) (line-end-position)))
