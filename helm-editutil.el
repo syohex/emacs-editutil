@@ -86,7 +86,7 @@
                     `(((name . ,(format "%s" prompt))
                        (candidates . names)
                        (action . (("Insert snippet" . (lambda (arg) arg))))))
-                    "*helm yas/prompt*")))
+                    "*helm yas-prompt*")))
     (if selected
         (nth (cl-position selected names :test 'equal) choices)
       (signal 'quit "user quit!"))))
