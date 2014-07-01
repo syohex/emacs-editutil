@@ -31,10 +31,9 @@
   (dired (file-name-directory file)))
 
 (defun helm-editutil--git-ls-files-source (pwd)
-  (cl-loop for (description . option) in
-           '(("Modified Files" . "--modified")
-             ("Untracked Files" . "--others --exclude-standard")
-             ("All Files" . ""))
+  (cl-loop for (description . option) in '(("Modified Files" . "--modified")
+                                           ("Untracked Files" . "--others --exclude-standard")
+                                           ("All Files" . ""))
            for cmd = (concat "git ls-files " option)
            collect
            `((name . ,(format "%s (%s)" description pwd))
@@ -52,7 +51,7 @@
   (interactive)
   (let ((topdir (locate-dominating-file default-directory ".git/")))
     (unless topdir
-      (error "I'm not in Git Repository!!"))
+      (error "Here is not Git Repository!!"))
     (let ((default-directory topdir)
           (sources (helm-editutil--git-ls-files-source topdir)))
       (helm-other-buffer sources "*Helm Git Project*"))))
