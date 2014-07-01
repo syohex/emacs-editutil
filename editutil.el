@@ -596,11 +596,10 @@
 (defun editutil-git-intent-to-add ()
   (interactive)
   (save-buffer)
-  (let* ((file (file-name-nondirectory (buffer-file-name)))
-         (cmd (format "git add -N %s" file)))
-    (unless (zerop (call-process-shell-command cmd))
-      (error "Failed: %s" cmd))
-    (message "Success: %s" cmd))
+  (let ((file (file-name-nondirectory (buffer-file-name))))
+    (unless (zerop (call-process "git" nil nil nil "add" "-N" file))
+      (error "Failed: 'git add -N %s'" file))
+    (message "Success: Staging %s" file))
   (when git-gutter-mode
     (git-gutter)))
 
