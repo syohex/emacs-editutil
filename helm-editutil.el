@@ -27,10 +27,6 @@
 (require 'helm)
 (require 'helm-tags)
 
-(defgroup helm-editutil nil
-  "My own editing utilities with helm"
-  :group 'editutil)
-
 (defun helm-editutil--open-dired (file)
   (dired (file-name-directory file)))
 
