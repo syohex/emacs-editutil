@@ -1,7 +1,7 @@
 (source gnu)
 (source melpa)
 
-(package "editutil" "0" "My editing utilities")
+(package-file "editutil.el")
 
 (development
  (depends-on "ert")
