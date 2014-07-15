@@ -2,7 +2,7 @@
 (source melpa)
 
 (package-file "editutil.el")
+(depends-on "helm")
 
 (development
- (depends-on "ert")
- (depends-on "helm"))
+ (depends-on "ert"))
