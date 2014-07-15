@@ -138,6 +138,16 @@
                            (helm-editutil--ghq-source-update repo))
             :buffer "*helm-ghq-list*"))))
 
+;;;###autoload
+(defun helm-editutil-select-2nd-action ()
+  (interactive)
+  (helm-select-nth-action 1))
+
+;;;###autoload
+(defun helm-editutil-select-3rd-action ()
+  (interactive)
+  (helm-select-nth-action 2))
+
 (provide 'helm-editutil)
 
 ;;; helm-editutil.el ends here
