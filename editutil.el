@@ -552,22 +552,6 @@
             (overlay-put ov 'editutils-highlight t)))))))
 
 ;;;###autoload
-(defun editutil-move-left-hand-side ()
-  (interactive)
-  (let ((bound (line-beginning-position)))
-    (if (not (re-search-backward "\\s-+:?=\\s-+" bound t))
-        (message "Here is left hand side.")
-      (goto-char (match-beginning 0)))))
-
-;;;###autoload
-(defun editutil-move-right-hand-side ()
-  (interactive)
-  (let ((bound (line-end-position)))
-    (if (not (re-search-forward "\\s-+:?=\\s-+" bound t))
-        (message "Here is righht hand side.")
-      (goto-char (match-end 0)))))
-
-;;;###autoload
 (defun editutil-show-here-function ()
   (interactive)
   (if (not which-func-mode)
@@ -593,17 +577,6 @@
   (insert (x-get-clipboard)))
 
 ;;;###autoload
-(defun editutil-git-intent-to-add ()
-  (interactive)
-  (save-buffer)
-  (let ((file (file-name-nondirectory (buffer-file-name))))
-    (unless (zerop (call-process "git" nil nil nil "add" "-N" file))
-      (error "Failed: 'git add -N %s'" file))
-    (message "Success: Staging %s" file))
-  (when git-gutter-mode
-    (git-gutter)))
-
-;;;###autoload
 (defun editutil-default-setup ()
   (interactive)
 
@@ -612,9 +585,6 @@
 
   (global-set-key (kbd "C-M-o") 'editutil-other-window)
   (global-set-key (kbd "C-M-u") 'editutil-backward-up)
-
-  (global-set-key (kbd "C-M-r") 'editutil-mark-around-paired)
-  (global-set-key (kbd "C-M-c") 'editutil-mark-inside-paired)
 
   (global-set-key (kbd "C-M-n") 'editutil-forward-list)
   (global-set-key (kbd "C-M-d") 'editutil-down-list)
@@ -632,11 +602,12 @@
   (global-set-key (kbd "C-M-SPC") 'editutil-copy-sexp)
   (global-set-key (kbd "M-I") 'editutil-indent-same-as-previous-line)
   (global-set-key (kbd "M-(") 'editutil-insert-parentheses)
-  (global-set-key (kbd "C-x l") 'editutil-copy-line)
-
-  (global-set-key (kbd "C-x v N") 'editutil-git-intent-to-add)
 
   ;; C-q map
+  (define-key my/ctrl-q-map (kbd "l") 'editutil-copy-line)
+  (define-key my/ctrl-q-map (kbd "a") 'editutil-mark-around-paired)
+  (define-key my/ctrl-q-map (kbd "i") 'editutil-mark-inside-paired)
+
   (define-key my/ctrl-q-map (kbd ".") 'editutil-highlight-symbol-in-defun)
   (define-key my/ctrl-q-map (kbd ",") 'editutil-highlight-clear-overlays)
   (define-key my/ctrl-q-map (kbd "s") 'editutil-unwrap-at-point)
