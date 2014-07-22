@@ -23,8 +23,7 @@
 ;;; Code:
 
 (eval-when-compile
-  (defvar my/ctrl-q-map)
-  (defvar git-gutter-mode))
+  (defvar my/ctrl-q-map))
 
 (require 'cl-lib)
 (require 'thingatpt)
@@ -34,7 +33,6 @@
 (declare-function smartrep-define-key "smartrep")
 (declare-function subword-forward "subword")
 (declare-function subword-backward "subword")
-(declare-function git-gutter "git-gutter")
 
 (defgroup editutil nil
   "My own editing utilities"
@@ -102,7 +100,6 @@
 (defun editutil--mark-paired (char inner-p)
   (interactive)
   (let* ((current-prefix-arg nil)
-         (curpoint (point))
          (open-str (char-to-string char))
          (close-str (ignore-errors (editutil--unwrap-counterpart open-str))))
     (if (memq char '(?' ?\"))
@@ -143,7 +140,7 @@
   (interactive "p")
   (if (< arg 0)
       (editutil-edit-next-line (- arg))
-    (dotimes (i arg)
+    (dotimes (_ arg)
       (if (= (line-number-at-pos) 1)
           (goto-char (line-beginning-position))
         (forward-line -1)
@@ -154,7 +151,7 @@
 (defun editutil-edit-next-line (arg)
   (interactive "p")
   (if (>= arg 0)
-      (dotimes (i arg)
+      (dotimes (_ arg)
         (end-of-line)
         (newline-and-indent))
     (editutil-edit-previous-line (- arg))))
@@ -162,7 +159,7 @@
 ;;;###autoload
 (defun editutil-edit-next-line-no-indent (arg)
   (interactive "p")
-  (dotimes (i arg)
+  (dotimes (_ arg)
     (end-of-line)
     (newline)))
 
@@ -172,7 +169,7 @@
   (let ((col (save-excursion
                (back-to-indentation)
                (current-column))))
-    (dotimes (i arg)
+    (dotimes (_ arg)
       (end-of-line)
       (newline)
       (move-to-column col t))))
@@ -194,10 +191,9 @@
                    (point))))
 
 ;;;###autoload
-(defun editutil-zap-to-char-backward ()
-  (interactive)
-  (let ((arg (prefix-numeric-value current-prefix-arg))
-        (char (read-char "Zap to char: " t))
+(defun editutil-zap-to-char-backward (arg)
+  (interactive "p")
+  (let ((char (read-char "Zap to char: " t))
         (curpoint (point))
         (case-fold-search nil))
     (save-excursion
@@ -290,7 +286,7 @@
   (setq this-command t)
   (push-mark (point))
   (let ((str (current-kill 0)))
-    (dotimes (i (or arg 1))
+    (dotimes (_ (or arg 1))
       (insert-for-yank str)))
   (when (eq this-command t)
     (setq this-command 'yank))
@@ -340,7 +336,7 @@
     (delete-region (max start non-space (line-beginning-position)) (point))))
 
 ;;;###autoload
-(defun editutil-number-rectangle (start end format-string from)
+(defun editutil-number-rectangle (start end format-string start-num)
   "Delete (don't save) text in the region-rectangle, then number it."
   (interactive
    (list (region-beginning) (region-end)
@@ -355,7 +351,8 @@
     (goto-char start)
     (cl-loop with column = (current-column)
              while (and (<= (point) end) (not (eobp)))
-             for i from from   do
+             for i = start-num then (1+ i)
+             do
              (move-to-column column t)
              (insert (format format-string i))
              (forward-line 1)))
@@ -385,7 +382,7 @@
         ;; maybe last line
         (when (= orig-line (line-number-at-pos))
           (insert "\n"))
-        (dotimes (i (or n 1))
+        (dotimes (_ (or n 1))
           (insert str "\n"))))
     (forward-line lines)
     (move-to-column orig-column)))
