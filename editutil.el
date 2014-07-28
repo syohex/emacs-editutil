@@ -559,7 +559,10 @@
 (defun editutil-toggle-let ()
   (interactive)
   (save-excursion
-    (let ((limit (save-excursion (beginning-of-defun) (point))))
+    (let ((limit (save-excursion (beginning-of-defun) (point)))
+          (at-point (thing-at-point 'symbol)))
+      (when (string-match "\\`let\\*?" at-point)
+        (forward-char (length (match-string-no-properties 0 at-point))))
       (when (re-search-backward "(\\(let\\)\\(\\*\\)?" limit t)
         (goto-char (match-end 1))
         (if (match-string 2)
