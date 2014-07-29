@@ -38,12 +38,23 @@
   "My own editing utilities"
   :group 'editing)
 
-(defvar editutil--unwrap-pair
+(defvar editutil--pair-characters
   '(("(" . ")") ("[" . "]") ("{" . "}") ("'" . "'") ("\"" . "\"")
     ("<" . ">") ("|" . "|") ("`" . "`")))
 
+;;;###autoload
+(defun editutil-insert-pair (char)
+  (interactive
+   (list (read-char)))
+  (let* ((str (char-to-string char))
+         (counter (assoc-default str editutil--pair-characters)))
+    (if counter
+        (insert str counter)
+      (insert str str))
+    (backward-char 1)))
+
 (defun editutil--unwrap-counterpart (sign)
-  (let ((pair (assoc-default sign editutil--unwrap-pair)))
+  (let ((pair (assoc-default sign editutil--pair-characters)))
     (unless pair
       (error "Not found: pair string of '%s'" sign))
     pair))
@@ -599,9 +610,10 @@
   (global-set-key (kbd "M-d") 'editutil-delete-word)
   (global-set-key [remap backward-kill-word] 'editutil-backward-delete-word)
   (global-set-key (kbd "C-x r N") 'editutil-number-rectangle)
-  (global-set-key (kbd "C-M-SPC") 'editutil-copy-sexp)
+
   (global-set-key (kbd "M-I") 'editutil-indent-same-as-previous-line)
   (global-set-key (kbd "M-(") 'editutil-insert-parentheses)
+  (global-set-key (kbd "M-z") 'editutil-insert-pair)
 
   ;; C-q map
   (define-key my/ctrl-q-map (kbd "l") 'editutil-copy-line)
@@ -613,11 +625,10 @@
   (define-key my/ctrl-q-map (kbd "s") 'editutil-unwrap-at-point)
   (define-key my/ctrl-q-map (kbd "r") 'editutil-replace-wrapped-string)
 
-  (define-key my/ctrl-q-map (kbd "C-h") 'editutil-move-left-hand-side)
-  (define-key my/ctrl-q-map (kbd "C-l") 'editutil-move-right-hand-side)
   (define-key my/ctrl-q-map (kbd "?") 'editutil-show-here-function)
 
   (when window-system
+    (global-set-key (kbd "C-M-SPC") 'editutil-copy-sexp)
     ;; This command should be used from `emacsclient -t'
     (define-key my/ctrl-q-map (kbd "y") 'editutil-yank-from-clipboard))
 
