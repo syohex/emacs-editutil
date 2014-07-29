@@ -643,6 +643,11 @@
 
   (smartrep-define-key
       global-map "M-g" '(("c" . 'editutil-duplicate-thing)))
+
+  ;; helm-editutil
+  (global-set-key (kbd "M-.") 'helm-editutil-etags-select)
+  (global-set-key (kbd "C-x C-a") 'helm-editutil-git-ls-files)
+  (global-set-key (kbd "C-x v g") 'helm-editutil-grep)
   t)
 
 (provide 'editutil)
