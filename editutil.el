@@ -461,6 +461,14 @@
       (kill-ring-save start (line-end-position)))))
 
 ;;;###autoload
+(defun editutil-kill-to-space ()
+  (interactive)
+  (let ((start (point)))
+    (save-excursion
+      (skip-chars-forward "^ \t\r\n")
+      (delete-region start (point)))))
+
+;;;###autoload
 (defun editutil-isearch-match-begin ()
   (interactive)
   (isearch-exit)
@@ -617,6 +625,7 @@
 
   ;; C-q map
   (define-key my/ctrl-q-map (kbd "l") 'editutil-copy-line)
+  (define-key my/ctrl-q-map (kbd "k") 'editutil-kill-to-space)
   (define-key my/ctrl-q-map (kbd "a") 'editutil-mark-around-paired)
   (define-key my/ctrl-q-map (kbd "i") 'editutil-mark-inside-paired)
 
