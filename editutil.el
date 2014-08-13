@@ -596,6 +596,14 @@
   (insert (x-get-clipboard)))
 
 ;;;###autoload
+(defun editutil-insert-semicolon ()
+  (interactive)
+  (save-excursion
+    (goto-char (line-end-position))
+    (delete-horizontal-space)
+    (insert ";")))
+
+;;;###autoload
 (defun editutil-default-setup ()
   (interactive)
 
@@ -634,6 +642,7 @@
   (define-key my/ctrl-q-map (kbd "s") 'editutil-unwrap-at-point)
   (define-key my/ctrl-q-map (kbd "r") 'editutil-replace-wrapped-string)
 
+  (define-key my/ctrl-q-map (kbd ";") 'editutil-insert-semicolon)
   (define-key my/ctrl-q-map (kbd "?") 'editutil-show-here-function)
 
   (when window-system
