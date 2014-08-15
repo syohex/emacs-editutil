@@ -395,7 +395,6 @@
           (insert "\n"))
         (dotimes (_ (or n 1))
           (insert str "\n"))))
-    (forward-line lines)
     (move-to-column orig-column)))
 
 ;;;###autoload
@@ -626,6 +625,7 @@
   (global-set-key (kbd "M-d") 'editutil-delete-word)
   (global-set-key [remap backward-kill-word] 'editutil-backward-delete-word)
   (global-set-key (kbd "C-x r N") 'editutil-number-rectangle)
+  (global-set-key (kbd "C-M-c") 'editutil-duplicate-thing)
 
   (global-set-key (kbd "M-I") 'editutil-indent-same-as-previous-line)
   (global-set-key (kbd "M-(") 'editutil-insert-parentheses)
@@ -658,9 +658,6 @@
 
   (smartrep-define-key
       global-map "C-x" '(("j" . 'editutil-insert-newline-without-moving)))
-
-  (smartrep-define-key
-      global-map "M-g" '(("c" . 'editutil-duplicate-thing)))
 
   ;; helm-editutil
   (global-set-key (kbd "M-.") 'helm-editutil-etags-select)
