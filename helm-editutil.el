@@ -55,7 +55,8 @@
       (error "Here is not Git Repository!!"))
     (let ((default-directory topdir)
           (sources (helm-editutil--git-ls-files-source topdir)))
-      (helm-other-buffer sources "*Helm Git Project*"))))
+      (helm :sources sources :buffer "*Helm Git Project*"
+            :keymap helm-find-files-map))))
 
 ;;;###autoload
 (defun helm-editutil-etags-select (arg)
