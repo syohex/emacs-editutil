@@ -398,6 +398,12 @@
     (move-to-column orig-column)))
 
 ;;;###autoload
+(defun editutil-view-word-end (arg)
+  (interactive "p")
+  (forward-char 1)
+  (forward-word arg)
+  (backward-char 1))
+
 (defun editutil-view-insert ()
   (interactive)
   (when view-mode
