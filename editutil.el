@@ -404,23 +404,21 @@
   (forward-word arg)
   (backward-char 1))
 
+;;;###autoload
 (defun editutil-view-insert ()
   (interactive)
-  (when view-mode
-    (view-mode -1)))
+  (read-only-mode -1))
 
 ;;;###autoload
 (defun editutil-view-insert-at-next ()
   (interactive)
-  (when view-mode
-    (view-mode -1))
+  (read-only-mode -1)
   (forward-char 1))
 
 ;;;###autoload
 (defun editutil-view-insert-at-bol ()
   (interactive)
-  (when view-mode
-    (view-mode -1))
+  (read-only-mode -1)
   (back-to-indentation))
 
 ;;;###autoload
