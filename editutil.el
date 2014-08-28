@@ -42,7 +42,6 @@
   '(("(" . ")") ("[" . "]") ("{" . "}") ("'" . "'") ("\"" . "\"")
     ("<" . ">") ("|" . "|") ("`" . "`")))
 
-;;;###autoload
 (defun editutil-insert-pair (char)
   (interactive
    (list (read-char)))
@@ -75,7 +74,6 @@
             (error "This point is not wrapped")))
         (point)))))
 
-;;;###autoload
 (defun editutil-unwrap-at-point (arg &optional replaced)
   (interactive "p")
   (save-excursion
@@ -130,25 +128,21 @@
        (re-search-forward (regexp-quote open-str) nil t))
     (and inner-p (backward-char 1))))
 
-;;;###autoload
 (defun editutil-mark-inside-paired (char)
   (interactive
    (list (read-char)))
   (editutil--mark-paired char t))
 
-;;;###autoload
 (defun editutil-mark-around-paired (char)
   (interactive
    (list (read-char)))
   (editutil--mark-paired char nil))
 
-;;;###autoload
 (defun editutil-replace-wrapped-string (arg)
   (interactive "p")
   (let ((replaced (char-to-string (read-char))))
     (editutil-unwrap-at-point arg replaced)))
 
-;;;###autoload
 (defun editutil-edit-previous-line (arg)
   (interactive "p")
   (if (< arg 0)
@@ -160,7 +154,6 @@
         (end-of-line))
       (newline-and-indent))))
 
-;;;###autoload
 (defun editutil-edit-next-line (arg)
   (interactive "p")
   (if (>= arg 0)
@@ -169,14 +162,12 @@
         (newline-and-indent))
     (editutil-edit-previous-line (- arg))))
 
-;;;###autoload
 (defun editutil-edit-next-line-no-indent (arg)
   (interactive "p")
   (dotimes (_ arg)
     (end-of-line)
     (newline)))
 
-;;;###autoload
 (defun editutil-edit-next-line-same-column (arg)
   (interactive "p")
   (let ((col (save-excursion
@@ -187,7 +178,6 @@
       (newline)
       (move-to-column col t))))
 
-;;;###autoload
 (defun editutil-zap-to-char (arg char)
   (interactive "p\ncZap to char: ")
   (with-no-warnings
@@ -203,7 +193,6 @@
                      (forward-char 1))
                    (point))))
 
-;;;###autoload
 (defun editutil-zap-to-char-backward (arg)
   (interactive "p")
   (let ((char (read-char "Zap to char: " t))
@@ -213,7 +202,6 @@
       (when (search-backward (char-to-string char) nil t)
         (delete-region (1+ (point)) curpoint)))))
 
-;;;###autoload
 (defun editutil-next-symbol (arg)
   (interactive "p")
   (let ((symbol (thing-at-point 'symbol))
@@ -230,7 +218,6 @@
         (goto-char curpoint)
         (error "No more found('%s')" symbol)))))
 
-;;;###autoload
 (defun editutil-previous-symbol (arg)
   (interactive "p")
   (editutil-next-symbol (- arg)))
@@ -240,7 +227,6 @@
 (defsubst editutil--last-command-move-char-p ()
   (memq last-command '(editutil-forward-char editutil-backward-char)))
 
-;;;###autoload
 (defun editutil-forward-char (arg &optional char)
   (interactive "p\n")
   (unless char
@@ -257,7 +243,6 @@
   (when (>= arg 0)
     (backward-char 1)))
 
-;;;###autoload
 (defun editutil-backward-char (arg &optional char)
   (interactive "p\n")
   (unless char
@@ -267,14 +252,12 @@
   (backward-char 1)
   (editutil-forward-char (- arg) char))
 
-;;;###autoload
 (defun editutil-move-line-up ()
   (interactive)
   (transpose-lines 1)
   (forward-line -2)
   (indent-according-to-mode))
 
-;;;###autoload
 (defun editutil-move-line-down ()
   (interactive)
   (forward-line 1)
@@ -282,7 +265,6 @@
   (forward-line -1)
   (indent-according-to-mode))
 
-;;;###autoload
 (defun editutil-delete-following-spaces (arg)
   (interactive "p")
   (let ((orig-point (point)))
@@ -292,7 +274,6 @@
         (skip-chars-forward " \t"))
       (delete-region orig-point (point)))))
 
-;;;###autoload
 (defun editutil-yank (arg)
   (interactive "P")
   (setq yank-window-start (window-start))
@@ -305,7 +286,6 @@
     (setq this-command 'yank))
   nil)
 
-;;;###autoload
 (defun editutil-insert-newline-without-moving ()
   (interactive)
   (save-excursion
@@ -320,7 +300,6 @@
     (skip-chars-forward "^ \t")
     (point)))
 
-;;;###autoload
 (defun editutil-delete-word (arg)
   (interactive "p")
   (let ((next-not-space (editutil--forward-next-space)))
@@ -331,7 +310,6 @@
                                  (forward-word arg))
                                (min next-not-space (point)))))))
 
-;;;###autoload
 (defun editutil-backward-delete-word (arg)
   (interactive "p")
   (when (= (point) (line-beginning-position))
@@ -348,7 +326,6 @@
                      (point))))
     (delete-region (max start non-space (line-beginning-position)) (point))))
 
-;;;###autoload
 (defun editutil-number-rectangle (start end format-string start-num)
   "Delete (don't save) text in the region-rectangle, then number it."
   (interactive
@@ -371,13 +348,11 @@
              (forward-line 1)))
   (goto-char start))
 
-;;;###autoload
 (defun editutil-copy-sexp ()
   (interactive)
   (copy-sexp)
   (message "%s" (substring-no-properties (thing-at-point 'sexp))))
 
-;;;###autoload
 (defun editutil-duplicate-thing (n)
   (interactive "p")
   (let ((orig-column (current-column))
@@ -399,49 +374,41 @@
           (insert str "\n"))))
     (move-to-column orig-column)))
 
-;;;###autoload
 (defun editutil-view-word-end (arg)
   (interactive "p")
   (forward-char 1)
   (forward-word arg)
   (backward-char 1))
 
-;;;###autoload
 (defun editutil-view-insert ()
   (interactive)
   (read-only-mode -1))
 
-;;;###autoload
 (defun editutil-view-insert-at-next ()
   (interactive)
   (read-only-mode -1)
   (forward-char 1))
 
-;;;###autoload
 (defun editutil-view-insert-at-bol ()
   (interactive)
   (read-only-mode -1)
   (back-to-indentation))
 
-;;;###autoload
 (defun editutil-view-insert-at-eol ()
   (interactive)
   (when view-mode
     (view-mode -1))
   (goto-char (line-end-position)))
 
-;;;###autoload
 (defun editutil-goto-last-line ()
   (interactive)
   (goto-char (point-max))
   (goto-char (line-beginning-position)))
 
-;;;###autoload
 (defun editutil-backward-symbol ()
   (interactive)
   (forward-symbol -1))
 
-;;;###autoload
 (defun editutil-indent-same-as-previous-line ()
   (interactive)
   (let ((cur-indent (current-indentation))
@@ -457,7 +424,6 @@
       (delete-horizontal-space)
       (insert-char (string-to-char " ") prev-indent))))
 
-;;;###autoload
 (defun editutil-copy-line (arg)
   (interactive "p")
   (let ((start (line-beginning-position)))
@@ -465,7 +431,6 @@
       (forward-line (1- arg))
       (kill-ring-save start (line-end-position)))))
 
-;;;###autoload
 (defun editutil-kill-to-space ()
   (interactive)
   (let ((start (point)))
@@ -473,21 +438,18 @@
       (skip-chars-forward "^ \t\r\n")
       (delete-region start (point)))))
 
-;;;###autoload
 (defun editutil-isearch-match-begin ()
   (interactive)
   (isearch-exit)
   (when (and isearch-forward isearch-success)
     (backward-char (length isearch-string))))
 
-;;;###autoload
 (defun editutil-isearch-match-end ()
   (interactive)
   (isearch-exit)
   (when (and (not isearch-forward) isearch-success)
     (forward-char (1- (length isearch-string)))))
 
-;;;###autoload
 (defun editutil-backward-up (arg)
   (interactive "p")
   (if (nth 3 (syntax-ppss))
@@ -500,7 +462,6 @@
       (skip-syntax-backward "^(")
       (backward-char 1))))
 
-;;;###autoload
 (defun editutil-down-list (arg)
   (interactive "p")
   (unless (ignore-errors
@@ -509,7 +470,6 @@
     (skip-syntax-forward "^(")
     (forward-char 2)))
 
-;;;###autoload
 (defun editutil-forward-list (arg)
   (interactive "p")
   (unless (ignore-errors
@@ -518,7 +478,6 @@
     (editutil-backward-up arg)
     (forward-sexp arg)))
 
-;;;###autoload
 (defun editutil-minibuffer-up-dir ()
   (interactive)
   (backward-char 1)
@@ -526,12 +485,10 @@
     (delete-region (1+ (point)) (line-end-position))
     (forward-char 1)))
 
-;;;###autoload
 (defun editutil-insert-parentheses (arg)
   (interactive "P")
   (insert-parentheses (or arg 1)))
 
-;;;###autoload
 (defun editutil-other-window ()
   (interactive)
   (when (one-window-p)
@@ -547,14 +504,12 @@
   "highlight symbol"
   :group 'editutil)
 
-;;;###autoload
 (defun editutil-highlight-clear-overlays ()
   (interactive)
   (dolist (ov (overlays-in (point-min) (point-max)))
     (when (overlay-get ov 'editutils-highlight)
       (delete-overlay ov))))
 
-;;;###autoload
 (defun editutil-highlight-symbol-in-defun ()
   (interactive)
   (let* ((symbol (thing-at-point 'symbol))
@@ -572,14 +527,12 @@
             (overlay-put ov 'face 'editutils-highlight)
             (overlay-put ov 'editutils-highlight t)))))))
 
-;;;###autoload
 (defun editutil-show-here-function ()
   (interactive)
   (if (not which-func-mode)
       (message "`which-func-mode' is not enabled")
     (message "%s" (gethash (selected-window) which-func-table))))
 
-;;;###autoload
 (defun editutil-toggle-let ()
   (interactive)
   (save-excursion
@@ -595,12 +548,10 @@
         (backward-up-list)
         (indent-pp-sexp)))))
 
-;;;###autoload
 (defun editutil-yank-from-clipboard ()
   (interactive)
   (insert (x-get-clipboard)))
 
-;;;###autoload
 (defun editutil-insert-semicolon ()
   (interactive)
   (save-excursion
