@@ -559,6 +559,13 @@
     (delete-horizontal-space)
     (insert ";")))
 
+(defun editutil-kill-line (arg)
+  (interactive "P")
+  (if (and arg (>= (prefix-numeric-value arg) 1))
+      (kill-whole-line arg)
+    (let ((current-prefix-arg nil))
+      (call-interactively 'kill-line))))
+
 ;;;###autoload
 (defun editutil-default-setup ()
   (interactive)
@@ -569,6 +576,7 @@
   (global-set-key (kbd "C-M-o") 'editutil-other-window)
   (global-set-key (kbd "C-M-u") 'editutil-backward-up)
 
+  (global-set-key (kbd "C-k") 'editutil-kill-line)
   (global-set-key (kbd "C-M-n") 'editutil-forward-list)
   (global-set-key (kbd "C-M-d") 'editutil-down-list)
   (global-set-key (kbd "M-o") 'editutil-edit-next-line)
