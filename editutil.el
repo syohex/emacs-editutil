@@ -42,16 +42,6 @@
   '(("(" . ")") ("[" . "]") ("{" . "}") ("'" . "'") ("\"" . "\"")
     ("<" . ">") ("|" . "|") ("`" . "`")))
 
-(defun editutil-insert-pair (char)
-  (interactive
-   (list (read-char)))
-  (let* ((str (char-to-string char))
-         (counter (assoc-default str editutil--pair-characters)))
-    (if counter
-        (insert str counter)
-      (insert str str))
-    (backward-char 1)))
-
 (defun editutil--unwrap-counterpart (sign)
   (let ((pair (assoc-default sign editutil--pair-characters)))
     (unless pair
@@ -605,7 +595,6 @@
 
   (global-set-key (kbd "M-I") 'editutil-indent-same-as-previous-line)
   (global-set-key (kbd "M-(") 'editutil-insert-parentheses)
-  (global-set-key (kbd "M-z") 'editutil-insert-pair)
 
   ;; C-q map
   (define-key my/ctrl-q-map (kbd "l") 'editutil-copy-line)
