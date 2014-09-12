@@ -567,6 +567,12 @@
     (let ((current-prefix-arg nil))
       (call-interactively 'kill-line))))
 
+(defun editutil-view-quit ()
+  (interactive)
+  (if (buffer-file-name)
+      (call-interactively 'read-only-mode)
+    (call-interactively 'View-quit)))
+
 ;;;###autoload
 (defun editutil-default-setup ()
   (interactive)
