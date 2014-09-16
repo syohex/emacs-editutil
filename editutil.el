@@ -573,6 +573,11 @@
       (call-interactively 'read-only-mode)
     (call-interactively 'View-quit)))
 
+(defun editutil--add-watchwords ()
+  (font-lock-add-keywords
+   nil '(("\\_<\\(FIXME\\|TODO\\|XXX\\|@@@\\)\\_>"
+          1 '((:foreground "pink") (:weight bold)) t))))
+
 ;;;###autoload
 (defun editutil-default-setup ()
   (interactive)
@@ -634,6 +639,9 @@
   (global-set-key (kbd "M-.") 'helm-editutil-etags-select)
   (global-set-key (kbd "C-x C-a") 'helm-editutil-git-ls-files)
   (global-set-key (kbd "C-x v g") 'helm-editutil-grep)
+
+  (dolist (hook '(prog-mode-hook org-mode-hook text-mode-hook markdown-mode-hook))
+    (add-hook hook 'editutil--add-watchwords))
   t)
 
 (provide 'editutil)
