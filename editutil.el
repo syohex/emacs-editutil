@@ -33,6 +33,7 @@
 (declare-function smartrep-define-key "smartrep")
 (declare-function subword-forward "subword")
 (declare-function subword-backward "subword")
+(declare-function elscreen-editutil-current-directory "elscreen-editutil")
 
 (defgroup editutil nil
   "My own editing utilities"
@@ -596,6 +597,19 @@
       (unless is-created
         (insert (format-time-string "* %m月 %d日 作業")))
       (show-all))))
+
+(defun editutil-current-buffer-directory ()
+  (if (featurep 'elscreen)
+      (elscreen-editutil-current-directory)
+    (let* ((bufsinfo (cadr (cadr (current-frame-configuration))))
+           (bufname-list (assoc-default 'buffer-list bufsinfo)))
+      (cl-loop for buf in bufname-list
+               for file = (or (buffer-file-name buf)
+                              (with-current-buffer buf
+                                (when (eq major-mode 'dired-mode)
+                                  dired-directory)))
+               when (buffer-file-name buf)
+               return (file-name-directory it)))))
 
 ;;;###autoload
 (defun editutil-default-setup ()
