@@ -3,8 +3,7 @@
 ;; Copyright (C) 2014 by Syohei YOSHIDA
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
-;; URL: https://github.com/syohex/
-;; Package-Requires: ((elscreen . "0"))
+;; Package-Requires: ((elscreen . "0") (cl-lib "0.5"))
 ;; Version: 0.01
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -25,6 +24,7 @@
 ;;; Code:
 
 (require 'elscreen)
+(require 'cl-lib)
 
 (defun elscreen-editutil--convert-name (screen-name)
   (let ((case-fold-search nil))
