@@ -58,11 +58,12 @@
   (let* ((current-screen (elscreen-get-current-screen))
          (property (elscreen-get-screen-property current-screen))
          (curbuf (marker-buffer (cadr (assoc-default 'window-configuration property))))
-         (bufname (buffer-file-name curbuf)))
-    (if bufname
-        (file-name-directory bufname)
-      (with-current-buffer curbuf
-        default-directory))))
+         (bufname (buffer-file-name curbuf))
+         (curdir (if bufname
+                     (file-name-directory bufname)
+                   (with-current-buffer curbuf
+                     default-directory))))
+    (expand-file-name curdir)))
 
 (provide 'elscreen-editutil)
 
