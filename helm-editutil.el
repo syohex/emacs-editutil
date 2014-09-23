@@ -87,8 +87,8 @@
 
 (defun helm-editutil--ghq-list-candidates ()
   (with-temp-buffer
-    (unless (zerop (call-process "ghq" nil t nil "list"))
-      (error "Failed: ghq list"))
+    (unless (zerop (process-file "ghq" nil t nil "list"))
+      (error "Failed: 'ghq list'"))
     (let (paths)
       (goto-char (point-min))
       (while (not (eobp))
@@ -99,7 +99,7 @@
 
 (defun helm-editutil--ghq-list-ls-files ()
   (with-current-buffer (helm-candidate-buffer 'global)
-    (unless (zerop (call-process "git" nil t nil "ls-files"))
+    (unless (zerop (process-file "git" nil t nil "ls-files"))
       (error "Failed: 'git ls-files'"))))
 
 (defun helm-editutil--ghq-format (repo)
@@ -163,14 +163,14 @@
     (helm-attrset 'recenter t)
     (with-current-buffer (helm-candidate-buffer 'global)
       (let ((default-directory helm-editutil--grep-root))
-        (unless (zerop (call-process-shell-command cmd nil t))
+        (unless (zerop (process-file-shell-command cmd nil t))
           (error "Failed: '%s'" cmd))
         (when (zerop (length (buffer-string)))
           (error "No output: '%s'" cmd))))))
 
 (defun helm-editutil--project-top ()
   (with-temp-buffer
-    (unless (zerop (call-process "git" nil t nil "rev-parse" "--show-toplevel"))
+    (unless (zerop (process-file "git" nil t nil "rev-parse" "--show-toplevel"))
       (error "Failed: 'git rev-parse --show-toplevel'"))
     (goto-char (point-min))
     (file-name-as-directory
