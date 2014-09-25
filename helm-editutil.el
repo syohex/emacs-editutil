@@ -32,15 +32,18 @@
   (dired (file-name-directory file)))
 
 (defun helm-editutil--git-ls-files-source (pwd)
-  (cl-loop for (description . option) in '(("Modified Files" . "--modified")
-                                           ("Untracked Files" . "--others --exclude-standard")
-                                           ("All Files" . ""))
-           for cmd = (concat "git ls-files " option)
+  (cl-loop for (description . options) in '(("Modified Files" . ("--modified"))
+                                            ("Untracked Files" . ("--others" "--exclude-standard"))
+                                            ("All Files" . ("--")))
+           for is-first = t then nil
+           for header = (if is-first
+                            (format "%s (%s)" description pwd)
+                          description)
            collect
-           `((name . ,(format "%s (%s)" description pwd))
+           `((name . ,header)
              (init . (lambda ()
                        (with-current-buffer (helm-candidate-buffer 'global)
-                         (call-process-shell-command ,cmd nil t))))
+                         (process-file "git" nil t nil "ls-files" ,@options))))
              (candidates-in-buffer)
              (action . (("Open File" . find-file)
                         ("Open Directory" . helm-editutil--open-dired)
@@ -74,16 +77,12 @@
               :default (concat "\\_<" (thing-at-point 'symbol) "\\_>"))
       (message "Error: No tag file found, please create one with etags shell command."))))
 
-(defmacro helm-editutil--line-string ()
-  `(buffer-substring-no-properties
-    (line-beginning-position) (line-end-position)))
-
 (defun helm-editutil--ghq-root ()
   (with-temp-buffer
     (unless (zerop (process-file "ghq" nil t nil "root"))
       (error "Failed: 'ghq root'"))
     (goto-char (point-min))
-    (expand-file-name (helm-editutil--line-string))))
+    (expand-file-name (helm-current-line-contents))))
 
 (defun helm-editutil--ghq-list-candidates ()
   (with-temp-buffer
@@ -92,7 +91,7 @@
     (let (paths)
       (goto-char (point-min))
       (while (not (eobp))
-        (let ((path (helm-editutil--line-string)))
+        (let ((path (helm-current-line-contents)))
           (push path paths))
         (forward-line 1))
       (reverse paths))))
