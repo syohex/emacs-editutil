@@ -224,9 +224,8 @@
 (defsubst editutil--last-command-move-char-p ()
   (memq last-command '(editutil-forward-char editutil-backward-char)))
 
-(defsubst editutil--use-last-key-p (char)
-  (or (= char (aref (kbd "M-a") 0))
-      (= char (aref (kbd "M-e") 0))))
+(defsubst editutil--use-last-key-p (char key)
+  (and window-system (= char (aref (kbd key) 0))))
 
 (defun editutil-forward-char (arg &optional char)
   (interactive "p\n")
@@ -234,7 +233,7 @@
     (if (editutil--last-command-move-char-p)
         (setq char editutil--last-search-char)
       (setq char (read-event))
-      (when (and window-system (editutil--use-last-key-p char))
+      (when (editutil--use-last-key-p char "M-e")
         (setq char editutil--last-search-char))))
   (unless (char-or-string-p char)
     (error "Error: Input Invalid Char %d" char))
@@ -251,7 +250,9 @@
   (unless char
     (if (editutil--last-command-move-char-p)
         (setq char editutil--last-search-char)
-      (setq char (read-event))))
+      (setq char (read-event))
+      (when (editutil--use-last-key-p char "M-a")
+        (setq char editutil--last-search-char))))
   (backward-char 1)
   (editutil-forward-char (- arg) char))
 
