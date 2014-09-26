@@ -647,8 +647,6 @@
   (global-set-key (kbd "M-I") 'editutil-indent-same-as-previous-line)
   (global-set-key (kbd "M-(") 'editutil-insert-parentheses)
 
-  (global-set-key (kbd "C-x C-p") 'editutil-open-today-todo)
-
   ;; C-q map
   (define-key my/ctrl-q-map (kbd "l") 'editutil-copy-line)
   (define-key my/ctrl-q-map (kbd "k") 'editutil-kill-to-space)
@@ -662,6 +660,7 @@
 
   (define-key my/ctrl-q-map (kbd ";") 'editutil-insert-semicolon)
   (define-key my/ctrl-q-map (kbd "?") 'editutil-show-here-function)
+  (define-key my/ctrl-q-map (kbd "C-p") 'editutil-open-today-todo)
 
   (when window-system
     (global-set-key (kbd "C-M-SPC") 'editutil-copy-sexp)
