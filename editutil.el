@@ -225,7 +225,13 @@
   (memq last-command '(editutil-forward-char editutil-backward-char)))
 
 (defsubst editutil--use-last-key-p (char key)
-  (and window-system (= char (aref (kbd key) 0))))
+  (if window-system
+      (= char (aref (kbd key) 0))
+    (when (and (= char 27) ;; ESC/Meta
+               (string-match "\\`M-\\([a-zA-Z]\\)" key))
+      (let ((meta-prefixed (string-to-char (match-string-no-properties 1 key)))
+            (second-char (read-event)))
+        (= second-char meta-prefixed)))))
 
 (defun editutil-forward-char (arg &optional char)
   (interactive "p\n")
