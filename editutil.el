@@ -34,6 +34,7 @@
 (declare-function subword-forward "subword")
 (declare-function subword-backward "subword")
 (declare-function elscreen-editutil-current-directory "elscreen-editutil")
+(declare-function ace-jump-char-mode "ace-jump-mode")
 
 (defgroup editutil nil
   "My own editing utilities"
@@ -448,6 +449,16 @@
       (skip-chars-forward "^ \t\r\n")
       (delete-region start (point)))))
 
+(defun editutil-isearch-ace-jump ()
+  (interactive)
+  (let ((input (substring isearch-string 0 1)))
+    (isearch-exit)
+    (ace-jump-char-mode (string-to-char input))))
+
+(defun editutil-isearch-yank-symbol ()
+  (interactive)
+  (isearch-yank-internal (lambda () (forward-symbol 1) (point))))
+
 (defun editutil-isearch-match-begin ()
   (interactive)
   (isearch-exit)
@@ -682,6 +693,8 @@
     ;; This command should be used from `emacsclient -t'
     (define-key my/ctrl-q-map (kbd "y") 'editutil-yank-from-clipboard))
 
+  (define-key isearch-mode-map (kbd "C-j") 'editutil-isearch-ace-jump)
+  (define-key isearch-mode-map (kbd "C-M-w") 'editutil-isearch-yank-symbol)
   (define-key isearch-mode-map [remap isearch-exit] 'editutil-isearch-match-begin)
   (define-key isearch-mode-map (kbd "C-M-a") 'editutil-isearch-match-begin)
   (define-key isearch-mode-map (kbd "C-M-e") 'editutil-isearch-match-end)
