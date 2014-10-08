@@ -34,7 +34,7 @@
 (declare-function subword-forward "subword")
 (declare-function subword-backward "subword")
 (declare-function elscreen-editutil-current-directory "elscreen-editutil")
-(declare-function ace-jump-char-mode "ace-jump-mode")
+(declare-function ace-jump-word-mode "ace-jump-mode")
 
 (defgroup editutil nil
   "My own editing utilities"
@@ -453,7 +453,7 @@
   (interactive)
   (let ((input (substring isearch-string 0 1)))
     (isearch-exit)
-    (ace-jump-char-mode (string-to-char input))))
+    (ace-jump-word-mode (string-to-char input))))
 
 (defun editutil-isearch-yank-symbol ()
   (interactive)
