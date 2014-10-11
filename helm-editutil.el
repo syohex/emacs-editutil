@@ -189,6 +189,19 @@
   (let ((default-directory helm-editutil--grep-root))
     (helm :sources '(helm-editutil--grep-source) :buffer "*sgit-grep*")))
 
+(defvar helm-editutil--hyperspec-source
+  `((name . "Lookup Hyperspec")
+    (candidates . ,(lambda ()
+                     (hash-table-keys common-lisp-hyperspec--symbols)))
+    (action . (("Show Hyperspec" . hyperspec-lookup)))))
+
+;;;###autoload
+(defun helm-editutil-hyperspec ()
+  (interactive)
+  (helm :sources '(helm-editutil--hyperspec-source)
+        :default (thing-at-point 'symbol)
+        :buffer "*Helm HyperSpec*"))
+
 (provide 'helm-editutil)
 
 ;;; helm-editutil.el ends here
