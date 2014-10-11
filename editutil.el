@@ -635,15 +635,6 @@
                when (buffer-file-name buf)
                return (file-name-directory it)))))
 
-(defun editutils-cleanup-spaces ()
-  (interactive)
-  (delete-trailing-whitespace)
-  (save-excursion
-    (save-restriction
-      (widen)
-      (goto-char (point-max))
-      (delete-blank-lines))))
-
 ;;;###autoload
 (defun editutil-default-setup ()
   (interactive)
