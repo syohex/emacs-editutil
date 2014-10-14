@@ -260,7 +260,6 @@
       (setq char (read-event))
       (when (editutil--use-last-key-p char "M-a")
         (setq char editutil--last-search-char))))
-  (backward-char 1)
   (editutil-forward-char (- arg) char))
 
 (defun editutil-move-line-up ()
