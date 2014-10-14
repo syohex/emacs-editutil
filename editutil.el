@@ -262,6 +262,37 @@
         (setq char editutil--last-search-char))))
   (editutil-forward-char (- arg) char))
 
+(defun editutil-kill-common (arg char way copy)
+  (unless char
+    (setq char (read-event)))
+  (save-excursion
+    (let ((start (point))
+          (func (if copy 'kill-ring-save 'kill-region)))
+      (if (eq way 'forward)
+          (editutil-forward-char arg char)
+        (editutil-backward-char arg char)
+        (forward-char +1))
+      (let ((end (point)))
+        (if (<= start end)
+            (funcall func start end)
+          (funcall func end start))))))
+
+(defun editutil-forward-kill (arg &optional char)
+  (interactive "p\n")
+  (editutil-kill-common arg char 'forward nil))
+
+(defun editutil-backward-kill (arg &optional char)
+  (interactive "p\n")
+  (editutil-kill-common arg char 'backward nil))
+
+(defun editutil-forward-copy (arg &optional char)
+  (interactive "p\n")
+  (editutil-kill-common arg char 'forward t))
+
+(defun editutil-backward-copy (arg &optional char)
+  (interactive "p\n")
+  (editutil-kill-common arg char 'backward t))
+
 (defun editutil-move-line-up ()
   (interactive)
   (transpose-lines 1)
