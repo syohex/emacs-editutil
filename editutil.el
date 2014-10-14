@@ -709,6 +709,11 @@
   (define-key my/ctrl-q-map (kbd "?") 'editutil-show-here-function)
   (define-key my/ctrl-q-map (kbd "C-p") 'editutil-open-today-todo)
 
+  (define-key my/ctrl-q-map (kbd "w") 'editutil-forward-kill)
+  (define-key my/ctrl-q-map (kbd "W") 'editutil-backward-kill)
+  (define-key my/ctrl-q-map (kbd "c") 'editutil-forward-copy)
+  (define-key my/ctrl-q-map (kbd "C") 'editutil-backward-copy)
+
   (when window-system
     (global-set-key (kbd "C-M-SPC") 'editutil-copy-sexp)
     ;; This command should be used from `emacsclient -t'
