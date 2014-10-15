@@ -31,16 +31,31 @@
     (let ((name 'orange))
       (do-something name))
 "
-    (forward-cursor-on "name")
-    (editutil-toggle-let)
-    (goto-char (point-min))
-    (should (search-forward "let*"))
+    (save-excursion
+      (forward-cursor-on "name")
+      (editutil-toggle-let)
+      (goto-char (point-min))
+      (should (search-forward "let*"))
+      (editutil-toggle-let)
+      (goto-char (point-min))
+      (should-not (search-forward "let*" nil t))
+      (goto-char (point-min))
+      (should (search-forward "let ")))
 
-    (editutil-toggle-let)
-    (goto-char (point-min))
-    (should-not (search-forward "let*" nil t))
+    (save-excursion
+      (forward-cursor-on "do-something")
+      (editutil-toggle-let)
+      (goto-char (point-min))
+      (should (search-forward "let*"))
+      (editutil-toggle-let)
+      (goto-char (point-min))
+      (should-not (search-forward "let*" nil t))
+      (goto-char (point-min))
+      (should (search-forward "let ")))
 
-    (goto-char (point-min))
-    (should (search-forward "let "))))
+    ;; toggle on let
+    (forward-cursor-on "let")
+    (editutil-toggle-let)
+    (should (string= (thing-at-point 'symbol) "let*"))))
 
 ;;; test-lisp-utility ends here
