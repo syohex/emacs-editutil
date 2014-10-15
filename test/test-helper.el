@@ -21,12 +21,13 @@
 
 ;;; Code:
 
-(defmacro with-editutil-temp-buffer (text &rest body)
+(defmacro with-editutil-temp-buffer (mode text &rest body)
   "Insert `text' in temporary buffer"
-  (declare (indent 0) (debug t))
+  (declare (indent 1) (debug t))
   `(with-temp-buffer
      (insert ,text)
      (goto-char (point-min))
+     (funcall ,mode)
      ,@body))
 
 (defun forward-cursor-on (pattern &optional count)
