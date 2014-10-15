@@ -26,7 +26,7 @@
 
 (ert-deftest forward-kill ()
   "editutil-forward-kill"
-  (with-editutil-temp-buffer
+  (with-editutil-temp-buffer 'fundamental-mode
     "apple orange melon"
     (forward-cursor-on "apple")
     (editutil-forward-kill 1 ?l)
@@ -35,7 +35,7 @@
 
 (ert-deftest backward-kill ()
   "editutil-backward-kill"
-  (with-editutil-temp-buffer
+  (with-editutil-temp-buffer 'fundamental-mode
     "apple orange melon"
     (forward-cursor-on "melon")
     (editutil-backward-kill 2 (string-to-char " "))
@@ -43,7 +43,7 @@
 
 (ert-deftest forward-copy ()
   "editutil-forward-copy"
-  (with-editutil-temp-buffer
+  (with-editutil-temp-buffer 'fundamental-mode
     "apple orange melon"
     (forward-cursor-on "apple")
     (editutil-forward-copy 1 ?m)
@@ -51,7 +51,7 @@
 
 (ert-deftest backward-copy ()
   "editutil-backward-copy"
-  (with-editutil-temp-buffer
+  (with-editutil-temp-buffer 'fundamental-mode
     "apple orange melon"
     (forward-cursor-on "orange")
     (editutil-backward-kill 1 ?l)
