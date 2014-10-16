@@ -119,11 +119,11 @@
         (set-mark (1+ (point)))
       (set-mark (point)))
     (if close-str
-        (if (= (char-syntax (string-to-char close-str)) ?\()
+        (if (member (char-syntax (string-to-char close-str)) '(?\" ?\)))
             (forward-sexp 1)
           (re-search-forward (regexp-quote close-str) nil t))
-       (forward-char 1)
-       (re-search-forward (regexp-quote open-str) nil t))
+      (forward-char 1)
+      (re-search-forward (regexp-quote open-str) nil t))
     (and inner-p (backward-char 1))))
 
 (defun editutil-mark-inside-paired (char)
