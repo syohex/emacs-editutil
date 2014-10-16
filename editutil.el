@@ -727,14 +727,16 @@
   (global-set-key (kbd "M-I") 'editutil-indent-same-as-previous-line)
   (global-set-key (kbd "M-(") 'editutil-insert-parentheses)
 
+  (global-set-key (kbd "C-x .") 'editutil-highlight-symbol-in-defun)
+  (global-set-key (kbd "C-x ,") 'editutil-highlight-clear-overlays)
+
+  (global-set-key (kbd "C-x a a") 'editutil-mark-around-paired)
+  (global-set-key (kbd "C-x a i") 'editutil-mark-inside-paired)
+
   ;; C-q map
   (define-key my/ctrl-q-map (kbd "l") 'editutil-copy-line)
   (define-key my/ctrl-q-map (kbd "k") 'editutil-kill-to-space)
-  (define-key my/ctrl-q-map (kbd "a") 'editutil-mark-around-paired)
-  (define-key my/ctrl-q-map (kbd "i") 'editutil-mark-inside-paired)
 
-  (define-key my/ctrl-q-map (kbd ".") 'editutil-highlight-symbol-in-defun)
-  (define-key my/ctrl-q-map (kbd ",") 'editutil-highlight-clear-overlays)
   (define-key my/ctrl-q-map (kbd "s") 'editutil-unwrap-at-point)
   (define-key my/ctrl-q-map (kbd "r") 'editutil-replace-wrapped-string)
 
