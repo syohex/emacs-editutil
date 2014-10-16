@@ -104,10 +104,18 @@
           (when replaced
             (insert replaced)))))))
 
+(defsubst editutil--convert-open-string (char)
+  (cl-case char
+    (?\) "(")
+    (?\] "[")
+    (?> "<")
+    (?} "{")
+    (otherwise (char-to-string char))))
+
 (defun editutil--mark-paired (char inner-p)
   (interactive)
   (let* ((current-prefix-arg nil)
-         (open-str (char-to-string char))
+         (open-str (editutil--convert-open-string char))
          (close-str (ignore-errors (editutil--unwrap-counterpart open-str))))
     (if (memq char '(?' ?\"))
         (while (nth 3 (syntax-ppss))
