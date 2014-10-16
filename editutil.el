@@ -652,6 +652,7 @@
         (insert (format-time-string "* %m月 %d日 作業")))
       (show-all))))
 
+;; for `cde' command
 (defun editutil-current-buffer-directory ()
   (if (featurep 'elscreen)
       (elscreen-editutil-current-directory)
@@ -665,12 +666,36 @@
                when (buffer-file-name buf)
                return (file-name-directory it)))))
 
+(defun editutil--kill-command-common (arg func)
+  (if (not arg)
+      (call-interactively func)
+    (let ((prefix-arg (prefix-numeric-value arg)))
+      (save-excursion
+        (if (>= prefix-arg 0)
+            (let ((start (line-beginning-position)))
+              (forward-line (1- prefix-arg))
+              (funcall func start (line-end-position)))
+          (let ((end (line-end-position)))
+            (forward-line (1+ arg))
+            (funcall func (point) end)))))))
+
+(defun editutil-kill-ring-save (arg)
+  (interactive "P")
+  (editutil--kill-command-common arg 'kill-ring-save))
+
+(defun editutil-kill-region (arg)
+  (interactive "P")
+  (editutil--kill-command-common arg 'kill-region))
+
 ;;;###autoload
 (defun editutil-default-setup ()
   (interactive)
 
   (global-set-key [(control shift up)] 'editutil-move-line-up)
   (global-set-key [(control shift down)] 'editutil-move-line-down)
+
+  (global-set-key (kbd "C-w") 'editutil-kill-region)
+  (global-set-key (kbd "M-w") 'editutil-kill-ring-save)
 
   (global-set-key (kbd "C-M-o") 'editutil-other-window)
   (global-set-key (kbd "C-M-u") 'editutil-backward-up)
