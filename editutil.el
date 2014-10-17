@@ -633,7 +633,7 @@
 
 (defun editutil-yank-from-clipboard ()
   (interactive)
-  (insert (gui-set-selection)))
+  (insert (gui-get-selection)))
 
 (defun editutil-insert-semicolon ()
   (interactive)
