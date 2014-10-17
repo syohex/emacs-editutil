@@ -35,6 +35,7 @@
 (declare-function subword-backward "subword")
 (declare-function elscreen-editutil-current-directory "elscreen-editutil")
 (declare-function ace-jump-word-mode "ace-jump-mode")
+(declare-function show-all "outline")
 
 (defgroup editutil nil
   "My own editing utilities"
@@ -211,11 +212,11 @@
 
 (defun editutil-zap-to-char-backward (arg)
   (interactive "p")
-  (let ((char (read-char "Zap to char: " t))
+  (let ((input (char-to-string (read-char "Zap to char: " t)))
         (curpoint (point))
         (case-fold-search nil))
     (save-excursion
-      (when (search-backward (char-to-string char) nil t)
+      (when (search-backward input nil t arg)
         (delete-region (1+ (point)) curpoint)))))
 
 (defun editutil-next-symbol (arg)
