@@ -224,6 +224,7 @@
         (curpoint (point)))
     (unless symbol
       (error "No symbol at cursor!!"))
+    (message "%s" symbol)
     (let ((bound (bounds-of-thing-at-point 'symbol)))
       (if (>= arg 0)
           (goto-char (cdr bound))
