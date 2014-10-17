@@ -421,11 +421,7 @@
 
 (defun editutil-duplicate-thing (n)
   (interactive "p")
-  (let ((orig-column (current-column))
-        (lines (if mark-active
-                   (1+ (- (line-number-at-pos (region-end))
-                          (line-number-at-pos (region-beginning))))
-                 1)))
+  (let ((orig-column (current-column)))
     (save-excursion
       (let ((orig-line (line-number-at-pos))
             (str (if mark-active
