@@ -112,17 +112,27 @@
     (?} "{")
     (otherwise (char-to-string char))))
 
+(defsubst editutil--in-string-p ()
+  (nth 3 (syntax-ppss)))
+
+(defsubst editutil--goto-beginning-of-string-or-comment ()
+  (goto-char (nth 8 (syntax-ppss))))
+
 (defun editutil--mark-paired (char inner-p)
   (interactive)
   (let* ((current-prefix-arg nil)
          (open-str (editutil--convert-open-string char))
          (close-str (ignore-errors (editutil--unwrap-counterpart open-str))))
     (if (memq char '(?' ?\"))
-        (while (nth 3 (syntax-ppss))
-          (skip-syntax-backward "^\"|")
-          (backward-char 1))
-      (unless (re-search-backward (regexp-quote open-str) nil t)
-        (error "Can't find '%s'" open-str)))
+        (while (editutil--in-string-p)
+          (editutil--goto-beginning-of-string-or-comment))
+      (if (= (char-syntax (string-to-char open-str)) ?\()
+          (progn
+            (when (editutil--in-string-p)
+              (editutil--goto-beginning-of-string-or-comment))
+            (backward-up-list 1))
+        (unless (re-search-backward (regexp-quote open-str) nil t)
+          (error "Can't find '%s'" open-str))))
     (if inner-p
         (set-mark (1+ (point)))
       (set-mark (point)))
@@ -511,7 +521,7 @@
 
 (defun editutil-backward-up (arg)
   (interactive "p")
-  (if (nth 3 (syntax-ppss))
+  (if (editutil--in-string-p)
       (progn
         (skip-syntax-backward "^\"|")
         (backward-char 1))
