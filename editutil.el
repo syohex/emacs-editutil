@@ -684,7 +684,7 @@
                               (with-current-buffer buf
                                 (when (eq major-mode 'dired-mode)
                                   dired-directory)))
-               when (buffer-file-name buf)
+               when file
                return (file-name-directory it)))))
 
 (defun editutil--kill-command-common (arg func)
