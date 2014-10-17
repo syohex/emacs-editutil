@@ -631,10 +631,6 @@
       (delete-region (match-beginning 1) (match-end 1))
       (insert (if (string= current "defun") "defsubst" "defun")))))
 
-(defun editutil-yank-from-clipboard ()
-  (interactive)
-  (insert (gui-get-selection)))
-
 (defun editutil-insert-semicolon ()
   (interactive)
   (save-excursion
@@ -763,9 +759,7 @@
   (define-key my/ctrl-q-map (kbd "C") 'editutil-backward-copy)
 
   (when window-system
-    (global-set-key (kbd "C-M-SPC") 'editutil-copy-sexp)
-    ;; This command should be used from `emacsclient -t'
-    (define-key my/ctrl-q-map (kbd "y") 'editutil-yank-from-clipboard))
+    (global-set-key (kbd "C-M-SPC") 'editutil-copy-sexp))
 
   (define-key isearch-mode-map (kbd "C-j") 'editutil-isearch-ace-jump)
   (define-key isearch-mode-map (kbd "C-M-w") 'editutil-isearch-yank-symbol)
