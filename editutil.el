@@ -774,7 +774,7 @@
 
   ;; helm-editutil
   (global-set-key (kbd "M-.") 'helm-editutil-etags-select)
-  (global-set-key (kbd "C-x C-a") 'helm-editutil-git-ls-files)
+  (global-set-key (kbd "C-x C-p") 'helm-editutil-git-ls-files)
   (global-set-key (kbd "C-x v g") 'helm-editutil-grep)
 
   (dolist (hook '(prog-mode-hook org-mode-hook text-mode-hook markdown-mode-hook))
