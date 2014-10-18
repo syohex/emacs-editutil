@@ -584,20 +584,20 @@
 
 (defun editutil-highlight-symbol-in-defun ()
   (interactive)
-  (let* ((symbol (thing-at-point 'symbol))
-         (bounds (bounds-of-thing-at-point 'defun))
-         (begin (car bounds))
-         (end (cdr bounds)))
+  (let ((symbol (thing-at-point 'symbol)))
     (unless symbol
       (error "Here is not on symbol!!"))
-    (editutil-highlight-clear-overlays)
-    (save-excursion
-      (goto-char begin)
-      (let ((regexp (concat "\\_<" symbol "\\_>")))
-        (while (re-search-forward regexp end t)
-          (let ((ov (make-overlay (match-beginning 0) (match-end 0))))
-            (overlay-put ov 'face 'editutils-highlight)
-            (overlay-put ov 'editutils-highlight t)))))))
+    (let ((bounds (bounds-of-thing-at-point 'defun)))
+      (let ((begin (or (car bounds) (point-min)))
+            (end (or (cdr bounds) (point-max))))
+        (editutil-highlight-clear-overlays)
+        (save-excursion
+          (goto-char begin)
+          (let ((regexp (concat "\\_<" symbol "\\_>")))
+            (while (re-search-forward regexp end t)
+              (let ((ov (make-overlay (match-beginning 0) (match-end 0))))
+                (overlay-put ov 'face 'editutils-highlight)
+                (overlay-put ov 'editutils-highlight t)))))))))
 
 (defun editutil-show-here-function ()
   (interactive)
