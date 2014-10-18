@@ -27,6 +27,14 @@
 (require 'helm)
 (require 'helm-tags)
 (require 'helm-files)
+(require 'helm-mode)
+(require 'subr-x)
+
+(eval-when-compile
+  (defvar common-lisp-hyperspec--symbols))
+
+(declare-function ghc-resolve-package-name "ghc")
+(declare-function ghc-display-document "ghc")
 
 (defun helm-editutil--open-dired (file)
   (dired (file-name-directory file)))
