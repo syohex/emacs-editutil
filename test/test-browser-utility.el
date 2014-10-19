@@ -28,7 +28,7 @@
   (let ((got (editutil--git-github-url "origin" "master")))
     (string= got "https://github.com/syohex/emacs-editutil"))
 
-  (let ((got (editutil--git-github-url "origin" "master")))
-    (string= got "https://github.com/syohex/emacs-editutil")))
+  (let ((got (editutil--git-github-url "origin" "foobar")))
+    (string= got "https://github.com/syohex/emacs-editutil/tree/foobar")))
 
 ;;; test-browser-utility.el ends here

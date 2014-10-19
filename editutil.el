@@ -716,7 +716,7 @@
           (let ((path (match-string-no-properties 1 line)))
             (if (string= branch "master")
                 (concat "https://github.com/" path)
-              (concat "https://github.com/tree/" path))))))))
+              (concat "https://github.com/" path "/tree/" branch))))))))
 
 (defun editutil-git-browse (remote)
   (interactive
