@@ -704,6 +704,29 @@
   (interactive "P")
   (editutil--kill-command-common arg 'kill-region))
 
+(defun editutil--git-github-url (remote branch)
+  (with-temp-buffer
+    (unless (zerop (process-file "git" nil t nil "remote" "-v"))
+      (error "Failed: git remote -v"))
+    (goto-char (point-min))
+    (when (re-search-forward (concat "\\<" remote "\\>") nil t)
+      (let ((line (buffer-substring-no-properties
+                   (line-beginning-position) (line-end-position))))
+        (when (string-match "github.com[:/]?\\(\\S-+?\\)?\\(?:\\.git\\)" line)
+          (let ((path (match-string-no-properties 1 line)))
+            (if (string= branch "master")
+                (concat "https://github.com/" path)
+              (concat "https://github.com/tree/" path))))))))
+
+(defun editutil-git-browse (remote)
+  (interactive
+   (list (read-string "Remote(default: origin): " nil nil "origin")))
+  (let ((current-branch (car (vc-git-branches))))
+    (let ((url (editutil--git-github-url remote current-branch)))
+      (unless url
+        (error "Error: URL not found"))
+      (browse-url url))))
+
 ;;;###autoload
 (defun editutil-default-setup ()
   (interactive)
