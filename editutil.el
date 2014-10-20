@@ -36,6 +36,7 @@
 (declare-function elscreen-editutil-current-directory "elscreen-editutil")
 (declare-function ace-jump-word-mode "ace-jump-mode")
 (declare-function show-all "outline")
+(declare-function vc-git-branches "vc-git")
 
 (defgroup editutil nil
   "My own editing utilities"
