@@ -721,7 +721,12 @@
 
 (defun editutil-git-browse (remote)
   (interactive
-   (list (read-string "Remote(default: origin): " nil nil "origin")))
+   (list
+    (let ((remotes (process-lines "git" "remote")))
+      (if (= (length remotes) 1)
+          (car remotes)
+        (completing-read "Remote(default: origin): " remotes nil t nil nil
+                         "origin")))))
   (let ((current-branch (car (vc-git-branches))))
     (let ((url (editutil--git-github-url remote current-branch)))
       (unless url
