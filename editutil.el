@@ -733,9 +733,29 @@
         (error "Error: URL not found"))
       (browse-url url))))
 
+(defvar editutil--toggle-cleanup-state "")
+
+(defun editutil--setup-toggle-cleanup ()
+  (setq-default mode-line-format
+                (cons '(:eval editutil--toggle-cleanup-state)
+                      mode-line-format)))
+
+(defun editutil-toggle-cleanup-spaces ()
+  (interactive)
+  (cond ((memq 'delete-trailing-whitespace before-save-hook)
+         (setq editutil--toggle-cleanup-state
+               (propertize "[DT-]" 'face '((:foreground "turquoise1" :weight bold))))
+         (remove-hook 'before-save-hook 'delete-trailing-whitespace))
+        (t
+         (setq editutil--toggle-cleanup-state "")
+         (add-hook 'before-save-hook 'delete-trailing-whitespace)))
+  (force-mode-line-update))
+
 ;;;###autoload
 (defun editutil-default-setup ()
   (interactive)
+
+  (editutil--setup-toggle-cleanup)
 
   (global-set-key [(control shift up)] 'editutil-move-line-up)
   (global-set-key [(control shift down)] 'editutil-move-line-down)
@@ -786,6 +806,8 @@
   (define-key my/ctrl-q-map (kbd "W") 'editutil-backward-kill)
   (define-key my/ctrl-q-map (kbd "c") 'editutil-forward-copy)
   (define-key my/ctrl-q-map (kbd "C") 'editutil-backward-copy)
+
+  (define-key my/ctrl-q-map (kbd "C-t") 'editutil-toggle-cleanup-spaces)
 
   (when window-system
     (global-set-key (kbd "C-M-SPC") 'editutil-copy-sexp))
