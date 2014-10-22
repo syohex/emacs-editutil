@@ -42,12 +42,6 @@
   "My own editing utilities"
   :group 'editing)
 
-(defcustom editutil-todo-directory
-  (file-name-as-directory (concat (expand-file-name "~/") "TODO"))
-  "TODO files directory"
-  :type 'directory
-  :group 'editutil)
-
 (defvar editutil--pair-characters
   '(("(" . ")") ("[" . "]") ("{" . "}") ("'" . "'") ("\"" . "\"")
     ("<" . ">") ("|" . "|") ("`" . "`")))
@@ -657,19 +651,6 @@
    nil '(("\\_<\\(FIXME\\|TODO\\|XXX\\|@@@\\)\\_>"
           1 '((:foreground "pink") (:weight bold)) t))))
 
-(defun editutil-open-today-todo ()
-  (interactive)
-  (let ((today-dir (file-name-as-directory
-                    (concat editutil-todo-directory (format-time-string "%Y")))))
-    (unless (file-directory-p today-dir)
-      (make-directory today-dir t))
-    (let* ((today-todo (concat today-dir (format-time-string "%m%02d.org")))
-           (is-created (file-exists-p today-todo)))
-      (find-file today-todo)
-      (unless is-created
-        (insert (format-time-string "* %m月 %d日 作業")))
-      (show-all))))
-
 ;; for `cde' command
 (defun editutil-current-buffer-directory ()
   (if (featurep 'elscreen)
@@ -800,7 +781,6 @@
 
   (define-key my/ctrl-q-map (kbd ";") 'editutil-insert-semicolon)
   (define-key my/ctrl-q-map (kbd "?") 'editutil-show-here-function)
-  (define-key my/ctrl-q-map (kbd "C-p") 'editutil-open-today-todo)
 
   (define-key my/ctrl-q-map (kbd "w") 'editutil-forward-kill)
   (define-key my/ctrl-q-map (kbd "W") 'editutil-backward-kill)
