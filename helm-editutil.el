@@ -74,7 +74,7 @@
   (interactive "P")
   (let ((tag  (helm-etags-get-tag-file))
         (helm-execute-action-at-once-if-one t))
-    (when (or (equal arg '(4))
+    (when (or (= (prefix-numeric-value arg) 4)
               (and helm-etags-mtime-alist
                    (helm-etags-file-modified-p tag)))
       (remhash tag helm-etags-cache))
