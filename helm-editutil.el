@@ -233,6 +233,13 @@
   (interactive)
   (helm :sources '(helm-editutil--ghc-mod-source) :buffer "*helm-ghc-document*"))
 
+;;;###autoload
+(defun helm-editutil-recentf-and-bookmark ()
+  (interactive)
+  (let ((helm-ff-transformer-show-only-basename nil))
+    (helm :sources '(helm-source-recentf helm-source-bookmarks)
+          :buffer "*helm recentf+bookmark*")))
+
 (provide 'helm-editutil)
 
 ;;; helm-editutil.el ends here
