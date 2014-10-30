@@ -733,6 +733,37 @@
          (add-hook 'before-save-hook 'delete-trailing-whitespace)))
   (force-mode-line-update))
 
+(defvar editutil-mode-line-cleaner-alist
+  '( ;; For minor-mode, first char is 'space'
+    (yas-minor-mode . " Ys")
+    (paredit-mode . " Pe")
+    (eldoc-mode . "")
+    (abbrev-mode . "")
+    (autopair-mode . " Ap")
+    (undo-tree-mode . "")
+    (elisp-slime-nav-mode . "")
+    (helm-gtags-mode . " HG")
+    (flymake-mode . " Fm")
+    (git-gutter-mode . " GG")
+    ;; Major modes
+    (lisp-interaction-mode . "Li")
+    (git-commit-mode . "Commit")
+    (python-mode . "Py")
+    (ruby-mode   . "Rb")
+    (emacs-lisp-mode . "El")
+    (markdown-mode . "Md")))
+
+(defun editutil-clear-mode-line ()
+  (interactive)
+  (cl-loop for (mode . mode-str) in editutil-mode-line-cleaner-alist
+           do
+           (let ((old-mode-str (cdr (assq mode minor-mode-alist))))
+             (when old-mode-str
+               (setcar old-mode-str mode-str))
+             ;; major mode
+             (when (eq mode major-mode)
+               (setq mode-name mode-str)))))
+
 ;;;###autoload
 (defun editutil-default-setup ()
   (interactive)
@@ -800,6 +831,8 @@
   (define-key isearch-mode-map (kbd "C-M-e") 'editutil-isearch-match-end)
 
   (define-key minibuffer-local-map (kbd "C-M-u") 'editutil-minibuffer-up-dir)
+
+  (add-hook 'after-change-major-mode-hook 'editutil-clear-mode-line)
 
   (smartrep-define-key
       global-map "C-x" '(("j" . 'editutil-insert-newline-without-moving)))
