@@ -489,13 +489,6 @@
       (forward-line (1- arg))
       (kill-ring-save start (line-end-position)))))
 
-(defun editutil-kill-to-space ()
-  (interactive)
-  (let ((start (point)))
-    (save-excursion
-      (skip-chars-forward "^ \t\r\n")
-      (delete-region start (point)))))
-
 (defun editutil-isearch-ace-jump ()
   (interactive)
   (let ((input (substring isearch-string 0 1)))
@@ -626,13 +619,6 @@
     (let ((current (match-string-no-properties 1)))
       (delete-region (match-beginning 1) (match-end 1))
       (insert (if (string= current "defun") "defsubst" "defun")))))
-
-(defun editutil-insert-semicolon ()
-  (interactive)
-  (save-excursion
-    (goto-char (line-end-position))
-    (delete-horizontal-space)
-    (insert ";")))
 
 (defun editutil-kill-line (arg)
   (interactive "P")
@@ -806,12 +792,10 @@
 
   ;; C-q map
   (define-key my/ctrl-q-map (kbd "l") 'editutil-copy-line)
-  (define-key my/ctrl-q-map (kbd "k") 'editutil-kill-to-space)
 
   (define-key my/ctrl-q-map (kbd "s") 'editutil-unwrap-at-point)
   (define-key my/ctrl-q-map (kbd "r") 'editutil-replace-wrapped-string)
 
-  (define-key my/ctrl-q-map (kbd ";") 'editutil-insert-semicolon)
   (define-key my/ctrl-q-map (kbd "?") 'editutil-show-here-function)
 
   (define-key my/ctrl-q-map (kbd "w") 'editutil-forward-kill)
