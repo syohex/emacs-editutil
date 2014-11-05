@@ -14,6 +14,7 @@ test: elpa
 		-l test/test-browser-utility.el \
 		-l test/test-lisp-utility.el \
 		-l test/test-kill-utility.el \
+		-l test/test-mark-utility.el \
 		-f ert-run-tests-batch-and-exit
 
 elpa: $(ELPA_DIR)
