@@ -45,12 +45,47 @@
       (should (string= marked "orange")))))
 
 (ert-deftest mark-inside-paired-nested ()
-  "editutil-mark-inside-paried"
+  "editutil-mark-inside-paried for nested pairs"
   (with-editutil-temp-buffer 'fundamental-mode
     "(apple (orange))"
     (forward-cursor-on "apple")
     (editutil-mark-inside-paired ?\( )
     (let ((marked (buffer-substring-no-properties (region-beginning) (region-end))))
       (should (string= marked "apple (orange)")))))
+
+(ert-deftest mark-around-paired ()
+  "editutil-mark-around-paried"
+  (dolist (input '("(apple)" "[apple]" "{apple}" "<apple>"))
+    (with-editutil-temp-buffer 'fundamental-mode
+      input
+      (forward-cursor-on "apple")
+      (let ((char (string-to-char (substring input 0))))
+        (editutil-mark-around-paired char)
+        (let ((marked (buffer-substring-no-properties (region-beginning) (region-end))))
+          (should (string= marked input)))))))
+
+(ert-deftest mark-around-string ()
+  "editutil-mark-around-paried for quoted"
+  (with-editutil-temp-buffer 'fundamental-mode
+    " \"orange\" "
+    (forward-cursor-on "orange")
+    (editutil-mark-around-paired ?\" )
+    (let ((marked (buffer-substring-no-properties (region-beginning) (region-end))))
+      (should (string= marked "\"orange\"")))))
+
+(ert-deftest mark-around-paired-nested ()
+  "editutil-mark-around-paried for nested pairs"
+  (with-editutil-temp-buffer 'fundamental-mode
+    "[apple (orange)]"
+    (forward-cursor-on "apple")
+    (editutil-mark-around-paired ?\[ )
+    (let ((marked (buffer-substring-no-properties (region-beginning) (region-end))))
+      (should (string= marked "[apple (orange)]")))
+
+    (goto-char (point-min))
+    (forward-cursor-on "orange")
+    (editutil-mark-around-paired ?\( )
+    (let ((marked (buffer-substring-no-properties (region-beginning) (region-end))))
+      (should (string= marked "(orange)")))))
 
 ;;; test-mark-utility.el ends here
