@@ -28,6 +28,7 @@
 (require 'cl-lib)
 (require 'thingatpt)
 (require 'which-func)
+(require 'vc-git)
 
 (declare-function copy-sexp "thingopt")
 (declare-function smartrep-define-key "smartrep")
@@ -36,7 +37,6 @@
 (declare-function elscreen-editutil-current-directory "elscreen-editutil")
 (declare-function ace-jump-word-mode "ace-jump-mode")
 (declare-function show-all "outline")
-(declare-function vc-git-branches "vc-git")
 
 (defgroup editutil nil
   "My own editing utilities"
@@ -701,6 +701,13 @@
         (error "Error: URL not found"))
       (browse-url url))))
 
+(defun editutil-jump-to-vcs-top ()
+  (interactive)
+  (let ((root (ignore-errors (vc-root-dir))))
+    (unless root
+      (error "Here is not version controled"))
+    (find-file root)))
+
 (defvar editutil--toggle-cleanup-state "")
 
 (defun editutil--setup-toggle-cleanup ()
@@ -815,6 +822,8 @@
   (define-key isearch-mode-map (kbd "C-M-e") 'editutil-isearch-match-end)
 
   (define-key minibuffer-local-map (kbd "C-M-u") 'editutil-minibuffer-up-dir)
+
+  (define-key dired-mode-map (kbd "P") 'editutil-jump-to-vcs-top)
 
   (add-hook 'after-change-major-mode-hook 'editutil-clear-mode-line)
 
