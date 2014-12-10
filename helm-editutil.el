@@ -233,11 +233,30 @@
   (interactive)
   (helm :sources '(helm-editutil--ghc-mod-source) :buffer "*helm-ghc-document*"))
 
+(defun helm-editutil--recentf-transform (candidates _source)
+  (cl-loop for i in candidates
+           if helm-ff-transformer-show-only-basename
+           collect (cons (helm-basename i) i)
+           else collect i))
+
+(defvar helm-editutil-source-recentf
+  `((name . "Recentf")
+    (init . (lambda ()
+              (require 'recentf)
+              (recentf-mode 1)))
+    (candidates . recentf-list)
+    (filtered-candidate-transformer . helm-editutil--recentf-transform)
+    (keymap . ,helm-generic-files-map)
+    (help-message . helm-generic-file-help-message)
+    (mode-line . helm-generic-file-mode-line-string)
+    (action . ,(cdr (helm-get-actions-from-type
+                     helm-source-locate)))))
+
 ;;;###autoload
 (defun helm-editutil-recentf-and-bookmark ()
   (interactive)
   (let ((helm-ff-transformer-show-only-basename nil))
-    (helm :sources '(helm-source-recentf helm-source-bookmarks)
+    (helm :sources '(helm-editutil-source-recentf helm-source-bookmarks)
           :buffer "*helm recentf+bookmark*")))
 
 (provide 'helm-editutil)
