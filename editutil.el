@@ -771,6 +771,8 @@
 
   (editutil--setup-toggle-cleanup)
 
+  (global-set-key (kbd "C-M-s") 'editutil-forward-symbol-at-point)
+
   (global-set-key [(control shift up)] 'editutil-move-line-up)
   (global-set-key [(control shift down)] 'editutil-move-line-down)
 
