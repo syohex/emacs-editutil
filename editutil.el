@@ -42,6 +42,14 @@
   "My own editing utilities"
   :group 'editing)
 
+(defun editutil-forward-symbol-at-point ()
+  (interactive)
+  (let ((symbol (thing-at-point 'symbol)))
+    (isearch-forward-symbol-at-point)
+    (when symbol
+      (setq regexp-search-ring
+            (cons (substring-no-properties symbol) regexp-search-ring)))))
+
 (defvar editutil--pair-characters
   '(("(" . ")") ("[" . "]") ("{" . "}") ("'" . "'") ("\"" . "\"")
     ("<" . ">") ("|" . "|") ("`" . "`")))
