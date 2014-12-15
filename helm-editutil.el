@@ -95,46 +95,6 @@
   (interactive)
   (helm-select-nth-action 2))
 
-(defvar helm-editutil--grep-root nil)
-(defvar helm-editutil--grep-history nil)
-
-(defun helm-editutil--grep-init ()
-  (let ((cmd (read-string "> "
-                          (concat "git grep -n -- "
-                                  (substring-no-properties
-                                   (or (thing-at-point 'symbol)
-                                       "")))
-                          'helm-editutil--grep-history)))
-    (helm-attrset 'recenter t)
-    (with-current-buffer (helm-candidate-buffer 'global)
-      (let ((default-directory helm-editutil--grep-root))
-        (unless (zerop (process-file-shell-command cmd nil t))
-          (error "Failed: '%s'" cmd))
-        (when (zerop (length (buffer-string)))
-          (error "No output: '%s'" cmd))))))
-
-(defun helm-editutil--project-top ()
-  (with-temp-buffer
-    (unless (zerop (process-file "git" nil t nil "rev-parse" "--show-toplevel"))
-      (error "Failed: 'git rev-parse --show-toplevel'"))
-    (goto-char (point-min))
-    (file-name-as-directory
-     (buffer-substring-no-properties (point) (line-end-position)))))
-
-(defvar helm-editutil--grep-source
-  '((name . "Git Grep")
-    (init . helm-editutil--grep-init)
-    (candidates-in-buffer)
-    (type . file-line)
-    (candidate-number-limit . 9999)))
-
-;;;###autoload
-(defun helm-editutil-grep ()
-  (interactive)
-  (setq helm-editutil--grep-root (helm-editutil--project-top))
-  (let ((default-directory helm-editutil--grep-root))
-    (helm :sources '(helm-editutil--grep-source) :buffer "*sgit-grep*")))
-
 (defvar helm-editutil--hyperspec-source
   `((name . "Lookup Hyperspec")
     (candidates . ,(lambda ()
