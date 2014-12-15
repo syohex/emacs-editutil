@@ -12,12 +12,11 @@ My configuration is:
 ### editutil for view-mode
 
 ```lisp
-(eval-after-load "view"
-  '(progn
-     (define-key view-mode-map (kbd "i") 'editutil-view-insert)
-     (define-key view-mode-map (kbd "a") 'editutil-view-insert-at-next)
-     (define-key view-mode-map (kbd "I") 'editutil-view-insert-at-bol)
-     (define-key view-mode-map (kbd "A") 'editutil-view-insert-at-eol)))
+(with-eval-after-load 'view
+  (define-key view-mode-map (kbd "i") 'editutil-view-insert)
+  (define-key view-mode-map (kbd "a") 'editutil-view-insert-at-next)
+  (define-key view-mode-map (kbd "I") 'editutil-view-insert-at-bol)
+  (define-key view-mode-map (kbd "A") 'editutil-view-insert-at-eol))
 ```
 
 ## helm-editutil.el
@@ -32,4 +31,20 @@ Select `etags` candidates with helm interface
 
 #### `helm-editutil-yas-prompt`
 
-Select `yasnippet` candidates with helm interface
+`yasnippet` candidates with helm interface
+
+#### `helm-editutil-hyperspec`
+
+Show `hyperspec` documents
+
+#### `helm-editutil-ghc-browse-document`
+
+Show `ghc` documents with helm interface
+
+#### `helm-editutil-recentf-and-bookmark`
+
+My own `helm-recentf` + `helm-books`
+
+#### `helm-editutil-select-2nd-action`, `helm-editutil-select-3rd-action`
+
+Select 2nd or 3rd candidate. These functions were deleted but I like them.
