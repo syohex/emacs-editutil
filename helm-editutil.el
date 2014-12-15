@@ -157,6 +157,20 @@
     (helm :sources '(helm-editutil-source-recentf helm-source-bookmarks)
           :buffer "*helm recentf+bookmark*")))
 
+;;;###autoload
+(defun helm-editutil-yas-prompt (_prompt choices &optional display-fn)
+  (let* ((names (cl-loop for choice in choices
+                         collect (or (and display-fn (funcall display-fn choice))
+                                     choice)))
+         (selected (helm-other-buffer
+                    `((name . "Choose a snippet")
+                      (candidates . ,names)
+                      (action . (("Insert snippet" . identity))))
+                    "*helm yas-prompt*")))
+    (if selected
+        (nth (cl-position selected names :test 'equal) choices)
+      (signal 'quit "user quit!"))))
+
 (provide 'helm-editutil)
 
 ;;; helm-editutil.el ends here
