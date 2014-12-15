@@ -85,68 +85,6 @@
               :default (concat "\\_<" (thing-at-point 'symbol) "\\_>"))
       (message "Error: No tag file found, please create one with etags shell command."))))
 
-(defun helm-editutil--ghq-root ()
-  (with-temp-buffer
-    (unless (zerop (process-file "ghq" nil t nil "root"))
-      (error "Failed: 'ghq root'"))
-    (goto-char (point-min))
-    (expand-file-name (helm-current-line-contents))))
-
-(defun helm-editutil--ghq-list-candidates ()
-  (with-temp-buffer
-    (unless (zerop (process-file "ghq" nil t nil "list"))
-      (error "Failed: 'ghq list'"))
-    (let (paths)
-      (goto-char (point-min))
-      (while (not (eobp))
-        (let ((path (helm-current-line-contents)))
-          (push path paths))
-        (forward-line 1))
-      (reverse paths))))
-
-(defun helm-editutil--ghq-list-ls-files ()
-  (with-current-buffer (helm-candidate-buffer 'global)
-    (unless (zerop (process-file "git" nil t nil "ls-files"))
-      (error "Failed: 'git ls-files'"))))
-
-(defun helm-editutil--ghq-format (repo)
-  (cond ((string-match "\\`github.com/\\(.+\\)" repo)
-         (match-string-no-properties 1 repo))
-        ((string-match "\\`code.google.com/\\(.+\\)" repo)
-         (match-string-no-properties 1 repo))))
-
-(defun helm-editutil--ghq-update-repository (repo)
-  (async-shell-command (concat "ghq get -u "
-                               (helm-editutil--ghq-format repo))))
-
-(defun helm-editutil--ghq-source-open (repo-path)
-  (let ((name (file-name-nondirectory (directory-file-name repo-path))))
-    `((name . ,name)
-      (init . helm-editutil--ghq-list-ls-files)
-      (candidates-in-buffer)
-      (action . (("Open File" . find-file)
-                 ("Open File other window" . find-file-other-window)
-                 ("Open Directory" . helm-editutil--open-dired))))))
-
-(defun helm-editutil--ghq-source-update (repo)
-  `((name . "Update Repository")
-    (candidates . (" ")) ;; dummy
-    (action . (lambda (candidate)
-                (helm-editutil--ghq-update-repository ,repo)))))
-
-;;;###autoload
-(defun helm-editutil-ghq-list ()
-  (interactive)
-  (let ((root (file-name-as-directory (helm-editutil--ghq-root)))
-        (repo (helm-comp-read "ghq-list: "
-                              (helm-editutil--ghq-list-candidates)
-                              :name "ghq list"
-                              :must-match t)))
-    (let ((default-directory (file-name-as-directory (concat root repo))))
-      (helm :sources (list (helm-editutil--ghq-source-open default-directory)
-                           (helm-editutil--ghq-source-update repo))
-            :buffer "*helm-ghq-list*"))))
-
 ;;;###autoload
 (defun helm-editutil-select-2nd-action ()
   (interactive)
