@@ -249,8 +249,8 @@
     (keymap . ,helm-generic-files-map)
     (help-message . helm-generic-file-help-message)
     (mode-line . helm-generic-file-mode-line-string)
-    (action . ,(cdr (helm-get-actions-from-type
-                     helm-source-locate)))))
+    (action . (("Find File" . find-file)
+               ("Find File other window" . find-file-other-frame)))))
 
 ;;;###autoload
 (defun helm-editutil-recentf-and-bookmark ()
