@@ -148,7 +148,8 @@
     (help-message . helm-generic-file-help-message)
     (mode-line . helm-generic-file-mode-line-string)
     (action . (("Find File" . find-file)
-               ("Find File other window" . find-file-other-frame)))))
+               ("Find File other window" . find-file-other-window)
+               ("Insert File" . insert-file)))))
 
 ;;;###autoload
 (defun helm-editutil-recentf-and-bookmark ()
