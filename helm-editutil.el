@@ -137,6 +137,10 @@
            collect (cons (helm-basename i) i)
            else collect i))
 
+(defun helm-editutil--file-in-dired (file)
+  (dired (file-name-directory file))
+  (dired-goto-file file))
+
 (defvar helm-editutil-source-recentf
   `((name . "Recentf")
     (init . (lambda ()
@@ -148,6 +152,7 @@
     (help-message . helm-generic-file-help-message)
     (mode-line . helm-generic-file-mode-line-string)
     (action . (("Find File" . find-file)
+               ("Find Files in dired" . helm-editutil--file-in-dired)
                ("Find File other window" . find-file-other-window)
                ("Insert File" . insert-file)))))
 
