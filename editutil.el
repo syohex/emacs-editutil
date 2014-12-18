@@ -26,6 +26,7 @@
   (defvar my/ctrl-q-map))
 
 (require 'cl-lib)
+(require 'subr-x)
 (require 'thingatpt)
 (require 'which-func)
 (require 'vc-git)
@@ -773,6 +774,28 @@
   (unless (eq major-mode 'dired-mode)
     (dired-jump)))
 
+(defun editutil-dictionary-search (word)
+  (interactive
+   (list (or (thing-at-point 'word)
+             (read-string "Word: "))))
+  (setq word (downcase (substring-no-properties word)))
+  (with-current-buffer (get-buffer-create "*sdic*")
+    (read-only-mode -1)
+    (erase-buffer)
+    (unless current-prefix-arg
+      (unless (zerop (process-file "dict" nil t nil word))
+        (error "Failed: 'dict %s'" word)))
+    (when (or current-prefix-arg (string-empty-p (buffer-string)))
+      (unless (zerop (process-file "dict" nil t nil "-s" word))
+        (error "Failed: 'dict -s %s'" word))
+      (when (string-empty-p (buffer-string))
+        (error "Can't find any entries of '%s'" word)))
+    (goto-char (point-min))
+    (ansi-color-apply-on-region (point-min) (point-max))
+    (view-mode +1)
+    (read-only-mode +1)
+    (pop-to-buffer (current-buffer))))
+
 ;;;###autoload
 (defun editutil-default-setup ()
   (interactive)
@@ -815,6 +838,7 @@
 
   (global-set-key (kbd "C-x a a") 'editutil-mark-around-paired)
   (global-set-key (kbd "C-x a i") 'editutil-mark-inside-paired)
+  (global-set-key (kbd "C-c w") 'editutil-dictionary-search)
 
   ;; C-q map
   (define-key my/ctrl-q-map (kbd "l") 'editutil-copy-line)
