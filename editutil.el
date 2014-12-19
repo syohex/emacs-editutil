@@ -410,6 +410,17 @@
           (insert str "\n"))))
     (move-to-column orig-column)))
 
+(defun editutil-delete-horizontal-space ()
+  (interactive)
+  (let ((orig-pos (point)))
+    (delete-region
+     (progn
+       (skip-chars-forward " \t\n\r")
+       (constrain-to-field nil orig-pos t))
+     (progn
+       (skip-chars-backward " \t\n\r")
+       (constrain-to-field nil orig-pos)))))
+
 (defun editutil-view-word-end (arg)
   (interactive "p")
   (forward-char 1)
@@ -792,6 +803,7 @@
   (global-set-key [remap backward-kill-word] 'editutil-backward-delete-word)
   (global-set-key (kbd "C-x r N") 'editutil-number-rectangle)
   (global-set-key (kbd "C-M-c") 'editutil-duplicate-thing)
+  (global-set-key (kbd "M-\\") 'editutil-delete-horizontal-space)
 
   (global-set-key (kbd "M-I") 'editutil-indent-same-as-previous-line)
   (global-set-key (kbd "M-(") 'editutil-insert-parentheses)
