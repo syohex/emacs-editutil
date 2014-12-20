@@ -249,6 +249,18 @@
   (interactive "p")
   (editutil-next-symbol (- arg)))
 
+(defun editutil-kill-thing (thing)
+  (interactive
+   (list (read-char)))
+  (let ((bound (cl-case thing
+                 (?w (bounds-of-thing-at-point 'word))
+                 (?W (bounds-of-thing-at-point 'symbol))
+                 (?l (bounds-of-thing-at-point 'line))
+                 (otherwise (error "'%s' is not supported" thing)))))
+    (unless bound
+      (error "Error: `thing' is not found"))
+    (delete-region (car bound) (cdr bound))))
+
 (defvar editutil--last-search-char nil)
 
 (defsubst editutil--last-command-move-char-p ()
@@ -803,6 +815,7 @@
   (define-key my/ctrl-q-map (kbd "r") 'editutil-replace-wrapped-string)
 
   (define-key my/ctrl-q-map (kbd "C-t") 'editutil-toggle-cleanup-spaces)
+  (define-key my/ctrl-q-map (kbd "w") 'editutil-kill-thing)
 
   (when window-system
     (global-set-key (kbd "C-M-SPC") 'editutil-copy-sexp))
