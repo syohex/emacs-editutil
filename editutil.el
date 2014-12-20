@@ -478,27 +478,9 @@
       (forward-line (1- arg))
       (kill-ring-save start (line-end-position)))))
 
-(defun editutil-isearch-ace-jump ()
-  (interactive)
-  (let ((input (substring isearch-string 0 1)))
-    (isearch-exit)
-    (ace-jump-word-mode (string-to-char input))))
-
 (defun editutil-isearch-yank-symbol ()
   (interactive)
   (isearch-yank-internal (lambda () (forward-symbol 1) (point))))
-
-(defun editutil-isearch-match-begin ()
-  (interactive)
-  (isearch-exit)
-  (when (and isearch-forward isearch-success)
-    (backward-char (length isearch-string))))
-
-(defun editutil-isearch-match-end ()
-  (interactive)
-  (isearch-exit)
-  (when (and (not isearch-forward) isearch-success)
-    (forward-char (1- (length isearch-string)))))
 
 (defun editutil-backward-up (arg)
   (interactive "p")
@@ -826,11 +808,7 @@
   (when window-system
     (global-set-key (kbd "C-M-SPC") 'editutil-copy-sexp))
 
-  (define-key isearch-mode-map (kbd "C-j") 'editutil-isearch-ace-jump)
   (define-key isearch-mode-map (kbd "C-M-w") 'editutil-isearch-yank-symbol)
-  (define-key isearch-mode-map [remap isearch-exit] 'editutil-isearch-match-begin)
-  (define-key isearch-mode-map (kbd "C-M-a") 'editutil-isearch-match-begin)
-  (define-key isearch-mode-map (kbd "C-M-e") 'editutil-isearch-match-end)
 
   (define-key minibuffer-local-map (kbd "C-M-u") 'editutil-minibuffer-up-dir)
 
