@@ -37,7 +37,6 @@
 (declare-function subword-backward "subword")
 (declare-function elscreen-editutil-current-directory "elscreen-editutil")
 (declare-function ace-jump-word-mode "ace-jump-mode")
-(declare-function show-all "outline")
 
 (defgroup editutil nil
   "My own editing utilities"
