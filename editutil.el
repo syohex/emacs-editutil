@@ -44,7 +44,8 @@
 
 (defun editutil-forward-symbol-at-point ()
   (interactive)
-  (let ((symbol (thing-at-point 'symbol)))
+  (let ((symbol (thing-at-point 'symbol))
+        (case-fold-search nil))
     (isearch-forward-symbol-at-point)
     (when symbol
       (setq regexp-search-ring
