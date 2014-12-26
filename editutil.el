@@ -29,6 +29,7 @@
 (require 'subr-x)
 (require 'thingatpt)
 (require 'which-func)
+(require 'dired)
 (require 'vc-git)
 
 (declare-function copy-sexp "thingopt")
@@ -678,9 +679,15 @@
         (error "Error: URL not found"))
       (browse-url url))))
 
+(defun editutil--vcs-root-directory ()
+  (ignore-errors
+    (if (fboundp 'vc-root-dir)
+        (vc-root-dir)
+      (vc-git-root default-directory))))
+
 (defun editutil-jump-to-vcs-top ()
   (interactive)
-  (let ((root (ignore-errors (vc-root-dir))))
+  (let ((root (editutil--vcs-root-directory)))
     (unless root
       (error "Here is not version controled"))
     (find-file root)))
