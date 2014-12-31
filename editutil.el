@@ -251,14 +251,22 @@
   (interactive "p")
   (editutil-next-symbol (- arg)))
 
+(defun editutil--thing-bounds (thing)
+  (cl-case thing
+    (?w (bounds-of-thing-at-point 'word))
+    (?W (bounds-of-thing-at-point 'symbol))
+    (?l (bounds-of-thing-at-point 'line))
+    (?s (save-excursion
+          (editutil--goto-beginning-of-string-or-comment)
+          (let ((start (point)))
+            (forward-sexp)
+            (cons start (point)))))
+    (otherwise (error "'%s' is not supported" thing))))
+
 (defun editutil-kill-thing (thing)
   (interactive
    (list (read-char)))
-  (let ((bound (cl-case thing
-                 (?w (bounds-of-thing-at-point 'word))
-                 (?W (bounds-of-thing-at-point 'symbol))
-                 (?l (bounds-of-thing-at-point 'line))
-                 (otherwise (error "'%s' is not supported" thing)))))
+  (let ((bound (editutil--thing-bounds thing)))
     (unless bound
       (error "Error: `thing' is not found"))
     (delete-region (car bound) (cdr bound))))
