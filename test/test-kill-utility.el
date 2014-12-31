@@ -49,4 +49,12 @@ melon"
     (editutil-kill-thing ?l)
     (should (string= (buffer-string) "orange\nmelon"))))
 
+(ert-deftest kill-thing-string ()
+  "kill-thing for string"
+  (with-editutil-temp-buffer 'emacs-lisp-mode
+    "apple \"orange melon\" banana"
+    (forward-cursor-on "orange")
+    (editutil-kill-thing ?s)
+    (should (string= (buffer-string) "apple  banana"))))
+
 ;;; test-kill-utility.el ends here
