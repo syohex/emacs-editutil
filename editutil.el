@@ -285,6 +285,13 @@
    (lambda (bound)
      (delete-region (car bound) (cdr bound)))))
 
+(defun editutil-copy-thing (char)
+  (interactive
+   (list (read-char)))
+  (editutil--thing-common
+   char
+   (lambda (bound)
+     (kill-ring-save (car bound) (cdr bound)))))
 
 (defvar editutil--last-search-char nil)
 
@@ -839,6 +846,7 @@
   (global-set-key (kbd "C-x a i") 'editutil-mark-inside-paired)
 
   (global-set-key (kbd "C-x d") 'editutil-kill-thing)
+  (global-set-key (kbd "C-x w") 'editutil-copy-thing)
 
   (global-set-key (kbd "C-c w") 'editutil-dictionary-search)
 
