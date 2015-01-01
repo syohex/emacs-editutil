@@ -822,6 +822,9 @@
 
   (global-set-key (kbd "C-x a a") 'editutil-mark-around-paired)
   (global-set-key (kbd "C-x a i") 'editutil-mark-inside-paired)
+
+  (global-set-key (kbd "C-x d") 'editutil-kill-thing)
+
   (global-set-key (kbd "C-c w") 'editutil-dictionary-search)
 
   ;; C-q map
@@ -831,7 +834,6 @@
   (define-key my/ctrl-q-map (kbd "r") 'editutil-replace-wrapped-string)
 
   (define-key my/ctrl-q-map (kbd "C-t") 'editutil-toggle-cleanup-spaces)
-  (define-key my/ctrl-q-map (kbd "w") 'editutil-kill-thing)
 
   (when window-system
     (global-set-key (kbd "C-M-SPC") 'editutil-copy-sexp))
