@@ -257,6 +257,8 @@
     (?W (bounds-of-thing-at-point 'symbol))
     (?l (bounds-of-thing-at-point 'line))
     (?s (save-excursion
+          (unless (editutil--in-string-p)
+            (error "Here is not in `string'."))
           (editutil--goto-beginning-of-string-or-comment)
           (let ((start (point)))
             (forward-sexp)
