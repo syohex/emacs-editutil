@@ -254,7 +254,7 @@
 (defun editutil--char-to-thing (char)
   (cl-case char
     (?w 'word)
-    (?W 'symbol)
+    (?q 'symbol)
     (?l 'line)
     (?s 'string)
     (otherwise (error "'%s' is not supported" char))))
@@ -272,7 +272,7 @@
       (otherwise (bounds-of-thing-at-point thing)))))
 
 (defun editutil--thing-common (char callback)
-  (let ((bound (editutil--thing-common char)))
+  (let ((bound (editutil--thing-bounds char)))
     (unless bound
       (error "Error: '%s' is not found" (editutil--char-to-thing char)))
     (funcall callback bound)))
