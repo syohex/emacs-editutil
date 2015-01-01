@@ -36,7 +36,7 @@
   (with-editutil-temp-buffer 'emacs-lisp-mode
     "foo-bar-baz"
     (forward-cursor-on "foo")
-    (editutil-kill-thing ?W)
+    (editutil-kill-thing ?q)
     (should (string-empty-p (buffer-string)))))
 
 (ert-deftest kill-thing-line ()
