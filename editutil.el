@@ -724,10 +724,28 @@
 
 (defvar editutil--toggle-cleanup-state "")
 
-(defun editutil--setup-toggle-cleanup ()
+(defvar editutil-vc-mode-line
+  '(" " (:propertize
+         (:eval (let ((backend (symbol-name (vc-backend (buffer-file-name)))))
+                  (substring vc-mode (+ (length backend) 2))))
+         face font-lock-variable-name-face))
+  "Mode line format for VC Mode.")
+(put 'editutil-vc-mode-line 'risky-local-variable t)
+
+(defun editutil--init-mode-line ()
   (setq-default mode-line-format
-                (cons '(:eval editutil--toggle-cleanup-state)
-                      mode-line-format)))
+                '((:eval editutil--toggle-cleanup-state)
+                  "%e" mode-line-front-space
+                  mode-line-mule-info
+                  mode-line-client
+                  mode-line-modified
+                  mode-line-remote
+                  mode-line-frame-identification
+                  mode-line-buffer-identification " " mode-line-position
+                  (vc-mode editutil-vc-mode-line)
+                  " "
+                  mode-line-misc-info
+                  " " mode-line-modes mode-line-end-spaces)))
 
 (defun editutil-toggle-cleanup-spaces ()
   (interactive)
@@ -805,7 +823,7 @@
 (defun editutil-default-setup ()
   (interactive)
 
-  (editutil--setup-toggle-cleanup)
+  (editutil--init-mode-line)
 
   (global-set-key (kbd "C-M-s") 'editutil-forward-symbol-at-point)
 
