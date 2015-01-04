@@ -722,20 +722,33 @@
       (error "Here is not version controled"))
     (find-file root)))
 
-(defvar editutil--toggle-cleanup-state "")
+(defun editutil-toggle-cleanup-spaces ()
+  (interactive)
+  (cond ((memq 'delete-trailing-whitespace before-save-hook)
+         (remove-hook 'before-save-hook 'delete-trailing-whitespace))
+        (t
+         (add-hook 'before-save-hook 'delete-trailing-whitespace)))
+  (force-mode-line-update))
+
+(defvar editutil-cleanup-space-mode-line
+  '(:eval (if (memq 'delete-trailing-whitespace before-save-hook)
+              ""
+            (propertize "[DT-]" 'face 'font-lock-keyword-face))))
+(put 'editutil-cleanup-space-mode-line 'risky-local-variable t)
 
 (defvar editutil-vc-mode-line
-  '(" " (:propertize
-         (:eval (let ((backend (symbol-name (vc-backend (buffer-file-name)))))
-                  (substring vc-mode (+ (length backend) 2))))
-         face font-lock-variable-name-face))
+  '(:propertize
+    (:eval (let ((backend (symbol-name (vc-backend (buffer-file-name)))))
+             (concat "(" (substring vc-mode (+ (length backend) 2)) ")")))
+    face font-lock-constant-face)
   "Mode line format for VC Mode.")
 (put 'editutil-vc-mode-line 'risky-local-variable t)
 
 (defun editutil--init-mode-line ()
   (setq-default mode-line-format
-                '((:eval editutil--toggle-cleanup-state)
-                  "%e" mode-line-front-space
+                '("%e"
+                  editutil-cleanup-space-mode-line
+                  mode-line-front-space
                   mode-line-mule-info
                   mode-line-client
                   mode-line-modified
@@ -744,19 +757,7 @@
                   mode-line-buffer-identification " " mode-line-position
                   (vc-mode editutil-vc-mode-line)
                   " "
-                  mode-line-misc-info
-                  " " mode-line-modes mode-line-end-spaces)))
-
-(defun editutil-toggle-cleanup-spaces ()
-  (interactive)
-  (cond ((memq 'delete-trailing-whitespace before-save-hook)
-         (setq editutil--toggle-cleanup-state
-               (propertize "[DT-]" 'face '((:foreground "turquoise1" :weight bold))))
-         (remove-hook 'before-save-hook 'delete-trailing-whitespace))
-        (t
-         (setq editutil--toggle-cleanup-state "")
-         (add-hook 'before-save-hook 'delete-trailing-whitespace)))
-  (force-mode-line-update))
+                  mode-line-modes mode-line-misc-info mode-line-end-spaces)))
 
 (defvar editutil-mode-line-cleaner-alist
   '( ;; For minor-mode, first char is 'space'
