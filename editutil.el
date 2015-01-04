@@ -277,14 +277,6 @@
       (error "Error: '%s' is not found" (editutil--char-to-thing char)))
     (funcall callback bound)))
 
-(defun editutil-kill-thing (char)
-  (interactive
-   (list (read-char)))
-  (editutil--thing-common
-   char
-   (lambda (bound)
-     (delete-region (car bound) (cdr bound)))))
-
 (defun editutil-copy-thing (char)
   (interactive
    (list (read-char)))

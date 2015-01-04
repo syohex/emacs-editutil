@@ -23,38 +23,25 @@
 
 (require 'ert)
 
-(ert-deftest kill-thing-word ()
-  "kill-thing for word"
+(ert-deftest kill-region ()
+  "My own kill-region."
   (with-editutil-temp-buffer 'text-mode
     "foo bar baz"
-    (forward-cursor-on "foo")
-    (editutil-kill-thing ?w)
-    (should (string= (buffer-string) " bar baz"))))
+    (forward-cursor-on "bar")
+    (backward-char 1)
+    (set-mark (point))
+    (goto-char (point-max))
+    (editutil-kill-region nil)
+    (should (string= (buffer-string) "foo"))))
 
-(ert-deftest kill-thing-symbol ()
-  "kill-thing for line"
-  (with-editutil-temp-buffer 'emacs-lisp-mode
-    "foo-bar-baz"
-    (forward-cursor-on "foo")
-    (editutil-kill-thing ?q)
-    (should (string-empty-p (buffer-string)))))
-
-(ert-deftest kill-thing-line ()
-  "kill-thing for line"
-  (with-editutil-temp-buffer 'emacs-lisp-mode
-    "apple
-orange
-melon"
-    (forward-cursor-on "apple")
-    (editutil-kill-thing ?l)
-    (should (string= (buffer-string) "orange\nmelon"))))
-
-(ert-deftest kill-thing-string ()
-  "kill-thing for string"
-  (with-editutil-temp-buffer 'emacs-lisp-mode
-    "apple \"orange melon\" banana"
-    (forward-cursor-on "orange")
-    (editutil-kill-thing ?s)
-    (should (string= (buffer-string) "apple  banana"))))
+(ert-deftest kill-region-multiple-lines ()
+  "My own kill-region for multiple lines."
+  (with-editutil-temp-buffer 'text-mode
+    "foo
+ bar
+ baz"
+    (forward-cursor-on "bar")
+    (editutil-kill-region 2)
+    (should (string= (buffer-string) "foo\n"))))
 
 ;;; test-kill-utility.el ends here
