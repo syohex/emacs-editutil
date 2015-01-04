@@ -277,14 +277,6 @@
       (error "Error: '%s' is not found" (editutil--char-to-thing char)))
     (funcall callback bound)))
 
-(defun editutil-kill-thing (char)
-  (interactive
-   (list (read-char)))
-  (editutil--thing-common
-   char
-   (lambda (bound)
-     (delete-region (car bound) (cdr bound)))))
-
 (defun editutil-copy-thing (char)
   (interactive
    (list (read-char)))
@@ -865,8 +857,8 @@
   (global-set-key (kbd "C-x a i") 'editutil-mark-inside-paired)
 
   (global-set-key (kbd "C-x d") 'editutil-kill-thing)
-  (global-set-key (kbd "C-x w") 'editutil-copy-thing)
 
+  (global-set-key (kbd "C-x w") 'editutil-git-browse)
   (global-set-key (kbd "C-c w") 'editutil-dictionary-search)
 
   ;; C-q map
