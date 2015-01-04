@@ -857,8 +857,8 @@
   (global-set-key (kbd "C-x a i") 'editutil-mark-inside-paired)
 
   (global-set-key (kbd "C-x d") 'editutil-kill-thing)
-  (global-set-key (kbd "C-x w") 'editutil-copy-thing)
 
+  (global-set-key (kbd "C-x w") 'editutil-git-browse)
   (global-set-key (kbd "C-c w") 'editutil-dictionary-search)
 
   ;; C-q map
