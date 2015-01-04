@@ -27,6 +27,7 @@
   "My own kill-region."
   (with-editutil-temp-buffer 'text-mode
     "foo bar baz"
+    (transient-mark-mode +1)
     (forward-cursor-on "bar")
     (backward-char 1)
     (set-mark (point))
@@ -40,8 +41,16 @@
     "foo
  bar
  baz"
+    (transient-mark-mode +1)
     (forward-cursor-on "bar")
     (editutil-kill-region 2)
     (should (string= (buffer-string) "foo\n"))))
+
+(ert-deftest kill-region-no-region ()
+  "My own kill-region."
+  (with-editutil-temp-buffer 'text-mode
+    "foo bar"
+    (editutil-kill-region nil)
+    (should (string= (buffer-string) " bar"))))
 
 ;;; test-kill-utility.el ends here
