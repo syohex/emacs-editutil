@@ -654,7 +654,10 @@
 
 (defun editutil--kill-command-common (arg func)
   (if (not arg)
-      (call-interactively func)
+      (if (use-region-p)
+          (call-interactively func)
+        (if-let ((bound (bounds-of-thing-at-point 'symbol)))
+            (delete-region (car bound) (cdr bound))))
     (let ((prefix-arg (prefix-numeric-value arg)))
       (save-excursion
         (if (>= prefix-arg 0)
