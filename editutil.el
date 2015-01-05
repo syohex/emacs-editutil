@@ -725,10 +725,15 @@
          (add-hook 'before-save-hook 'delete-trailing-whitespace)))
   (force-mode-line-update))
 
+(defface editutils-clean-space
+  '((t (:inherit font-lock-keyword-face :weight bold)))
+  "highlight symbol"
+  :group 'editutil)
+
 (defvar editutil-cleanup-space-mode-line
   '(:eval (if (memq 'delete-trailing-whitespace before-save-hook)
               ""
-            (propertize "[DT-]" 'face 'font-lock-keyword-face))))
+            (propertize "[DT-]" 'face 'editutils-clean-space))))
 (put 'editutil-cleanup-space-mode-line 'risky-local-variable t)
 
 (defvar editutil-vc-mode-line
