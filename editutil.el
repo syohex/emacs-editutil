@@ -800,8 +800,10 @@
 
 (defun editutil-dictionary-search (word)
   (interactive
-   (list (or (thing-at-point 'word)
-             (read-string "Word: "))))
+   (list
+    (let ((word (thing-at-point 'word)))
+      (or (and word (string-match-p "^[a-zA-Z]" word) word)
+          (read-string "Word: ")))))
   (setq word (downcase (substring-no-properties word)))
   (with-current-buffer (get-buffer-create "*sdic*")
     (read-only-mode -1)
