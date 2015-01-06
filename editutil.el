@@ -513,10 +513,6 @@
       (forward-line (1- arg))
       (kill-ring-save start (line-end-position)))))
 
-(defun editutil-isearch-yank-symbol ()
-  (interactive)
-  (isearch-yank-internal (lambda () (forward-symbol 1) (point))))
-
 (defun editutil-backward-up (arg)
   (interactive "p")
   (if (editutil--in-string-p)
@@ -881,8 +877,6 @@
 
   (when window-system
     (global-set-key (kbd "C-M-SPC") 'editutil-copy-sexp))
-
-  (define-key isearch-mode-map (kbd "C-M-w") 'editutil-isearch-yank-symbol)
 
   (define-key minibuffer-local-map (kbd "C-M-u") 'editutil-minibuffer-up-dir)
 
