@@ -862,8 +862,6 @@
   (global-set-key (kbd "C-x a a") 'editutil-mark-around-paired)
   (global-set-key (kbd "C-x a i") 'editutil-mark-inside-paired)
 
-  (global-set-key (kbd "C-x d") 'editutil-kill-thing)
-
   (global-set-key (kbd "C-x w") 'editutil-git-browse)
   (global-set-key (kbd "C-c w") 'editutil-dictionary-search)
 
