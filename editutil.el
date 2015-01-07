@@ -723,7 +723,7 @@
 
 (defface editutils-clean-space
   '((t (:inherit font-lock-keyword-face :weight bold)))
-  "highlight symbol"
+  "Clean spaces statement in mode-line."
   :group 'editutil)
 
 (defvar editutil-cleanup-space-mode-line
@@ -732,11 +732,16 @@
             (propertize "[DT-]" 'face 'editutils-clean-space))))
 (put 'editutil-cleanup-space-mode-line 'risky-local-variable t)
 
+(defface editutils-vc-branch
+  '((t (:inherit font-lock-constant-face :weight bold)))
+  "Branch information in mode-line"
+  :group 'editutil)
+
 (defvar editutil-vc-mode-line
   '(:propertize
     (:eval (let ((backend (symbol-name (vc-backend (buffer-file-name)))))
              (concat "(" (substring vc-mode (+ (length backend) 2)) ")")))
-    face font-lock-constant-face)
+    face editutils-vc-branch)
   "Mode line format for VC Mode.")
 (put 'editutil-vc-mode-line 'risky-local-variable t)
 
