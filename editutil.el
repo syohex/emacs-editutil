@@ -799,12 +799,14 @@
   (unless (eq major-mode 'dired-mode)
     (dired-jump)))
 
+(defvar editutil--dictionary-history nil)
+
 (defun editutil-dictionary-search (word)
   (interactive
    (list
     (let ((word (thing-at-point 'word)))
       (or (and word (string-match-p "^[a-zA-Z]" word) word)
-          (read-string "Word: ")))))
+          (read-string "Word: " nil 'editutil--dictionary-history)))))
   (setq word (downcase (substring-no-properties word)))
   (with-current-buffer (get-buffer-create "*sdic*")
     (read-only-mode -1)
