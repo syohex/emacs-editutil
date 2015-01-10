@@ -652,9 +652,12 @@
   (if (not arg)
       (if (use-region-p)
           (call-interactively func)
-        (let ((bound (bounds-of-thing-at-point 'symbol)))
+        (let ((bound (bounds-of-thing-at-point 'symbol))
+              (del-func (if (eq func 'kill-region)
+                            'delete-region
+                          'kill-ring-save)))
           (when bound
-            (delete-region (car bound) (cdr bound)))))
+            (funcall del-func (car bound) (cdr bound)))))
     (let ((prefix-arg (prefix-numeric-value arg)))
       (save-excursion
         (if (>= prefix-arg 0)
