@@ -652,8 +652,9 @@
   (if (not arg)
       (if (use-region-p)
           (call-interactively func)
-        (if-let ((bound (bounds-of-thing-at-point 'symbol)))
-            (delete-region (car bound) (cdr bound))))
+        (let ((bound (bounds-of-thing-at-point 'symbol)))
+          (when bound
+            (delete-region (car bound) (cdr bound)))))
     (let ((prefix-arg (prefix-numeric-value arg)))
       (save-excursion
         (if (>= prefix-arg 0)
