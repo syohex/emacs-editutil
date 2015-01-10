@@ -1,5 +1,10 @@
 # My Own Editing Utilities [![Build Status](https://travis-ci.org/syohex/emacs-editutil.png)](https://travis-ci.org/syohex/emacs-editutil)
 
+## Requirements
+
+Emacs 24.4 or higher. I use new feature as possible which can be used latest stable version.
+
+
 ## editutil.el
 
 My configuration is:
