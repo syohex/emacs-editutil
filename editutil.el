@@ -1,6 +1,6 @@
 ;;; editutil.el --- My own Edit Utilities -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2014 by Syohei YOSHIDA
+;; Copyright (C) 2015 by Syohei YOSHIDA
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; Version: 0.01
@@ -623,6 +623,12 @@
     (let ((current-prefix-arg nil))
       (call-interactively 'kill-line))))
 
+(defun editutil-move-beginning-of-line ()
+  (interactive)
+  (if (= (current-column) 0)
+      (back-to-indentation)
+    (move-beginning-of-line 1)))
+
 (defun editutil-view-quit ()
   (interactive)
   (if (buffer-file-name)
@@ -842,6 +848,8 @@
 
   (global-set-key (kbd "C-w") 'editutil-kill-region)
   (global-set-key (kbd "M-w") 'editutil-kill-ring-save)
+
+  (global-set-key (kbd "C-a") 'editutil-move-beginning-of-line)
 
   (global-set-key (kbd "C-M-o") 'editutil-other-window)
   (global-set-key (kbd "C-M-y") 'editutil-dired-other-window)
