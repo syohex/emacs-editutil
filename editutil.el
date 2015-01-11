@@ -405,7 +405,9 @@
   "Delete (don't save) text in the region-rectangle, then number it."
   (interactive
    (list (region-beginning) (region-end)
-         (read-string "Number rectangle: " (if (looking-back "^ *") "%d. " "%d"))
+         (if current-prefix-arg
+             (read-string "Number rectangle: " (if (looking-back "^ *") "%d. " "%d"))
+           "%d")
          (read-number "From: " 1)))
   (save-excursion
     (goto-char start)
