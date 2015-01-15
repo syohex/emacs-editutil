@@ -33,7 +33,6 @@
 (require 'vc-git)
 
 (declare-function copy-sexp "thingopt")
-(declare-function smartrep-define-key "smartrep")
 (declare-function subword-forward "subword")
 (declare-function subword-backward "subword")
 (declare-function elscreen-editutil-current-directory "elscreen-editutil")
@@ -361,11 +360,6 @@
     (setq this-command 'yank))
   nil)
 
-(defun editutil-insert-newline-without-moving ()
-  (interactive)
-  (save-excursion
-    (newline)))
-
 (defsubst editutil--enable-subword-mode-p ()
   (and (boundp 'subword-mode) subword-mode))
 
@@ -625,12 +619,6 @@
     (let ((current-prefix-arg nil))
       (call-interactively 'kill-line))))
 
-(defun editutil-move-beginning-of-line ()
-  (interactive)
-  (if (= (current-column) 0)
-      (back-to-indentation)
-    (move-beginning-of-line 1)))
-
 (defun editutil-view-quit ()
   (interactive)
   (if (buffer-file-name)
@@ -851,8 +839,6 @@
   (global-set-key (kbd "C-w") 'editutil-kill-region)
   (global-set-key (kbd "M-w") 'editutil-kill-ring-save)
 
-  (global-set-key (kbd "C-a") 'editutil-move-beginning-of-line)
-
   (global-set-key (kbd "C-M-o") 'editutil-other-window)
   (global-set-key (kbd "C-M-y") 'editutil-dired-other-window)
   (global-set-key (kbd "C-M-u") 'editutil-backward-up)
@@ -902,9 +888,6 @@
   (define-key dired-mode-map (kbd "P") 'editutil-jump-to-vcs-top)
 
   (add-hook 'after-change-major-mode-hook 'editutil-clear-mode-line)
-
-  (smartrep-define-key
-      global-map "C-x" '(("j" . 'editutil-insert-newline-without-moving)))
 
   ;; helm-editutil
   (global-set-key (kbd "M-.") 'helm-editutil-etags-select)
