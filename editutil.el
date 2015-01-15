@@ -527,7 +527,7 @@
             (down-list arg)
             t)
     (skip-syntax-forward "^(")
-    (forward-char 2)))
+    (forward-char 1)))
 
 (defun editutil-forward-list (arg)
   (interactive "p")
