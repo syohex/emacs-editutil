@@ -24,16 +24,20 @@
 (require 'ert)
 (require 'editutil)
 
-(ert-deftest move-beginning-of-line ()
-  "editutil-move-beginning-of-line"
+(ert-deftest down-list ()
+  "editutil-down-list"
   (with-editutil-temp-buffer 'fundamental-mode
-    "  foo bar baz"
-    (forward-cursor-on "baz")
-    (call-interactively 'editutil-move-beginning-of-line)
-    (should (= (current-column) 0))
-    (call-interactively 'editutil-move-beginning-of-line)
-    (should (= (current-column) (current-indentation)))
-    (call-interactively 'editutil-move-beginning-of-line)
-    (should (= (current-column) 0))))
+    "  (foo)"
+    (call-interactively 'editutil-down-list)
+    (should (string= (thing-at-point 'word) "foo"))))
+
+(ert-deftest down-list-fallback ()
+  "editutil-down-list in fallback case"
+  (with-editutil-temp-buffer 'fundamental-mode
+    "  (foo) (bar)"
+    (call-interactively 'editutil-down-list)
+    (call-interactively 'editutil-down-list)
+    (should (= (char-after) ?b))
+    (should (string= (thing-at-point 'word) "bar"))))
 
 ;;; test-moving-utility.el ends here
