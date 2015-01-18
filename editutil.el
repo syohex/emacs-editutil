@@ -846,6 +846,22 @@
     (unless (zerop (process-file "curl" nil t nil "-s" url))
       (error "Can't get '%s'" url))))
 
+(defvar editutil--compile-history nil)
+(defvar editutil--last-command nil)
+
+(defsubst editutil--compile-root-directory ()
+  (cl-loop for file in '(".git" ".hg" "Makefile" "Build.PL")
+           when (locate-dominating-file default-directory file)
+           return it))
+
+(defun editutil-compile (command)
+  (interactive
+   (list (read-string "Compile command: "
+                      editutil--last-command 'editutil--compile-history)))
+  (setq editutil--last-command command)
+  (let ((default-directory (editutil--compile-root-directory)))
+    (compile command)))
+
 ;;;###autoload
 (defun editutil-default-setup ()
   (interactive)
@@ -889,6 +905,8 @@
 
   (global-set-key (kbd "C-x a a") 'editutil-mark-around-paired)
   (global-set-key (kbd "C-x a i") 'editutil-mark-inside-paired)
+
+  (global-set-key (kbd "C-x c c") 'editutil-compile)
 
   (global-set-key (kbd "C-x w") 'editutil-git-browse)
   (global-set-key (kbd "C-c w") 'editutil-dictionary-search)
