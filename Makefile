@@ -16,6 +16,7 @@ test: elpa
 		-l test/test-mark-utility.el \
 		-l test/test-kill-utility.el \
 		-l test/test-moving-utility.el \
+		-l test/test-insertion-utility.el \
 		-f ert-run-tests-batch-and-exit
 
 elpa: $(ELPA_DIR)
