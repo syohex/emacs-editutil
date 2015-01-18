@@ -612,17 +612,6 @@
         (backward-up-list)
         (indent-pp-sexp)))))
 
-(defun editutil-toggle-defun ()
-  (interactive)
-  (save-excursion
-    (beginning-of-defun)
-    (forward-char 1)
-    (unless (looking-at "\\(defun\\|defsubst\\)\\>")
-      (error "Here is not defun"))
-    (let ((current (match-string-no-properties 1)))
-      (delete-region (match-beginning 1) (match-end 1))
-      (insert (if (string= current "defun") "defsubst" "defun")))))
-
 (defun editutil-kill-line (arg)
   (interactive "P")
   (if (and arg (>= (prefix-numeric-value arg) 1))
