@@ -395,13 +395,17 @@
                      (point))))
     (delete-region (max start non-space (line-beginning-position)) (point))))
 
+(defun editutil--rectangle-format ()
+  (let ((arg (prefix-numeric-value current-prefix-arg)))
+    (if (< arg 0)
+        (read-string "Number rectangle: " (if (looking-back "^ *") "%d. " "%d"))
+      "%d")))
+
 (defun editutil-number-rectangle (start end format-string start-num)
   "Delete (don't save) text in the region-rectangle, then number it."
   (interactive
    (list (region-beginning) (region-end)
-         (if current-prefix-arg
-             (read-string "Number rectangle: " (if (looking-back "^ *") "%d. " "%d"))
-           "%d")
+         (editutil--rectangle-format)
          (read-number "From: " 1)))
   (save-excursion
     (goto-char start)
@@ -410,12 +414,19 @@
     (setq end (point-marker))
     (delete-rectangle start end)
     (goto-char start)
-    (cl-loop with column = (current-column)
+    (cl-loop with arg = (abs (prefix-numeric-value current-prefix-arg))
+             with count = arg
+             with column = (current-column)
              while (and (<= (point) end) (not (eobp)))
-             for i = start-num then (1+ i)
+             for i = start-num then (if (zerop count)
+                                        (progn
+                                          (setq count arg)
+                                          (1+ i))
+                                      i)
              do
              (move-to-column column t)
              (insert (format format-string i))
+             (cl-decf count)
              (forward-line 1)))
   (goto-char start))
 
