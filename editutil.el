@@ -170,10 +170,12 @@
       (editutil-edit-next-line (- arg))
     (dotimes (_ arg)
       (if (= (line-number-at-pos) 1)
-          (goto-char (line-beginning-position))
+          (progn
+            (goto-char (line-beginning-position))
+            (open-line 1))
         (forward-line -1)
-        (end-of-line))
-      (newline-and-indent))))
+        (end-of-line)
+        (newline-and-indent)))))
 
 (defun editutil-edit-next-line (arg)
   (interactive "p")
@@ -611,17 +613,6 @@
           (insert "*"))
         (backward-up-list)
         (indent-pp-sexp)))))
-
-(defun editutil-toggle-defun ()
-  (interactive)
-  (save-excursion
-    (beginning-of-defun)
-    (forward-char 1)
-    (unless (looking-at "\\(defun\\|defsubst\\)\\>")
-      (error "Here is not defun"))
-    (let ((current (match-string-no-properties 1)))
-      (delete-region (match-beginning 1) (match-end 1))
-      (insert (if (string= current "defun") "defsubst" "defun")))))
 
 (defun editutil-kill-line (arg)
   (interactive "P")
