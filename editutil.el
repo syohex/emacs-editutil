@@ -170,10 +170,12 @@
       (editutil-edit-next-line (- arg))
     (dotimes (_ arg)
       (if (= (line-number-at-pos) 1)
-          (goto-char (line-beginning-position))
+          (progn
+            (goto-char (line-beginning-position))
+            (open-line 1))
         (forward-line -1)
-        (end-of-line))
-      (newline-and-indent))))
+        (end-of-line)
+        (newline-and-indent)))))
 
 (defun editutil-edit-next-line (arg)
   (interactive "p")
