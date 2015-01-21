@@ -655,7 +655,8 @@
                             'delete-region
                           'kill-ring-save)))
           (when bound
-            (funcall del-func (car bound) (cdr bound)))))
+            (funcall del-func (car bound) (cdr bound))
+            (message "%s" (substring-no-properties (thing-at-point thing))))))
     (let ((prefix-arg (prefix-numeric-value arg)))
       (save-excursion
         (if (>= prefix-arg 0)
