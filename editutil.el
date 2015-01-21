@@ -646,11 +646,11 @@
                when file
                return (file-name-directory it)))))
 
-(defun editutil--kill-command-common (arg func)
+(defun editutil--kill-command-common (arg func thing)
   (if (not arg)
       (if (use-region-p)
           (call-interactively func)
-        (let ((bound (bounds-of-thing-at-point 'symbol))
+        (let ((bound (bounds-of-thing-at-point thing))
               (del-func (if (eq func 'kill-region)
                             'delete-region
                           'kill-ring-save)))
@@ -668,11 +668,11 @@
 
 (defun editutil-kill-ring-save (arg)
   (interactive "P")
-  (editutil--kill-command-common arg 'kill-ring-save))
+  (editutil--kill-command-common arg 'kill-ring-save 'sexp))
 
 (defun editutil-kill-region (arg)
   (interactive "P")
-  (editutil--kill-command-common arg 'kill-region))
+  (editutil--kill-command-common arg 'kill-region 'symbol))
 
 (defun editutil--git-github-url (remote branch)
   (with-temp-buffer
@@ -872,8 +872,8 @@
 
   (global-set-key (kbd "C-M-s") 'editutil-forward-symbol-at-point)
 
-  (global-set-key [(control shift up)] 'editutil-move-line-up)
-  (global-set-key [(control shift down)] 'editutil-move-line-down)
+  (global-set-key (kbd "C-x c p") 'editutil-move-line-up)
+  (global-set-key (kbd "C-x c n") 'editutil-move-line-down)
 
   (global-set-key (kbd "C-w") 'editutil-kill-region)
   (global-set-key (kbd "M-w") 'editutil-kill-ring-save)
