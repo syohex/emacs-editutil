@@ -650,13 +650,14 @@
   (if (not arg)
       (if (use-region-p)
           (call-interactively func)
-        (let ((bound (bounds-of-thing-at-point thing))
-              (del-func (if (eq func 'kill-region)
-                            'delete-region
-                          'kill-ring-save)))
+        (let* ((bound (bounds-of-thing-at-point thing))
+               (kill-p (eq func 'kill-region))
+               (del-func (if kill-p 'delete-region 'kill-ring-save)))
           (when bound
-            (funcall del-func (car bound) (cdr bound))
-            (message "%s" (substring-no-properties (thing-at-point thing))))))
+            (let ((str (thing-at-point thing)))
+              (funcall del-func (car bound) (cdr bound))
+              (unless kill-p
+                (message "%s" (substring-no-properties str)))))))
     (let ((prefix-arg (prefix-numeric-value arg)))
       (save-excursion
         (if (>= prefix-arg 0)
