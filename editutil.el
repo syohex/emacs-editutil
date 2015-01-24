@@ -923,9 +923,6 @@
 
   (define-key my/ctrl-q-map (kbd "C-t") 'editutil-toggle-cleanup-spaces)
 
-  (when window-system
-    (global-set-key (kbd "C-M-SPC") 'editutil-copy-sexp))
-
   (define-key minibuffer-local-map (kbd "C-M-u") 'editutil-minibuffer-up-dir)
 
   (define-key dired-mode-map (kbd "P") 'editutil-jump-to-vcs-top)
