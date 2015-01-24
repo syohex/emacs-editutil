@@ -880,6 +880,8 @@
   (global-set-key (kbd "C-w") 'editutil-kill-region)
   (global-set-key (kbd "M-w") 'editutil-kill-ring-save)
 
+  (global-set-key (kbd "C-x q") 'editutil-zap-to-char-backward)
+
   (global-set-key (kbd "C-M-o") 'editutil-other-window)
   (global-set-key (kbd "C-M-y") 'editutil-dired-other-window)
   (global-set-key (kbd "C-M-u") 'editutil-backward-up)
@@ -907,8 +909,8 @@
   (global-set-key (kbd "C-x .") 'editutil-highlight-symbol-in-defun)
   (global-set-key (kbd "C-x ,") 'editutil-highlight-clear-overlays)
 
-  (global-set-key (kbd "C-x a a") 'editutil-mark-around-paired)
-  (global-set-key (kbd "C-x a i") 'editutil-mark-inside-paired)
+  (global-set-key (kbd "C-x m") 'editutil-mark-around-paired)
+  (global-set-key (kbd "C-x M") 'editutil-mark-inside-paired)
 
   (global-set-key (kbd "C-x c c") 'editutil-compile)
 
