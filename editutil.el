@@ -456,14 +456,17 @@
 
 (defun editutil-delete-horizontal-space ()
   (interactive)
-  (let ((orig-pos (point)))
-    (delete-region
-     (progn
-       (skip-chars-forward " \t\n\r")
-       (constrain-to-field nil orig-pos t))
-     (progn
-       (skip-chars-backward " \t\n\r")
-       (constrain-to-field nil orig-pos)))))
+  (if (not current-prefix-arg)
+      (call-interactively 'delete-horizontal-space)
+    (let ((current-prefix-arg nil)
+          (orig-pos (point)))
+      (delete-region
+       (progn
+         (skip-chars-forward " \t\n\r")
+         (constrain-to-field nil orig-pos t))
+       (progn
+         (skip-chars-backward " \t\n\r")
+         (constrain-to-field nil orig-pos))))))
 
 (defun editutil-view-word-end (arg)
   (interactive "p")
