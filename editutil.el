@@ -442,14 +442,15 @@
   (let ((orig-column (current-column)))
     (save-excursion
       (let ((orig-line (line-number-at-pos))
-            (str (if mark-active
+            (str (if (use-region-p)
                      (buffer-substring (region-beginning) (region-end))
                    (buffer-substring (line-beginning-position)
                                      (line-end-position)))))
-        (forward-line 1)
-        ;; maybe last line
-        (when (= orig-line (line-number-at-pos))
-          (insert "\n"))
+        (when (or (not (use-region-p)) (not (bolp)))
+          (forward-line 1)
+          ;; maybe lastline
+          (when (= orig-line (line-number-at-pos))
+            (insert "\n")))
         (dotimes (_ (or n 1))
           (insert str "\n"))))
     (move-to-column orig-column)))

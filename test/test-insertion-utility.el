@@ -50,4 +50,27 @@ fom
         (editutil-number-rectangle start (point) "%d." 1)
         (should (string= (buffer-string) "1.foo\n1.bar\n2.baz\n2.fom\n"))))))
 
+(ert-deftest duplicate-thing ()
+  "editutil-duplicate-thing."
+  (with-editutil-temp-buffer 'fundamental-mode
+    "foo"
+    (set-mark (point-min))
+    (editutil-duplicate-thing 1)
+    (let ((got (buffer-string)))
+      (should (string= got "foo\nfoo\n")))))
+
+(ert-deftest duplicate-thing-region ()
+  "editutil-duplicate-thing with selected region."
+  (with-editutil-temp-buffer 'fundamental-mode
+    "foo
+bar
+"
+    (forward-cursor-on "bar")
+    (set-mark (point-min))
+    (goto-char (line-end-position))
+    (cl-letf (((symbol-function 'use-region-p) (lambda () t)))
+      (editutil-duplicate-thing 1)
+      (let ((got (buffer-string)))
+        (should (string= got "foo\nbar\nfoo\nbar\n"))))))
+
 ;;; test-insertion-utility.el ends here
