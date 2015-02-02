@@ -159,6 +159,15 @@
    (list (read-char)))
   (editutil--mark-paired char nil))
 
+(defun editutil-mark-until-char (arg char)
+  (interactive
+   (list
+    (prefix-numeric-value current-prefix-arg)
+    (read-char)))
+  (unless (use-region-p)
+    (set-mark (point)))
+  (editutil-forward-char arg char))
+
 (defun editutil-replace-wrapped-string (arg)
   (interactive "p")
   (let ((replaced (char-to-string (read-char))))
@@ -915,6 +924,7 @@
 
   (global-set-key (kbd "C-x m") 'editutil-mark-around-paired)
   (global-set-key (kbd "C-x M") 'editutil-mark-inside-paired)
+  (global-set-key (kbd "C-M-w") 'editutil-mark-until-char)
 
   (global-set-key (kbd "C-x c c") 'editutil-compile)
 
