@@ -210,20 +210,30 @@
       (newline)
       (move-to-column col t))))
 
-(defun editutil-zap-to-char (arg char)
-  (interactive "p\ncZap to char: ")
+(defun editutil--zap-to-char-common (arg char more)
   (with-no-warnings
     (when (char-table-p translation-table-for-input)
       (setq char (or (aref translation-table-for-input char) char))))
   (delete-region (point)
                  (let ((case-fold-search nil))
                    (when (>= arg 0)
-                     (forward-char 1))
+                     (forward-char (1+ more)))
                    (search-forward (char-to-string char) nil nil arg)
                    (if (>= arg 0)
                        (backward-char 1)
-                     (forward-char 1))
+                     (forward-char (1+ more)))
                    (point))))
+
+(defun editutil-zap-to-char1 (arg char)
+  (interactive (list (prefix-numeric-value current-prefix-arg)
+		     (read-char "Zap to char: " t)))
+  (editutil--zap-to-char-common arg char 1))
+
+(defun editutil-zap-to-char (arg char)
+  (interactive
+   (list (prefix-numeric-value current-prefix-arg)
+         (read-char "Zap to char: " t)))
+  (editutil--zap-to-char-common arg char 0))
 
 (defun editutil-zap-to-char-backward (arg)
   (interactive "p")
@@ -893,6 +903,7 @@
   (global-set-key (kbd "C-w") 'editutil-kill-region)
   (global-set-key (kbd "M-w") 'editutil-kill-ring-save)
 
+  (global-set-key (kbd "ESC Q") 'editutil-zap-to-char1)
   (global-set-key (kbd "C-x q") 'editutil-zap-to-char-backward)
 
   (global-set-key (kbd "C-M-o") 'editutil-other-window)
