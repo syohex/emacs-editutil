@@ -904,7 +904,7 @@
   (global-set-key (kbd "M-w") 'editutil-kill-ring-save)
 
   (global-set-key (kbd "ESC Q") 'editutil-zap-to-char1)
-  (global-set-key (kbd "C-x q") 'editutil-zap-to-char-backward)
+  (global-set-key (kbd "ESC ESC q") 'editutil-zap-to-char-backward)
 
   (global-set-key (kbd "C-M-o") 'editutil-other-window)
   (global-set-key (kbd "C-M-y") 'editutil-dired-other-window)
