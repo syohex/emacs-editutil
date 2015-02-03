@@ -220,8 +220,9 @@
                      (forward-char (1+ more)))
                    (search-forward (char-to-string char) nil nil arg)
                    (if (>= arg 0)
-                       (backward-char 1)
-                     (forward-char (1+ more)))
+                       (when (= more 0)
+                         (backward-char 1))
+                     (forward-char 1))
                    (point))))
 
 (defun editutil-zap-to-char1 (arg char)
