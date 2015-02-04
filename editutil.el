@@ -227,18 +227,18 @@
 
 (defun editutil-zap-to-char1 (arg char)
   (interactive (list (prefix-numeric-value current-prefix-arg)
-		     (read-char "Zap to char: " t)))
+		     (read-char nil t)))
   (editutil--zap-to-char-common arg char 1))
 
 (defun editutil-zap-to-char (arg char)
   (interactive
    (list (prefix-numeric-value current-prefix-arg)
-         (read-char "Zap to char: " t)))
+         (read-char nil t)))
   (editutil--zap-to-char-common arg char 0))
 
 (defun editutil-zap-to-char-backward (arg)
   (interactive "p")
-  (let ((input (char-to-string (read-char "Zap to char: " t)))
+  (let ((input (char-to-string (read-char nil t)))
         (curpoint (point))
         (case-fold-search nil))
     (save-excursion
