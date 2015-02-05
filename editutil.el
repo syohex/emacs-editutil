@@ -646,10 +646,11 @@
 
 (defun editutil-kill-line (arg)
   (interactive "P")
-  (if (and arg (>= (prefix-numeric-value arg) 1))
-      (kill-whole-line arg)
-    (let ((current-prefix-arg nil))
-      (call-interactively 'kill-line))))
+  (let ((num (prefix-numeric-value arg)))
+    (if (and arg (>= num 1))
+        (kill-whole-line num)
+      (let ((current-prefix-arg nil))
+        (call-interactively 'kill-line)))))
 
 (defun editutil-view-quit ()
   (interactive)
