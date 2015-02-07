@@ -463,6 +463,13 @@
   (copy-sexp)
   (message "%s" (substring-no-properties (thing-at-point 'sexp))))
 
+
+(defun editutil-paredit-backward-delete ()
+  (interactive)
+  (if (use-region-p)
+      (delete-region (region-beginning) (region-end))
+    (call-interactively 'paredit-backward-delete)))
+
 (defun editutil-duplicate-thing (n)
   (interactive "p")
   (let ((orig-column (current-column)))
