@@ -22,6 +22,7 @@
 ;;; Code:
 
 (require 'ert)
+(require 'editutil)
 
 (ert-deftest kill-region ()
   "My own kill-region."

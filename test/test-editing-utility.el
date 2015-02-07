@@ -22,6 +22,7 @@
 ;;; Code:
 
 (require 'ert)
+(require 'editutil)
 
 (ert-deftest edit-next-line ()
   "Edit next line like Vim's 'o'."

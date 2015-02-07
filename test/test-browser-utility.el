@@ -22,6 +22,7 @@
 ;;; Code:
 
 (require 'ert)
+(require 'editutil)
 
 (ert-deftest git-github-url ()
   "editutil--git-github-url"
