@@ -463,6 +463,14 @@
   (copy-sexp)
   (message "%s" (substring-no-properties (thing-at-point 'sexp))))
 
+(defun editutil-mark-sexp ()
+  (interactive)
+  (let ((bounds (bounds-of-thing-at-point 'sexp)))
+    (when bounds
+      (goto-char (car bounds))
+      (set-mark (point))
+      (goto-char (cdr bounds))
+      (exchange-point-and-mark))))
 
 (defun editutil-paredit-backward-delete ()
   (interactive)
@@ -951,7 +959,8 @@
 
   (global-set-key (kbd "C-x m") 'editutil-mark-around-paired)
   (global-set-key (kbd "C-x M") 'editutil-mark-inside-paired)
-  (global-set-key (kbd "C-M-w") 'editutil-mark-until-char)
+  (global-set-key (kbd "C-M-w") 'editutil-mark-sexp)
+
 
   (global-set-key (kbd "C-x c c") 'editutil-compile)
 
