@@ -666,7 +666,9 @@
             (delete-char 1)
           (insert "*"))
         (backward-up-list)
-        (indent-pp-sexp)))))
+        (indent-pp-sexp))))
+  (when (looking-at-p "^")
+    (back-to-indentation)))
 
 (defun editutil-kill-line (arg)
   (interactive "P")
