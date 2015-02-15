@@ -852,14 +852,6 @@
              (when (eq mode major-mode)
                (setq mode-name mode-str)))))
 
-(defun editutil-dired-other-window ()
-  (interactive)
-  (when (one-window-p)
-    (split-window-right))
-  (other-window 1)
-  (unless (eq major-mode 'dired-mode)
-    (dired-jump)))
-
 (defvar editutil--dictionary-history nil)
 
 (defun editutil-dictionary-search (word)
@@ -942,7 +934,6 @@
   (global-set-key (kbd "ESC ESC q") 'editutil-zap-to-char1)
 
   (global-set-key (kbd "C-M-o") 'editutil-other-window)
-  (global-set-key (kbd "C-M-y") 'editutil-dired-other-window)
   (global-set-key (kbd "C-M-u") 'editutil-backward-up)
 
   (global-set-key (kbd "C-k") 'editutil-kill-line)
