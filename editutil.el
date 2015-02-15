@@ -935,8 +935,8 @@
 
   (global-set-key (kbd "C-M-s") 'editutil-forward-symbol-at-point)
 
-  (global-set-key (kbd "C-x c p") 'editutil-move-line-up)
-  (global-set-key (kbd "C-x c n") 'editutil-move-line-down)
+  (global-set-key (kbd "C-x t p") 'editutil-move-line-up)
+  (global-set-key (kbd "C-x t n") 'editutil-move-line-down)
 
   (global-set-key (kbd "C-w") 'editutil-kill-region)
   (global-set-key (kbd "M-w") 'editutil-kill-ring-save)
