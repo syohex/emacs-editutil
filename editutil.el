@@ -971,7 +971,7 @@
   (global-set-key (kbd "C-x w") 'editutil-git-browse)
   (global-set-key (kbd "C-c w") 'editutil-dictionary-search)
 
-  (global-set-key (kbd "C-x l") 'editutil-copy-line)
+  (global-set-key (kbd "C-x y") 'editutil-copy-line)
 
   ;; C-q map
   (define-key my/ctrl-q-map (kbd "s") 'editutil-unwrap-at-point)
