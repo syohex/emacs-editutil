@@ -31,6 +31,7 @@
 (require 'which-func)
 (require 'dired)
 (require 'vc-git)
+(require 'smartrep)
 
 (declare-function copy-sexp "thingopt")
 (declare-function subword-forward "subword")
@@ -933,10 +934,12 @@
 
   (editutil--init-mode-line)
 
-  (global-set-key (kbd "C-M-s") 'editutil-forward-symbol-at-point)
+  (global-unset-key (kbd "C-x c"))
+  (global-unset-key (kbd "C-x z"))
+  (global-unset-key (kbd "C-x d"))
+  (global-unset-key (kbd "C-x t"))
 
-  (global-set-key (kbd "C-x t p") 'editutil-move-line-up)
-  (global-set-key (kbd "C-x t n") 'editutil-move-line-down)
+  (global-set-key (kbd "C-M-s") 'editutil-forward-symbol-at-point)
 
   (global-set-key (kbd "C-w") 'editutil-kill-region)
   (global-set-key (kbd "M-w") 'editutil-kill-ring-save)
@@ -979,16 +982,21 @@
   (global-set-key (kbd "C-x f") 'editutil-mark-forward-char)
   (global-set-key (kbd "C-x F") 'editutil-mark-backward-char)
 
-  (global-set-key (kbd "C-x c c") 'editutil-compile)
-
   (global-set-key (kbd "C-x w") 'editutil-git-browse)
   (global-set-key (kbd "C-c w") 'editutil-dictionary-search)
 
   (global-set-key (kbd "C-x y") 'editutil-copy-line)
 
-  ;; C-q map
-  (define-key my/ctrl-q-map (kbd "s") 'editutil-unwrap-at-point)
-  (define-key my/ctrl-q-map (kbd "r") 'editutil-replace-wrapped-string)
+  ;; 'C-x c' prefix
+  (global-set-key (kbd "C-x c c") 'editutil-compile)
+
+  ;; 'C-x t' prefix
+  (smartrep-define-key
+      global-map "C-x t" '(("p" . editutil-move-line-up)
+                           ("n" . editutil-move-line-down)))
+
+  (global-set-key (kbd "C-x t s") 'editutil-unwrap-at-point)
+  (global-set-key (kbd "C-x t r") 'editutil-replace-wrapped-string)
 
   (define-key my/ctrl-q-map (kbd "C-t") 'editutil-toggle-cleanup-spaces)
 
