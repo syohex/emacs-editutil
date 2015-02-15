@@ -710,7 +710,9 @@
         (let* ((bound (bounds-of-thing-at-point thing))
                (kill-p (eq func 'kill-region))
                (del-func (if kill-p 'delete-region 'kill-ring-save)))
-          (when bound
+          (if (not bound)
+              (when (bolp)
+                (funcall del-func (line-beginning-position) (line-end-position)))
             (let ((str (thing-at-point thing)))
               (funcall del-func (car bound) (cdr bound))
               (unless kill-p
