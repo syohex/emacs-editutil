@@ -385,6 +385,12 @@
         (skip-chars-forward " \t"))
       (delete-region orig-point (point)))))
 
+(defun editutil-kill-whole-line (arg)
+  (interactive "p")
+  (let ((curcolumn (current-column)))
+    (kill-whole-line arg)
+    (move-to-column curcolumn)))
+
 (defun editutil-yank (arg)
   (interactive "P")
   (setq yank-window-start (window-start))
@@ -954,6 +960,7 @@
   (global-set-key (kbd "C-x r N") 'editutil-number-rectangle)
   (global-set-key (kbd "C-M-c") 'editutil-duplicate-thing)
   (global-set-key (kbd "M-\\") 'editutil-delete-horizontal-space)
+  (global-set-key (kbd "C-x DEL") 'editutil-kill-whole-line)
 
   (global-set-key (kbd "M-I") 'editutil-indent-same-as-previous-line)
   (global-set-key (kbd "M-(") 'editutil-insert-parentheses)
