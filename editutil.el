@@ -721,13 +721,13 @@
         (let* ((bound (bounds-of-thing-at-point thing))
                (kill-p (eq func 'kill-region))
                (del-func (if kill-p 'delete-region 'kill-ring-save)))
-          (if (not bound)
-              (when (bolp)
-                (funcall del-func (line-beginning-position) (line-end-position)))
-            (let ((str (thing-at-point thing)))
-              (funcall del-func (car bound) (cdr bound))
-              (unless kill-p
-                (message "%s" (substring-no-properties str)))))))
+          (when (and (not bound) (bolp))
+            (setq bound (cons (line-beginning-position) (line-end-position))))
+          (when bound
+            (funcall del-func (car bound) (cdr bound))
+            (unless kill-p
+              (message "%s" (buffer-substring-no-properties
+                             (car bound) (cdr bound)))))))
     (let ((prefix-arg (prefix-numeric-value arg)))
       (save-excursion
         (if (>= prefix-arg 0)
