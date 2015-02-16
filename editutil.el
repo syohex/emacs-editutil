@@ -902,6 +902,14 @@
   (let ((default-directory (editutil--compile-root-directory)))
     (compile command)))
 
+(defun editutil-point-to-register ()
+  (interactive)
+  (point-to-register :editutil-point))
+
+(defun editutil-jump-to-register ()
+  (interactive)
+  (jump-to-register :editutil-point))
+
 ;;;###autoload
 (defun editutil-default-setup ()
   (interactive)
@@ -937,7 +945,6 @@
   (global-set-key (kbd "C-y") 'editutil-yank)
   (global-set-key (kbd "M-d") 'editutil-delete-word)
   (global-set-key [remap backward-kill-word] 'editutil-backward-delete-word)
-  (global-set-key (kbd "C-x r N") 'editutil-number-rectangle)
   (global-set-key (kbd "C-M-c") 'editutil-duplicate-thing)
   (global-set-key (kbd "M-\\") 'editutil-delete-horizontal-space)
   (global-set-key (kbd "C-x DEL") 'editutil-kill-whole-line)
@@ -959,6 +966,12 @@
   (global-set-key (kbd "C-c w") 'editutil-dictionary-search)
 
   (global-set-key (kbd "C-x y") 'editutil-copy-line)
+
+  (global-set-key (kbd "C-x SPC") 'editutil-point-to-register)
+  (global-set-key (kbd "C-x j") 'editutil-jump-to-register)
+
+  ;; 'C-x r' prefix
+  (global-set-key (kbd "C-x r N") 'editutil-number-rectangle)
 
   ;; 'C-x c' prefix
   (global-set-key (kbd "C-x c c") 'editutil-compile)
