@@ -261,33 +261,6 @@
       (when (search-backward input nil t arg)
         (delete-region (1+ (point)) curpoint)))))
 
-(defun editutil-next-symbol (arg)
-  (interactive "p")
-  (let ((symbol (thing-at-point 'symbol)))
-    (unless symbol
-      (error "No symbol at cursor!!"))
-    (message "%s" (substring-no-properties symbol))
-    (let ((bound (bounds-of-thing-at-point 'symbol)))
-      (if (>= arg 0)
-          (goto-char (cdr bound))
-        (goto-char (car bound))))
-    (let ((case-fold-search nil))
-      (let ((regexp (concat "\\_<" (regexp-quote symbol) "\\_>"))
-            finish)
-        (while (not finish)
-          (if (re-search-forward regexp nil t arg)
-              (progn
-                (setq finish t)
-                (goto-char (match-beginning 0)))
-            (message "Overwrapping")
-            (if (>= arg 0)
-                (goto-char (point-min))
-              (goto-char (point-max)))))))))
-
-(defun editutil-previous-symbol (arg)
-  (interactive "p")
-  (editutil-next-symbol (- arg)))
-
 (defun editutil--char-to-thing (char)
   (cl-case char
     (?w 'word)
@@ -958,8 +931,7 @@
   (global-set-key (kbd "M-O") 'editutil-edit-previous-line)
   (global-set-key (kbd "M-s") 'editutil-unwrap-at-point)
   (global-set-key (kbd "M-r") 'editutil-replace-wrapped-string)
-  (global-set-key (kbd "M-n") 'editutil-next-symbol)
-  (global-set-key (kbd "M-p") 'editutil-previous-symbol)
+
   (global-set-key (kbd "M-k") 'editutil-delete-following-spaces)
   (global-set-key (kbd "C-y") 'editutil-yank)
   (global-set-key (kbd "M-d") 'editutil-delete-word)
