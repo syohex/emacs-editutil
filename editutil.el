@@ -891,7 +891,8 @@
 (defsubst editutil--compile-root-directory ()
   (cl-loop for file in '(".git" ".hg" "Makefile" "Build.PL")
            when (locate-dominating-file default-directory file)
-           return it))
+           return it
+           finally return default-directory))
 
 (defun editutil-compile (command)
   (interactive
