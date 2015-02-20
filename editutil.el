@@ -284,7 +284,7 @@
   (set-transient-map
    (let ((m (make-sparse-keymap)))
      (define-key m (kbd "f") (lambda () (interactive) (editutil-forward-char 1 char)))
-     (define-key m (kbd "b") (lambda () (interactive) (editutil-forward-char -1 char)))
+     (define-key m (kbd "F") (lambda () (interactive) (editutil-forward-char -1 char)))
      m)))
 
 (defun editutil-backward-char (arg char)
