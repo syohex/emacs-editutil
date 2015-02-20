@@ -160,24 +160,6 @@
    (list (read-char)))
   (editutil--mark-paired char nil))
 
-(defun editutil-mark-forward-char (arg char)
-  (interactive
-   (list
-    (prefix-numeric-value current-prefix-arg)
-    (read-char)))
-  (unless (use-region-p)
-    (set-mark (point)))
-  (editutil-forward-char arg char))
-
-(defun editutil-mark-backward-char (arg char)
-  (interactive
-   (list
-    (prefix-numeric-value current-prefix-arg)
-    (read-char)))
-  (unless (use-region-p)
-    (set-mark (point)))
-  (editutil-backward-char arg char))
-
 (defun editutil-replace-wrapped-string (arg)
   (interactive "p")
   (let ((replaced (char-to-string (read-char))))
@@ -295,46 +277,28 @@
    (lambda (bound)
      (kill-ring-save (car bound) (cdr bound)))))
 
-(defvar editutil--last-search-char nil)
-
-(defsubst editutil--last-command-move-char-p ()
-  (memq last-command '(editutil-forward-char editutil-backward-char)))
-
-(defsubst editutil--use-last-key-p (char key)
-  (if window-system
-      (= char (aref (kbd key) 0))
-    (when (and (= char 27) ;; ESC/Meta
-               (string-match "\\`M-\\([a-zA-Z]\\)" key))
-      (let ((meta-prefixed (string-to-char (match-string-no-properties 1 key)))
-            (second-char (read-event)))
-        (= second-char meta-prefixed)))))
-
-(defun editutil-forward-char (arg &optional char)
-  (interactive "p\n")
-  (unless char
-    (if (editutil--last-command-move-char-p)
-        (setq char editutil--last-search-char)
-      (setq char (read-event))
-      (when (editutil--use-last-key-p char "M-e")
-        (setq char editutil--last-search-char))))
+(defun editutil-forward-char (arg char)
+  (interactive
+   (list (prefix-numeric-value current-prefix-arg)
+         (read-char)))
   (unless (char-or-string-p char)
     (error "Error: Input Invalid Char %d" char))
-  (setq editutil--last-search-char char)
   (when (>= arg 0)
     (forward-char 1))
   (let ((case-fold-search nil))
     (search-forward (char-to-string char) nil t arg))
   (when (>= arg 0)
-    (backward-char 1)))
+    (backward-char 1))
+  (set-transient-map
+   (let ((m (make-sparse-keymap)))
+     (define-key m (kbd "f") (lambda () (interactive) (editutil-forward-char 1 char)))
+     (define-key m (kbd "b") (lambda () (interactive) (editutil-forward-char -1 char)))
+     m)))
 
-(defun editutil-backward-char (arg &optional char)
-  (interactive "p\n")
-  (unless char
-    (if (editutil--last-command-move-char-p)
-        (setq char editutil--last-search-char)
-      (setq char (read-event))
-      (when (editutil--use-last-key-p char "M-a")
-        (setq char editutil--last-search-char))))
+(defun editutil-backward-char (arg char)
+  (interactive
+   (list (prefix-numeric-value current-prefix-arg)
+         (read-char)))
   (editutil-forward-char (- arg) char))
 
 (defun editutil-move-line-up ()
