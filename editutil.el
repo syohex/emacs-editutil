@@ -295,13 +295,22 @@
          (read-char)))
   (editutil-forward-char (- arg) char))
 
+(defun editutil--repeat-move-line-command ()
+  (message "'n': Move up, 'p': Move Down")
+  (set-transient-map
+   (let ((m (make-sparse-keymap)))
+     (define-key m (kbd "n") 'editutil-move-line-down)
+     (define-key m (kbd "p") 'editutil-move-line-up)
+     m)))
+
 (defun editutil-move-line-up ()
   (interactive)
   (let ((curindent (current-column)))
     (transpose-lines 1)
     (indent-according-to-mode)
     (forward-line -2)
-    (move-to-column curindent)))
+    (move-to-column curindent)
+    (editutil--repeat-move-line-command)))
 
 (defun editutil-move-line-down ()
   (interactive)
@@ -310,7 +319,8 @@
     (transpose-lines 1)
     (forward-line -1)
     (indent-according-to-mode)
-    (move-to-column curindent)))
+    (move-to-column curindent)
+    (editutil--repeat-move-line-command)))
 
 (defun editutil-delete-following-spaces (arg)
   (interactive "p")
