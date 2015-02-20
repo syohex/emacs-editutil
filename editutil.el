@@ -31,13 +31,11 @@
 (require 'which-func)
 (require 'dired)
 (require 'vc-git)
-(require 'smartrep)
 
 (declare-function copy-sexp "thingopt")
 (declare-function subword-forward "subword")
 (declare-function subword-backward "subword")
 (declare-function elscreen-editutil-current-directory "elscreen-editutil")
-(declare-function ace-jump-word-mode "ace-jump-mode")
 
 (defgroup editutil nil
   "My own editing utilities"
