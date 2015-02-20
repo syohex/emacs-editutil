@@ -917,8 +917,8 @@
   (global-set-key (kbd "C-x M") 'editutil-mark-inside-paired)
   (global-set-key (kbd "C-M-w") 'editutil-mark-sexp)
 
-  (global-set-key (kbd "C-x f") 'editutil-mark-forward-char)
-  (global-set-key (kbd "C-x F") 'editutil-mark-backward-char)
+  (global-set-key (kbd "C-x f") 'editutil-forward-char)
+  (global-set-key (kbd "C-x F") 'editutil-backward-char)
 
   (global-set-key (kbd "C-x w") 'editutil-git-browse)
   (global-set-key (kbd "C-c w") 'editutil-dictionary-search)
@@ -935,9 +935,8 @@
   (global-set-key (kbd "C-x c c") 'editutil-compile)
 
   ;; 'C-x t' prefix
-  (smartrep-define-key
-      global-map "C-x t" '(("p" . editutil-move-line-up)
-                           ("n" . editutil-move-line-down)))
+  (global-set-key (kbd "C-x t n") 'editutil-move-line-down)
+  (global-set-key (kbd "C-x t p") 'editutil-move-line-up)
 
   (global-set-key (kbd "C-x t s") 'editutil-unwrap-at-point)
   (global-set-key (kbd "C-x t r") 'editutil-replace-wrapped-string)
