@@ -24,12 +24,12 @@
 (require 'ert)
 (require 'editutil)
 
-(ert-deftest git-github-url ()
+(ert-deftest gitbur-url ()
   "editutil--git-github-url"
-  (let ((got (editutil--git-github-url "origin" "master")))
+  (let ((got (editutil--github-url "origin" "master")))
     (string= got "https://github.com/syohex/emacs-editutil"))
 
-  (let ((got (editutil--git-github-url "origin" "foobar")))
+  (let ((got (editutil--github-url "origin" "foobar")))
     (string= got "https://github.com/syohex/emacs-editutil/tree/foobar")))
 
 ;;; test-browser-utility.el ends here
