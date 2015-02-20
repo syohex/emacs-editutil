@@ -68,13 +68,4 @@
     (editutil-zap-to-char1 1 ?b)
     (should (string= (buffer-string) "ar"))))
 
-(ert-deftest zap-to-char-m-q ()
-  "Same as Emacs's zap-to-char except using `delete-region'."
-  (with-editutil-temp-buffer 'text-mode
-    "foo bar"
-    (cl-letf (((symbol-function 'editutil--use-last-key-p)
-               (lambda (_a _b) t)))
-      (editutil-zap-to-char 1 ?d)
-      (should (string= (buffer-string) "bar")))))
-
 ;;; test-kill-utility.el ends here

@@ -31,13 +31,11 @@
 (require 'which-func)
 (require 'dired)
 (require 'vc-git)
-(require 'smartrep)
 
 (declare-function copy-sexp "thingopt")
 (declare-function subword-forward "subword")
 (declare-function subword-backward "subword")
 (declare-function elscreen-editutil-current-directory "elscreen-editutil")
-(declare-function ace-jump-word-mode "ace-jump-mode")
 
 (defgroup editutil nil
   "My own editing utilities"
@@ -160,24 +158,6 @@
    (list (read-char)))
   (editutil--mark-paired char nil))
 
-(defun editutil-mark-forward-char (arg char)
-  (interactive
-   (list
-    (prefix-numeric-value current-prefix-arg)
-    (read-char)))
-  (unless (use-region-p)
-    (set-mark (point)))
-  (editutil-forward-char arg char))
-
-(defun editutil-mark-backward-char (arg char)
-  (interactive
-   (list
-    (prefix-numeric-value current-prefix-arg)
-    (read-char)))
-  (unless (use-region-p)
-    (set-mark (point)))
-  (editutil-backward-char arg char))
-
 (defun editutil-replace-wrapped-string (arg)
   (interactive "p")
   (let ((replaced (char-to-string (read-char))))
@@ -224,22 +204,16 @@
   (with-no-warnings
     (when (char-table-p translation-table-for-input)
       (setq char (or (aref translation-table-for-input char) char))))
-  (let ((use-m-q (editutil--use-last-key-p char "M-q")))
-    (delete-region (point)
-                   (let ((case-fold-search nil))
-                     (when (>= arg 0)
-                       (forward-char (1+ more)))
-                     (if (not use-m-q)
-                         (search-forward (char-to-string char) nil nil arg)
-                       (if (looking-at-p " ")
-                           (skip-chars-forward " \t\r\n")
-                         (search-forward " " nil nil arg))
-                       (forward-char 1))
-                     (if (>= arg 0)
-                         (when (= more 0)
-                           (backward-char 1))
-                       (forward-char 1))
-                     (point)))))
+  (delete-region (point)
+                 (let ((case-fold-search nil))
+                   (when (>= arg 0)
+                     (forward-char (1+ more)))
+                   (search-forward (char-to-string char) nil nil arg)
+                   (if (>= arg 0)
+                       (when (= more 0)
+                         (backward-char 1))
+                     (forward-char 1))
+                   (point))))
 
 (defun editutil-zap-to-char1 (arg char)
   (interactive (list (prefix-numeric-value current-prefix-arg)
@@ -295,47 +269,37 @@
    (lambda (bound)
      (kill-ring-save (car bound) (cdr bound)))))
 
-(defvar editutil--last-search-char nil)
-
-(defsubst editutil--last-command-move-char-p ()
-  (memq last-command '(editutil-forward-char editutil-backward-char)))
-
-(defsubst editutil--use-last-key-p (char key)
-  (if window-system
-      (= char (aref (kbd key) 0))
-    (when (and (= char 27) ;; ESC/Meta
-               (string-match "\\`M-\\([a-zA-Z]\\)" key))
-      (let ((meta-prefixed (string-to-char (match-string-no-properties 1 key)))
-            (second-char (read-event)))
-        (= second-char meta-prefixed)))))
-
-(defun editutil-forward-char (arg &optional char)
-  (interactive "p\n")
-  (unless char
-    (if (editutil--last-command-move-char-p)
-        (setq char editutil--last-search-char)
-      (setq char (read-event))
-      (when (editutil--use-last-key-p char "M-e")
-        (setq char editutil--last-search-char))))
+(defun editutil-forward-char (arg char)
+  (interactive
+   (list (prefix-numeric-value current-prefix-arg)
+         (read-char)))
   (unless (char-or-string-p char)
     (error "Error: Input Invalid Char %d" char))
-  (setq editutil--last-search-char char)
   (when (>= arg 0)
     (forward-char 1))
   (let ((case-fold-search nil))
     (search-forward (char-to-string char) nil t arg))
   (when (>= arg 0)
-    (backward-char 1)))
+    (backward-char 1))
+  (set-transient-map
+   (let ((m (make-sparse-keymap)))
+     (define-key m (kbd "f") (lambda () (interactive) (editutil-forward-char 1 char)))
+     (define-key m (kbd "b") (lambda () (interactive) (editutil-forward-char -1 char)))
+     m)))
 
-(defun editutil-backward-char (arg &optional char)
-  (interactive "p\n")
-  (unless char
-    (if (editutil--last-command-move-char-p)
-        (setq char editutil--last-search-char)
-      (setq char (read-event))
-      (when (editutil--use-last-key-p char "M-a")
-        (setq char editutil--last-search-char))))
+(defun editutil-backward-char (arg char)
+  (interactive
+   (list (prefix-numeric-value current-prefix-arg)
+         (read-char)))
   (editutil-forward-char (- arg) char))
+
+(defun editutil--repeat-move-line-command ()
+  (message "'n': Move up, 'p': Move Down")
+  (set-transient-map
+   (let ((m (make-sparse-keymap)))
+     (define-key m (kbd "n") 'editutil-move-line-down)
+     (define-key m (kbd "p") 'editutil-move-line-up)
+     m)))
 
 (defun editutil-move-line-up ()
   (interactive)
@@ -343,7 +307,8 @@
     (transpose-lines 1)
     (indent-according-to-mode)
     (forward-line -2)
-    (move-to-column curindent)))
+    (move-to-column curindent)
+    (editutil--repeat-move-line-command)))
 
 (defun editutil-move-line-down ()
   (interactive)
@@ -352,7 +317,8 @@
     (transpose-lines 1)
     (forward-line -1)
     (indent-according-to-mode)
-    (move-to-column curindent)))
+    (move-to-column curindent)
+    (editutil--repeat-move-line-command)))
 
 (defun editutil-delete-following-spaces (arg)
   (interactive "p")
@@ -959,8 +925,8 @@
   (global-set-key (kbd "C-x M") 'editutil-mark-inside-paired)
   (global-set-key (kbd "C-M-w") 'editutil-mark-sexp)
 
-  (global-set-key (kbd "C-x f") 'editutil-mark-forward-char)
-  (global-set-key (kbd "C-x F") 'editutil-mark-backward-char)
+  (global-set-key (kbd "C-x f") 'editutil-forward-char)
+  (global-set-key (kbd "C-x F") 'editutil-backward-char)
 
   (global-set-key (kbd "C-x w") 'editutil-git-browse)
   (global-set-key (kbd "C-c w") 'editutil-dictionary-search)
@@ -977,9 +943,8 @@
   (global-set-key (kbd "C-x c c") 'editutil-compile)
 
   ;; 'C-x t' prefix
-  (smartrep-define-key
-      global-map "C-x t" '(("p" . editutil-move-line-up)
-                           ("n" . editutil-move-line-down)))
+  (global-set-key (kbd "C-x t n") 'editutil-move-line-down)
+  (global-set-key (kbd "C-x t p") 'editutil-move-line-up)
 
   (global-set-key (kbd "C-x t s") 'editutil-unwrap-at-point)
   (global-set-key (kbd "C-x t r") 'editutil-replace-wrapped-string)
