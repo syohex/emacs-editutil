@@ -32,7 +32,6 @@
 (require 'dired)
 (require 'vc-git)
 
-(declare-function copy-sexp "thingopt")
 (declare-function subword-forward "subword")
 (declare-function subword-backward "subword")
 (declare-function elscreen-editutil-current-directory "elscreen-editutil")
@@ -416,11 +415,6 @@
              (cl-decf count)
              (forward-line 1)))
   (goto-char start))
-
-(defun editutil-copy-sexp ()
-  (interactive)
-  (copy-sexp)
-  (message "%s" (substring-no-properties (thing-at-point 'sexp))))
 
 (defun editutil-mark-sexp ()
   (interactive)
