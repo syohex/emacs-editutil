@@ -793,6 +793,7 @@
     (helm-gtags-mode . " HG")
     (flymake-mode . " Fm")
     (git-gutter-mode . " GG")
+    (isearch-describe-mode . "")
     ;; Major modes
     (lisp-interaction-mode . "Li")
     (git-commit-mode . "Commit")
