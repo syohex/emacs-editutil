@@ -685,7 +685,7 @@
   (interactive "P")
   (editutil--kill-command-common arg 'kill-region 'symbol))
 
-(defun editutil--git-github-url (remote branch)
+(defun editutil--github-url (remote branch)
   (with-temp-buffer
     (unless (zerop (process-file "git" nil t nil "remote" "-v"))
       (error "Failed: git remote -v"))
@@ -699,7 +699,7 @@
                 (concat "https://github.com/" path)
               (concat "https://github.com/" path "/tree/" branch))))))))
 
-(defun editutil-git-browse (remote)
+(defun editutil-github-browse (remote)
   (interactive
    (list
     (let ((remotes (process-lines "git" "remote")))
@@ -708,10 +708,24 @@
         (completing-read "Remote(default: origin): " remotes nil t nil nil
                          "origin")))))
   (let ((current-branch (car (vc-git-branches))))
-    (let ((url (editutil--git-github-url remote current-branch)))
+    (let ((url (editutil--github-url remote current-branch)))
       (unless url
         (error "Error: URL not found"))
       (browse-url url))))
+
+(defun editutil--browse-github-endpoint (endpoint)
+  (let ((url (editutil--github-url "origin" "master")))
+    (unless url
+      (error "Error: URL not found"))
+    (browse-url (concat url endpoint))))
+
+(defun editutil-github-browse-issues ()
+  (interactive)
+  (editutil--browse-github-endpoint "/issues"))
+
+(defun editutil-github-browse-pull-request ()
+  (interactive)
+  (editutil--browse-github-endpoint "/pulls"))
 
 (defun editutil--vcs-root-directory ()
   (ignore-errors
@@ -886,6 +900,7 @@
   (global-unset-key (kbd "C-x z"))
   (global-unset-key (kbd "C-x d"))
   (global-unset-key (kbd "C-x t"))
+  (global-unset-key (kbd "C-x w"))
 
   (global-set-key (kbd "C-M-s") 'editutil-forward-symbol-at-point)
 
@@ -928,7 +943,6 @@
   (global-set-key (kbd "C-x f") 'editutil-forward-char)
   (global-set-key (kbd "C-x F") 'editutil-backward-char)
 
-  (global-set-key (kbd "C-x w") 'editutil-git-browse)
   (global-set-key (kbd "C-c w") 'editutil-dictionary-search)
 
   (global-set-key (kbd "C-x y") 'editutil-copy-line)
@@ -948,6 +962,11 @@
 
   (global-set-key (kbd "C-x t s") 'editutil-unwrap-at-point)
   (global-set-key (kbd "C-x t r") 'editutil-replace-wrapped-string)
+
+  ;; 'C-x w' prefix
+  (global-set-key (kbd "C-x w w") 'editutil-github-browse)
+  (global-set-key (kbd "C-x w i") 'editutil-github-browse-issues)
+  (global-set-key (kbd "C-x w p") 'editutil-github-browse-pull-request)
 
   (define-key my/ctrl-q-map (kbd "C-t") 'editutil-toggle-cleanup-spaces)
 
