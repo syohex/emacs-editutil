@@ -693,7 +693,7 @@
                 (concat "https://github.com/" path)
               (concat "https://github.com/" path "/tree/" branch))))))))
 
-(defun editutil-github-browse (remote)
+(defun editutil-browse-github (remote)
   (interactive
    (list
     (let ((remotes (process-lines "git" "remote")))
@@ -713,13 +713,18 @@
       (error "Error: URL not found"))
     (browse-url (concat url endpoint))))
 
-(defun editutil-github-browse-issues ()
+(defun editutil-browse-github-issues ()
   (interactive)
   (editutil--browse-github-endpoint "/issues"))
 
-(defun editutil-github-browse-pull-request ()
+(defun editutil-browse-github-pull-request ()
   (interactive)
   (editutil--browse-github-endpoint "/pulls"))
+
+(defun editutil-browse-alc (query)
+  (interactive
+   (list (read-string "Query: ")))
+  (browse-url (format "http://eow.alc.co.jp/search?q=%s&ref=sa" query)))
 
 (defun editutil--vcs-root-directory ()
   (ignore-errors
@@ -959,9 +964,10 @@
   (global-set-key (kbd "C-x t r") 'editutil-replace-wrapped-string)
 
   ;; 'C-x w' prefix
-  (global-set-key (kbd "C-x w w") 'editutil-github-browse)
-  (global-set-key (kbd "C-x w i") 'editutil-github-browse-issues)
-  (global-set-key (kbd "C-x w p") 'editutil-github-browse-pull-request)
+  (global-set-key (kbd "C-x w w") 'editutil-browse-github)
+  (global-set-key (kbd "C-x w i") 'editutil-browse-github-issues)
+  (global-set-key (kbd "C-x w p") 'editutil-browse-github-pull-request)
+  (global-set-key (kbd "C-x w a") 'editutil-browse-alc)
 
   (define-key my/ctrl-q-map (kbd "C-t") 'editutil-toggle-cleanup-spaces)
 
