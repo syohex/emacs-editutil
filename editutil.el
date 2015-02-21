@@ -890,6 +890,15 @@
   (interactive)
   (jump-to-register :editutil-point))
 
+(defun editutil-auto-save-buffers ()
+  (save-excursion
+    (dolist (buffer (buffer-list))
+      (set-buffer buffer)
+      (let ((buffile (buffer-file-name)))
+        (when (and buffile (buffer-modified-p) (not buffer-read-only)
+                   (file-writable-p buffile))
+          (save-buffer))))))
+
 ;;;###autoload
 (defun editutil-default-setup ()
   (interactive)
@@ -984,6 +993,8 @@
 
   (dolist (hook '(prog-mode-hook org-mode-hook text-mode-hook markdown-mode-hook))
     (add-hook hook 'editutil--add-watchwords))
+
+  (run-with-idle-timer 10 t 'editutil-auto-save-buffers)
   t)
 
 (provide 'editutil)
