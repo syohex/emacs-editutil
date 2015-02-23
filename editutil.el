@@ -910,6 +910,7 @@
   (global-unset-key (kbd "C-x d"))
   (global-unset-key (kbd "C-x t"))
   (global-unset-key (kbd "C-x w"))
+  (global-unset-key (kbd "C-x s"))
 
   (global-set-key (kbd "C-M-s") 'editutil-forward-symbol-at-point)
 
@@ -969,8 +970,9 @@
   (global-set-key (kbd "C-x t n") 'editutil-move-line-down)
   (global-set-key (kbd "C-x t p") 'editutil-move-line-up)
 
-  (global-set-key (kbd "C-x t s") 'editutil-unwrap-at-point)
-  (global-set-key (kbd "C-x t r") 'editutil-replace-wrapped-string)
+  ;; 'C-x s' prefix
+  (global-set-key (kbd "C-x s s") 'editutil-unwrap-at-point)
+  (global-set-key (kbd "C-x s r") 'editutil-replace-wrapped-string)
 
   ;; 'C-x w' prefix
   (global-set-key (kbd "C-x w w") 'editutil-browse-github)
