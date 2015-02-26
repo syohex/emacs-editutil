@@ -1006,6 +1006,17 @@
     (add-hook hook 'editutil--add-watchwords))
 
   (run-with-idle-timer 10 t 'editutil-auto-save-buffers)
+
+  (makunbound 'editutil-global-minor-mode-map)
+  (define-minor-mode editutil-global-minor-mode
+    "Most superior minir mode"
+    t
+    ""
+    `((,(kbd "C-M-j") . dabbrev-expand)
+      (,(kbd "M-q") . editutil-zap-to-char)
+      (,(kbd "M-e") . editutil-forward-char)
+      (,(kbd "M-a") . editutil-backward-char)
+      (,(kbd "C-M-o") . editutil-other-window)))
   t)
 
 (provide 'editutil)
