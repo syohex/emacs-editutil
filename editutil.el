@@ -23,6 +23,7 @@
 ;;; Code:
 
 (eval-when-compile
+  (require 'org)
   (defvar my/ctrl-q-map))
 
 (require 'cl-lib)
@@ -899,6 +900,11 @@
                    (file-writable-p buffile))
           (save-buffer))))))
 
+(defun editutil-open-organizer-file ()
+  (interactive)
+  (require 'org)
+  (find-file org-default-notes-file))
+
 ;;;###autoload
 (defun editutil-default-setup ()
   (interactive)
@@ -959,6 +965,9 @@
 
   (global-set-key (kbd "C-x SPC") 'editutil-point-to-register)
   (global-set-key (kbd "C-x j") 'editutil-jump-to-register)
+
+  ;; org utility
+  (global-set-key (kbd "<f10>") 'editutil-open-organizer-file)
 
   ;; 'C-x r' prefix
   (global-set-key (kbd "C-x r N") 'editutil-number-rectangle)
