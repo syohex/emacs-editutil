@@ -345,7 +345,10 @@
       (insert-for-yank str)))
   (when (eq this-command t)
     (setq this-command 'yank))
-  nil)
+  (set-transient-map
+   (let ((m (make-sparse-keymap)))
+     (define-key m (kbd "M-y") 'yank-pop)
+     m)))
 
 (defsubst editutil--enable-subword-mode-p ()
   (and (boundp 'subword-mode) subword-mode))
