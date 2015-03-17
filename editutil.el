@@ -1011,6 +1011,7 @@
   (add-hook 'after-change-major-mode-hook 'editutil-clear-mode-line)
 
   ;; helm-editutil
+  (global-set-key (kbd "M-g p") 'helm-editutil-git-grep)
   (global-set-key (kbd "M-.") 'helm-editutil-etags-select)
   (global-set-key (kbd "C-x C-p") 'helm-editutil-git-ls-files)
   (global-set-key (kbd "C-x C-r") 'helm-editutil-recentf-and-bookmark)
