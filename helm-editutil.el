@@ -1,10 +1,10 @@
 ;;; helm-editutil.el --- My own editing utilities with helm -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2014 by Syohei YOSHIDA
+;; Copyright (C) 2015 by Syohei YOSHIDA
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; Version: 0.01
-;; Package-Requires: ((helm "1.0") (cl-lib "0.5"))
+;; Package-Requires: ((helm "1.56") (cl-lib "0.5"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -176,6 +176,69 @@
     (if selected
         (nth (cl-position selected names :test 'equal) choices)
       (signal 'quit "user quit!"))))
+
+(defvar helm-editutil--git-root nil)
+(defvar helm-editutil--grep-query nil)
+
+(defun helm-editutil--git-grep-init ()
+  (let ((default-directory helm-editutil--git-root))
+    (with-current-buffer (helm-candidate-buffer 'global)
+      (process-file "git" nil t nil "--no-pager" "grep" "-n"
+                    helm-editutil--grep-query))))
+
+(defun helm-editutil--grep-find-file-common (candidate find-file-func)
+  (let* ((cols (split-string candidate ":"))
+         (filename (cl-first cols))
+         (line (string-to-number (cl-second cols))))
+    (let ((default-directory helm-editutil--git-root))
+      (funcall find-file-func filename)
+      (goto-char (point-min))
+      (forward-line (1- line)))))
+
+(defun helm-editutil--grep-find-file (candidate)
+  (helm-editutil--grep-find-file-common candidate 'find-file))
+
+(defun helm-editutil--grep-find-file-other-window (candidate)
+  (helm-editutil--grep-find-file-common candidate 'find-file-other-window))
+
+(defvar helm-editutil--git-grep-actions
+  '(("Open file" . helm-editutil--grep-find-file)
+    ("Open file in other window" . helm-editutil--grep-find-file-other-window)))
+
+(defun helm-editutil--grep-highlight-candidate (candidate)
+  (let ((limit (1- (length candidate)))
+        (last-pos 0))
+    (while (and (< last-pos limit)
+                (string-match helm-editutil--grep-query candidate last-pos))
+      (put-text-property (match-beginning 0) (match-end 0)
+                         'face 'helm-match
+                         candidate)
+      (setq last-pos (1+ (match-end 0))))
+    candidate))
+
+(defun helm-editutil--git-grep-transform (candidate)
+  (when (string-match "\\`\\([^:]+\\):\\([^:]+\\):\\(.+\\)" candidate)
+    (format "%s:%s:%s"
+            (propertize (match-string 1 candidate) 'face 'helm-moccur-buffer)
+            (propertize (match-string 2 candidate) 'face 'helm-grep-lineno)
+            (helm-editutil--grep-highlight-candidate (match-string 3 candidate)))))
+
+(defvar helm-editutil-source-git-grep
+  (helm-build-in-buffer-source "Helm Git Grep"
+    :init 'helm-editutil--git-grep-init
+    :real-to-display 'helm-editutil--git-grep-transform
+    :action helm-editutil--git-grep-actions))
+
+;;;###autoload
+(defun helm-editutil-git-grep ()
+  (interactive)
+  (let ((rootdir (locate-dominating-file default-directory ".git/")))
+    (unless rootdir
+      (error "Here is not git repository"))
+    (setq helm-editutil--git-root rootdir)
+    (setq helm-editutil--grep-query (read-string "Query: "))
+    (helm :sources '(helm-editutil-source-git-grep)
+          :buffer "*helm git-grep*")))
 
 (provide 'helm-editutil)
 
