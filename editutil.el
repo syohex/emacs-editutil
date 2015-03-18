@@ -283,8 +283,8 @@
     (backward-char 1))
   (set-transient-map
    (let ((m (make-sparse-keymap)))
-     (define-key m (kbd "f") (lambda () (interactive) (editutil-forward-char 1 char)))
-     (define-key m (kbd "F") (lambda () (interactive) (editutil-forward-char -1 char)))
+     (define-key m (kbd "M-e") (lambda () (interactive) (editutil-forward-char 1 char)))
+     (define-key m (kbd "M-a") (lambda () (interactive) (editutil-forward-char -1 char)))
      m)))
 
 (defun editutil-backward-char (arg char)
@@ -960,9 +960,6 @@
   (global-set-key (kbd "C-x m") 'editutil-mark-around-paired)
   (global-set-key (kbd "C-x M") 'editutil-mark-inside-paired)
   (global-set-key (kbd "C-M-w") 'editutil-mark-sexp)
-
-  (global-set-key (kbd "C-x f") 'editutil-forward-char)
-  (global-set-key (kbd "C-x F") 'editutil-backward-char)
 
   (global-set-key (kbd "C-c w") 'editutil-dictionary-search)
 
