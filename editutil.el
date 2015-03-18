@@ -886,14 +886,6 @@
   (let ((default-directory (editutil--compile-root-directory)))
     (compile command)))
 
-(defun editutil-point-to-register ()
-  (interactive)
-  (point-to-register :editutil-point))
-
-(defun editutil-jump-to-register ()
-  (interactive)
-  (jump-to-register :editutil-point))
-
 (defun editutil-auto-save-buffers ()
   (save-excursion
     (dolist (buffer (buffer-list))
@@ -975,9 +967,6 @@
   (global-set-key (kbd "C-c w") 'editutil-dictionary-search)
 
   (global-set-key (kbd "C-x y") 'editutil-copy-line)
-
-  (global-set-key (kbd "C-x SPC") 'editutil-point-to-register)
-  (global-set-key (kbd "C-x j") 'editutil-jump-to-register)
 
   ;; org utility
   (global-set-key (kbd "<f10>") 'editutil-open-organizer-file)
