@@ -904,7 +904,7 @@
   "Most superior minir mode"
   t
   ""
-  `((,(kbd "C-M-j") . dabbrev-expand)
+  `((,(kbd "C-M-j") . hippie-expand)
     (,(kbd "M-q") . editutil-zap-to-char)
     (,(kbd "M-e") . editutil-forward-char)
     (,(kbd "M-a") . editutil-backward-char)
