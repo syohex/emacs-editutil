@@ -69,7 +69,9 @@
   (let ((topdir (locate-dominating-file default-directory ".git/")))
     (unless topdir
       (error "Here is not Git Repository!!"))
-    (let ((default-directory topdir)
+    (let ((default-directory (if current-prefix-arg
+                                 default-directory
+                               topdir))
           (sources (helm-editutil--git-ls-files-source topdir)))
       (helm :sources sources :buffer "*Helm Git Project*"
             :keymap helm-find-files-map))))
