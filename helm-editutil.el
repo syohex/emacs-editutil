@@ -39,6 +39,17 @@
 (defun helm-editutil--open-dired (file)
   (dired (file-name-directory file)))
 
+(defun helm-editutil--make-git-ls-function (options)
+  (lambda ()
+    (with-current-buffer (helm-candidate-buffer 'global)
+      (apply 'process-file "git" nil t nil "ls-files" options))))
+
+(defvar helm-editutil--git-ls-actions
+  '(("Open File" . find-file)
+    ("Open Directory" . helm-editutil--open-dired)
+    ("Open File other window" . find-file-other-window)
+    ("Insert buffer" . insert-file)))
+
 (defun helm-editutil--git-ls-files-source (pwd)
   (cl-loop for (description . options) in '(("Modified Files" . ("--modified"))
                                             ("Untracked Files" . ("--others" "--exclude-standard"))
@@ -48,15 +59,9 @@
                             (format "%s (%s)" description pwd)
                           description)
            collect
-           `((name . ,header)
-             (init . (lambda ()
-                       (with-current-buffer (helm-candidate-buffer 'global)
-                         (process-file "git" nil t nil "ls-files" ,@options))))
-             (candidates-in-buffer)
-             (action . (("Open File" . find-file)
-                        ("Open Directory" . helm-editutil--open-dired)
-                        ("Open File other window" . find-file-other-window)
-                        ("Insert buffer" . insert-file))))))
+           (helm-build-in-buffer-source header
+             :init (helm-editutil--make-git-ls-function options)
+             :action helm-editutil--git-ls-actions)))
 
 ;;;###autoload
 (defun helm-editutil-git-ls-files ()
