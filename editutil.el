@@ -344,11 +344,11 @@
     (dotimes (_ (or arg 1))
       (insert-for-yank str)))
   (when (eq this-command t)
-    (setq this-command 'yank))
-  (set-transient-map
-   (let ((m (make-sparse-keymap)))
-     (define-key m (kbd "M-y") 'yank-pop)
-     m)))
+    (setq this-command 'yank)))
+
+(defun editutil-yank-pop-next (arg)
+  (interactive "p")
+  (yank-pop (- arg)))
 
 (defsubst editutil--enable-subword-mode-p ()
   (and (boundp 'subword-mode) subword-mode))
@@ -944,7 +944,11 @@
   (global-set-key (kbd "M-r") 'editutil-replace-wrapped-string)
 
   (global-set-key (kbd "M-k") 'editutil-delete-following-spaces)
+
   (global-set-key (kbd "C-y") 'editutil-yank)
+  (global-set-key (kbd "M-n") 'yank-pop)
+  (global-set-key (kbd "M-p") 'editutil-yank-pop-next)
+
   (global-set-key (kbd "M-d") 'editutil-delete-word)
   (global-set-key [remap backward-kill-word] 'editutil-backward-delete-word)
   (global-set-key (kbd "C-M-c") 'editutil-duplicate-thing)
