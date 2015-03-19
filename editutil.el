@@ -31,7 +31,6 @@
 (require 'thingatpt)
 (require 'which-func)
 (require 'dired)
-(require 'vc-git)
 
 (declare-function subword-forward "subword")
 (declare-function subword-backward "subword")
@@ -730,19 +729,6 @@
    (list (read-string "Query: ")))
   (browse-url (format "http://eow.alc.co.jp/search?q=%s&ref=sa" query)))
 
-(defun editutil--vcs-root-directory ()
-  (ignore-errors
-    (if (fboundp 'vc-root-dir)
-        (vc-root-dir)
-      (vc-git-root default-directory))))
-
-(defun editutil-jump-to-vcs-top ()
-  (interactive)
-  (let ((root (editutil--vcs-root-directory)))
-    (unless root
-      (error "Here is not version controled"))
-    (find-file root)))
-
 (defun editutil-toggle-cleanup-spaces ()
   (interactive)
   (cond ((memq 'delete-trailing-whitespace before-save-hook)
@@ -996,12 +982,9 @@
 
   (define-key minibuffer-local-map (kbd "C-M-u") 'editutil-minibuffer-up-dir)
 
-  (define-key dired-mode-map (kbd "P") 'editutil-jump-to-vcs-top)
-
   (add-hook 'after-change-major-mode-hook 'editutil-clear-mode-line)
 
   ;; helm-editutil
-  (global-set-key (kbd "M-g p") 'helm-editutil-git-grep)
   (global-set-key (kbd "M-.") 'helm-editutil-etags-select)
   (global-set-key (kbd "C-x C-p") 'helm-editutil-git-ls-files)
   (global-set-key (kbd "C-x C-r") 'helm-editutil-recentf-and-bookmark)
