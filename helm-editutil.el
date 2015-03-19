@@ -229,6 +229,8 @@
     :real-to-display 'helm-editutil--git-grep-transform
     :action helm-editutil--git-grep-actions))
 
+(defvar helm-editutil--git-grep-history nil)
+
 ;;;###autoload
 (defun helm-editutil-git-grep ()
   (interactive)
@@ -238,7 +240,8 @@
     (setq helm-editutil--git-root rootdir)
     (setq helm-editutil--grep-query (read-string "Query: "))
     (helm :sources '(helm-editutil-source-git-grep)
-          :buffer "*helm git-grep*")))
+          :buffer "*helm git-grep*"
+          :history 'helm-editutil--git-grep-history)))
 
 (provide 'helm-editutil)
 
