@@ -31,6 +31,7 @@
 (require 'thingatpt)
 (require 'which-func)
 (require 'dired)
+(require 'vc-git)
 
 (declare-function subword-forward "subword")
 (declare-function subword-backward "subword")
