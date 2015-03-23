@@ -457,20 +457,6 @@
           (insert str "\n"))))
     (move-to-column orig-column)))
 
-(defun editutil-delete-horizontal-space ()
-  (interactive)
-  (if (not current-prefix-arg)
-      (call-interactively 'delete-horizontal-space)
-    (let ((current-prefix-arg nil)
-          (orig-pos (point)))
-      (delete-region
-       (progn
-         (skip-chars-forward " \t\n\r")
-         (constrain-to-field nil orig-pos t))
-       (progn
-         (skip-chars-backward " \t\n\r")
-         (constrain-to-field nil orig-pos))))))
-
 (defun editutil-view-word-end (arg)
   (interactive "p")
   (forward-char 1)
@@ -891,6 +877,10 @@
   (require 'org)
   (find-file org-default-notes-file))
 
+(defun editutil-join-line ()
+  (interactive)
+  (delete-indentation -1))
+
 (define-minor-mode editutil-global-minor-mode
   "Most superior minir mode"
   t
@@ -957,6 +947,8 @@
   (global-set-key (kbd "C-c w") 'editutil-dictionary-search)
 
   (global-set-key (kbd "C-x y") 'editutil-copy-line)
+
+  (global-set-key (kbd "C-x j") 'editutil-join-line)
 
   ;; org utility
   (global-set-key (kbd "<f10>") 'editutil-open-organizer-file)
