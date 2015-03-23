@@ -931,8 +931,6 @@
   (global-set-key (kbd "C-M-d") 'editutil-down-list)
   (global-set-key (kbd "M-o") 'editutil-edit-next-line)
   (global-set-key (kbd "M-O") 'editutil-edit-previous-line)
-  (global-set-key (kbd "M-s") 'editutil-unwrap-at-point)
-  (global-set-key (kbd "M-r") 'editutil-replace-wrapped-string)
 
   (global-set-key (kbd "M-k") 'editutil-delete-following-spaces)
 
@@ -943,7 +941,7 @@
   (global-set-key (kbd "M-d") 'editutil-delete-word)
   (global-set-key [remap backward-kill-word] 'editutil-backward-delete-word)
   (global-set-key (kbd "C-M-c") 'editutil-duplicate-thing)
-  (global-set-key (kbd "M-\\") 'editutil-delete-horizontal-space)
+
   (global-set-key (kbd "C-x DEL") 'editutil-kill-whole-line)
 
   (global-set-key (kbd "M-I") 'editutil-indent-same-as-previous-line)
