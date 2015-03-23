@@ -333,7 +333,11 @@
   (interactive "p")
   (let ((curcolumn (current-column)))
     (kill-whole-line arg)
-    (move-to-column curcolumn)))
+    (move-to-column curcolumn)
+    (set-transient-map
+     (let ((m (make-sparse-keymap)))
+       (define-key m (kbd "DEL") 'editutil-kill-whole-line)
+       m))))
 
 (defun editutil-yank (arg)
   (interactive "P")
