@@ -925,8 +925,7 @@
   (global-set-key (kbd "M-k") 'editutil-delete-following-spaces)
 
   (global-set-key (kbd "C-y") 'editutil-yank)
-  (global-set-key (kbd "M-n") 'yank-pop)
-  (global-set-key (kbd "M-p") 'editutil-yank-pop-next)
+  (global-set-key (kbd "M-Y") 'editutil-yank-pop-next)
 
   (global-set-key (kbd "M-d") 'editutil-delete-word)
   (global-set-key [remap backward-kill-word] 'editutil-backward-delete-word)
