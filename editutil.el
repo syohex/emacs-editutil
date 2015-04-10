@@ -860,7 +860,8 @@
    (list (read-string "Compile command: "
                       editutil--last-command 'editutil--compile-history)))
   (setq editutil--last-command command)
-  (let ((default-directory (editutil--compile-root-directory)))
+  (let ((default-directory (editutil--compile-root-directory))
+        (compilation-scroll-output c))
     (compile command)))
 
 (defun editutil-auto-save-buffers ()
