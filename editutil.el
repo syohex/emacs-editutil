@@ -861,7 +861,7 @@
                       editutil--last-command 'editutil--compile-history)))
   (setq editutil--last-command command)
   (let ((default-directory (editutil--compile-root-directory))
-        (compilation-scroll-output c))
+        (compilation-scroll-output t))
     (compile command)))
 
 (defun editutil-auto-save-buffers ()
