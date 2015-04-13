@@ -51,12 +51,14 @@
     ("Insert buffer" . insert-file)))
 
 (defun helm-editutil--git-ls-files-source (pwd)
-  (cl-loop for (description . options) in '(("Modified Files" . ("--modified"))
+  (cl-loop with is-first = t
+           for (description . options) in '(("Modified Files" . ("--modified"))
                                             ("Untracked Files" . ("--others" "--exclude-standard"))
                                             ("All Files" . ("--")))
-           for is-first = t then nil
            for header = (if is-first
-                            (format "%s (%s)" description pwd)
+                            (progn
+                              (setq is-first nil)
+                              (format "%s (%s)" description pwd))
                           description)
            collect
            (helm-build-in-buffer-source header
