@@ -2,7 +2,7 @@
 
 ## Requirements
 
-Emacs 24.4 or higher. I use new feature as possible which can be used latest stable version.
+Emacs 24.5 or higher. I use new feature as possible which can be used latest stable version.
 
 
 ## editutil.el
