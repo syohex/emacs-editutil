@@ -878,9 +878,10 @@
   (require 'org)
   (find-file org-default-notes-file))
 
-(defun editutil-join-line ()
-  (interactive)
-  (delete-indentation -1))
+(defun editutil-join-line (arg)
+  (interactive "p")
+  (dotimes (_i arg)
+    (delete-indentation -1)))
 
 (define-minor-mode editutil-global-minor-mode
   "Most superior minir mode"
