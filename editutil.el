@@ -771,6 +771,7 @@
   '( ;; For minor-mode, first char is 'space'
     (yas-minor-mode . " Ys")
     (paredit-mode . " Pe")
+    (company-mode . " Co")
     (eldoc-mode . "")
     (abbrev-mode . "")
     (autopair-mode . " Ap")
