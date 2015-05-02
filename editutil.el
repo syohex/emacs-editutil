@@ -375,24 +375,25 @@
 
 (defun editutil-backward-delete-word (arg)
   (interactive "p")
-  (when (= (point) (line-beginning-position))
-    (backward-char 1))
-  (when (looking-back "\\s-+")
-    (skip-chars-backward " \t"))
-  (let ((start (save-excursion
-                 (if (editutil--enable-subword-mode-p)
-                     (subword-backward arg)
-                   (forward-word (- arg)))
-                 (point)))
-        (non-space (save-excursion
-                     (skip-chars-backward "^ \t")
-                     (point))))
-    (delete-region (max start non-space (line-beginning-position)) (point))))
+  (let ((bol (line-beginning-position)))
+    (when (= (point) bol)
+      (backward-char 1))
+    (when (looking-back "\\s-+" bol)
+      (skip-chars-backward " \t"))
+    (let ((start (save-excursion
+                   (if (editutil--enable-subword-mode-p)
+                       (subword-backward arg)
+                     (forward-word (- arg)))
+                   (point)))
+          (non-space (save-excursion
+                       (skip-chars-backward "^ \t")
+                       (point))))
+      (delete-region (max start non-space (line-beginning-position)) (point)))))
 
 (defun editutil--rectangle-format ()
   (let ((arg (prefix-numeric-value current-prefix-arg)))
     (if (< arg 0)
-        (read-string "Number rectangle: " (if (looking-back "^ *") "%d. " "%d"))
+        (read-string "Number rectangle: " (if (looking-back "^ *" (line-beginning-position)) "%d. " "%d"))
       "%d")))
 
 (defun editutil-number-rectangle (start end format-string start-num)
