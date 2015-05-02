@@ -968,6 +968,8 @@
   ;; 'C-x s' prefix
   (global-set-key (kbd "C-x s s") 'editutil-unwrap-at-point)
   (global-set-key (kbd "C-x s r") 'editutil-replace-wrapped-string)
+  (global-set-key (kbd "M-s s") 'editutil-unwrap-at-point)
+  (global-set-key (kbd "M-s r") 'editutil-replace-wrapped-string)
 
   ;; 'C-x w' prefix
   (global-set-key (kbd "C-x w w") 'editutil-browse-github)
