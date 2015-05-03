@@ -378,7 +378,7 @@
   (let ((bol (line-beginning-position)))
     (when (= (point) bol)
       (backward-char 1))
-    (when (looking-back "\\s-+" bol)
+    (when (looking-back "\\s-+" nil)
       (skip-chars-backward " \t"))
     (let ((start (save-excursion
                    (if (editutil--enable-subword-mode-p)
