@@ -660,8 +660,8 @@
       (save-excursion
         (if (>= prefix-arg 0)
             (let ((start (line-beginning-position)))
-              (forward-line (1- prefix-arg))
-              (funcall func start (line-end-position)))
+              (forward-line prefix-arg)
+              (funcall func start (point)))
           (let ((end (line-end-position)))
             (forward-line (1+ arg))
             (funcall func (point) end)))))))
