@@ -78,6 +78,9 @@
 
 (defun editutil-unwrap-at-point (arg &optional replaced)
   (interactive "p")
+  (let ((paren-level (car (syntax-ppss))))
+    (when (zerop paren-level)
+      (error "Here is top level!!")))
   (save-excursion
     (let ((curpoint (point))
           (count 0)
