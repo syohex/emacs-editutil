@@ -186,6 +186,23 @@
         (nth (cl-position selected names :test 'equal) choices)
       (signal 'quit "user quit!"))))
 
+(defun helm-editutil--find-files-init ()
+  (with-current-buffer (helm-candidate-buffer 'global)
+    (unless (zerop (process-file "perl" nil t nil "-wE" "say for grep {-T $_} glob('*')"))
+      (error "Failed: collect files"))))
+
+(defvar helm-editutil-source-find-files
+  (helm-build-in-buffer-source "Find Files"
+    :init 'helm-editutil--find-files-init
+    :action '(("Find File" . find-file)
+              ("Find File other window" . find-file-other-window)
+              ("Insert File" . insert-file))))
+
+;;;###autoload
+(defun helm-editutil-find-files ()
+  (interactive)
+  (helm :sources '(helm-editutil-source-find-files) :buffer "*Helm Find Files*"))
+
 (provide 'helm-editutil)
 
 ;;; helm-editutil.el ends here
