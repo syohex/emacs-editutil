@@ -991,6 +991,7 @@
   (global-set-key (kbd "M-.") 'helm-editutil-etags-select)
   (global-set-key (kbd "C-x C-p") 'helm-editutil-git-ls-files)
   (global-set-key (kbd "C-x C-r") 'helm-editutil-recentf-and-bookmark)
+  (global-set-key (kbd "C-x C-x") 'helm-editutil-find-files)
 
   (dolist (hook '(prog-mode-hook org-mode-hook text-mode-hook markdown-mode-hook))
     (add-hook hook 'editutil--add-watchwords))
