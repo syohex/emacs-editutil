@@ -188,7 +188,7 @@
 
 (defun helm-editutil--find-files-init ()
   (with-current-buffer (helm-candidate-buffer 'global)
-    (unless (zerop (process-file "perl" nil t nil "-wE" "say for grep {-T $_} glob('*')"))
+    (unless (zerop (process-file "perl" nil t nil "-wE" "say for grep {-T $_} glob('* .*')"))
       (error "Failed: collect files"))))
 
 (defvar helm-editutil-source-find-files
