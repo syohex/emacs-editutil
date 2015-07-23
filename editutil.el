@@ -888,11 +888,16 @@
   (dotimes (_i arg)
     (delete-indentation -1)))
 
+(defun editutil-hippie-expand ()
+  (interactive)
+  (let ((case-fold-search nil))
+    (hippie-expand 0)))
+
 (define-minor-mode editutil-global-minor-mode
   "Most superior minir mode"
   t
   ""
-  `((,(kbd "C-M-j") . hippie-expand)
+  `((,(kbd "C-M-j") . editutil-hippie-expand)
     (,(kbd "M-q") . editutil-zap-to-char)
     (,(kbd "M-e") . editutil-forward-char)
     (,(kbd "M-a") . editutil-backward-char)
