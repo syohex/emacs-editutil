@@ -891,7 +891,7 @@
 (defun editutil-hippie-expand ()
   (interactive)
   (let ((case-fold-search nil))
-    (hippie-expand 0)))
+    (hippie-expand 1)))
 
 (define-minor-mode editutil-global-minor-mode
   "Most superior minir mode"
