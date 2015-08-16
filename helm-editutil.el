@@ -141,6 +141,13 @@
   (interactive)
   (helm :sources '(helm-editutil-source-find-files) :buffer "*Helm Find Files*"))
 
+;;;###autoload
+(defun helm-editutil-search-buffer ()
+  (interactive)
+  (if (buffer-file-name)
+      (call-interactively 'helm-do-ag-this-file)
+    (call-interactively 'helm-occur)))
+
 (provide 'helm-editutil)
 
 ;;; helm-editutil.el ends here
