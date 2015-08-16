@@ -34,21 +34,9 @@ My configuration is:
 
 Select `etags` candidates with helm interface
 
-#### `helm-editutil-yas-prompt`
-
-`yasnippet` candidates with helm interface
-
-#### `helm-editutil-hyperspec`
-
-Show `hyperspec` documents
-
-#### `helm-editutil-ghc-browse-document`
-
-Show `ghc` documents with helm interface
-
 #### `helm-editutil-recentf-and-bookmark`
 
-My own `helm-recentf` + `helm-books`
+My own `helm-recentf` + `helm-bookmarks`
 
 #### `helm-editutil-select-2nd-action`, `helm-editutil-select-3rd-action`
 
