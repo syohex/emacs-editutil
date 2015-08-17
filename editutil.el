@@ -707,25 +707,6 @@
         (error "Error: URL not found"))
       (browse-url url))))
 
-(defun editutil--browse-github-endpoint (endpoint)
-  (let ((url (editutil--github-url "origin" "master")))
-    (unless url
-      (error "Error: URL not found"))
-    (browse-url (concat url endpoint))))
-
-(defun editutil-browse-github-issues ()
-  (interactive)
-  (editutil--browse-github-endpoint "/issues"))
-
-(defun editutil-browse-github-pull-request ()
-  (interactive)
-  (editutil--browse-github-endpoint "/pulls"))
-
-(defun editutil-browse-localhost (port)
-  (interactive
-   (list (read-number "Port: ")))
-  (browse-url (format "http://localhost:%d" port)))
-
 (defun editutil-toggle-cleanup-spaces ()
   (interactive)
   (cond ((memq 'delete-trailing-whitespace before-save-hook)
@@ -984,9 +965,6 @@
 
   ;; 'C-x w' prefix
   (global-set-key (kbd "C-x w w") 'editutil-browse-github)
-  (global-set-key (kbd "C-x w i") 'editutil-browse-github-issues)
-  (global-set-key (kbd "C-x w p") 'editutil-browse-github-pull-request)
-  (global-set-key (kbd "C-x w l") 'editutil-browse-localhost)
 
   (define-key my/ctrl-q-map (kbd "C-t") 'editutil-toggle-cleanup-spaces)
 
