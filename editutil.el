@@ -876,6 +876,24 @@
   (let ((case-fold-search nil))
     (hippie-expand 1)))
 
+(defun editutil-newline-common (newline-fn)
+  (if (not (bound-and-true-p smartparens-mode))
+      (funcall newline-fn)
+    (if (and (looking-at-p "[])}]") (looking-back "[\[({]"))
+        (let ((curpoint (point)))
+          (funcall #'electric-newline-and-maybe-indent)
+          (goto-char curpoint)
+          (funcall #'electric-newline-and-maybe-indent))
+      (funcall newline-fn))))
+
+(defun editutil-newline ()
+  (interactive)
+  (editutil-newline-common #'newline))
+
+(defun editutil-newline-and-maybe-indent ()
+  (interactive)
+  (editutil-newline-common #'electric-newline-and-maybe-indent))
+
 (define-minor-mode editutil-global-minor-mode
   "Most superior minir mode"
   t
@@ -898,6 +916,9 @@
   (global-unset-key (kbd "C-x t"))
   (global-unset-key (kbd "C-x w"))
   (global-unset-key (kbd "C-x s"))
+
+  (global-set-key (kbd "RET") 'editutil-newline)
+  (global-set-key (kbd "C-j") 'editutil-newline-and-maybe-indent)
 
   (global-set-key (kbd "C-M-s") 'editutil-forward-symbol-at-point)
 
