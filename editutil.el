@@ -877,13 +877,14 @@
     (hippie-expand 1)))
 
 (defun editutil-newline-common (newline-fn)
-  (if (not (bound-and-true-p smartparens-mode))
+  (if (not electric-pair-mode)
       (funcall newline-fn)
     (if (and (looking-at-p "[])}]") (looking-back "[\[({]"))
-        (let ((curpoint (point)))
-          (funcall #'electric-newline-and-maybe-indent)
-          (goto-char curpoint)
-          (funcall #'electric-newline-and-maybe-indent))
+        (progn
+          (funcall #'newline-and-indent)
+          (save-excursion
+            (forward-line 1)
+            (indent-for-tab-command)))
       (funcall newline-fn))))
 
 (defun editutil-newline ()
@@ -892,7 +893,7 @@
 
 (defun editutil-newline-and-maybe-indent ()
   (interactive)
-  (editutil-newline-common #'electric-newline-and-maybe-indent))
+  (editutil-newline-common #'newline-and-indent))
 
 (define-minor-mode editutil-global-minor-mode
   "Most superior minir mode"
