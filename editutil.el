@@ -707,6 +707,12 @@
         (error "Error: URL not found"))
       (browse-url url))))
 
+(defun editutil-browse-weblio-sentence (sentence)
+  (interactive
+   (list (read-string "Sentence: ")))
+  (let ((query (mapconcat 'identity (split-string sentence) "+")))
+    (browse-url (format "http://ejje.weblio.jp/sentence/content/%s" query))))
+
 (defun editutil-toggle-cleanup-spaces ()
   (interactive)
   (cond ((memq 'delete-trailing-whitespace before-save-hook)
@@ -963,6 +969,7 @@
   (global-set-key (kbd "C-M-w") 'editutil-mark-sexp)
 
   (global-set-key (kbd "C-c w") 'editutil-dictionary-search)
+  (global-set-key (kbd "C-c W") 'editutil-browse-weblio-sentence)
 
   (global-set-key (kbd "C-x y") 'editutil-copy-line)
 
