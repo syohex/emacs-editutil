@@ -909,10 +909,12 @@
     (save-excursion
       (let ((finish nil))
         (forward-line -1)
-        (while (and (not finish) (not (bobp)))
+        (while (not finish)
+          (when (bobp)
+            (setq finish t))
           (let ((line (buffer-substring-no-properties
                        (line-beginning-position) (line-end-position))))
-            (unless (string-match-p "\\`\\s-+\\'" line)
+            (unless (string-match-p "\\`\\s-*\\'" line)
               (setq finish t
                     column (current-indentation))))
           (forward-line -1))))
