@@ -691,8 +691,7 @@
       (error "Failed: git remote -v"))
     (goto-char (point-min))
     (when (re-search-forward (concat "\\<" remote "\\>") nil t)
-      (let ((line (buffer-substring-no-properties
-                   (line-beginning-position) (line-end-position))))
+      (let ((line (editutil--current-line)))
         (when (string-match "github.com[:/]?\\(\\S-+?\\)?\\(?:\\.git\\)" line)
           (let ((path (match-string-no-properties 1 line)))
             (if (string= branch "master")
