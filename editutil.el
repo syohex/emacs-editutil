@@ -43,6 +43,9 @@
   "My own editing utilities"
   :group 'editing)
 
+(defsubst editutil--current-line ()
+  (buffer-substring-no-properties (line-beginning-position) (line-end-position)))
+
 (defun editutil-forward-symbol-at-point ()
   (interactive)
   (let ((symbol (thing-at-point 'symbol))
@@ -498,15 +501,23 @@
   (let ((cur-indent (current-indentation))
         (prev-indent (save-excursion
                        (forward-line -1)
-                       (back-to-indentation)
-                       (current-indentation))))
-    (if (< cur-indent prev-indent)
-        (progn
-          (back-to-indentation)
-          (insert-char (string-to-char " ") (- prev-indent cur-indent)))
-      (goto-char (line-beginning-position))
-      (delete-horizontal-space)
-      (insert-char (string-to-char " ") prev-indent))))
+                       (let (finish column)
+                         (while (not finish)
+                           (when (bobp)
+                             (setq finish t))
+                           (let ((line (editutil--current-line)))
+                             (unless (string-match-p "\\`\\s-*\\'" line)
+                               (setq finish t column (current-indentation)))
+                             (forward-line -1)))
+                         column))))
+    (save-excursion
+      (if (< cur-indent prev-indent)
+          (progn
+            (back-to-indentation)
+            (insert-char (string-to-char " ") (- prev-indent cur-indent)))
+        (goto-char (line-beginning-position))
+        (delete-horizontal-space)
+        (insert-char (string-to-char " ") prev-indent)))))
 
 (defun editutil-copy-line (arg)
   (interactive "p")
