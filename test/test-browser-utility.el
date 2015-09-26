@@ -1,6 +1,6 @@
 ;;; test-browser-utility.el --- test for browser utility
 
-;; Copyright (C) 2014 by Syohei YOSHIDA
+;; Copyright (C) 2015 by Syohei YOSHIDA
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 

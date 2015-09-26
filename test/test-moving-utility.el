@@ -40,15 +40,15 @@
     (should (= (char-after) ?b))
     (should (string= (thing-at-point 'word) "bar"))))
 
-(ert-deftest move-to-column ()
-  "editutil-move-to-column"
+(ert-deftest same-as-previous-line-indent ()
+  "editutil-indent-same-as-previous-line"
   (with-editutil-temp-buffer 'fundamental-mode
     "    foo bar
 
 "
     (let ((expected (current-indentation)))
       (goto-char (point-max))
-      (call-interactively 'editutil-move-to-column)
+      (call-interactively 'editutil-indent-same-as-previous-line)
       (should (= (current-column) expected)))))
 
 ;;; test-moving-utility.el ends here
