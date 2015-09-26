@@ -959,8 +959,8 @@
   (global-set-key (kbd "C-x .") 'editutil-highlight-symbol-in-defun)
   (global-set-key (kbd "C-x ,") 'editutil-highlight-clear-overlays)
 
-  (global-set-key (kbd "C-x m") 'editutil-mark-around-paired)
-  (global-set-key (kbd "C-x M") 'editutil-mark-inside-paired)
+  (global-set-key (kbd "C-x m") 'editutil-mark-inside-paired)
+  (global-set-key (kbd "C-x M") 'editutil-mark-around-paired)
   (global-set-key (kbd "C-M-w") 'editutil-mark-sexp)
 
   (global-set-key (kbd "C-c w") 'editutil-dictionary-search)
