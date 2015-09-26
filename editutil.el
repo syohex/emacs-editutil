@@ -220,11 +220,6 @@
                      (forward-char 1))
                    (point))))
 
-(defun editutil-zap-to-char1 (arg char)
-  (interactive (list (prefix-numeric-value current-prefix-arg)
-		     (read-char nil t)))
-  (editutil--zap-to-char-common arg char 1))
-
 (defun editutil-zap-to-char (arg char)
   (interactive
    (list (prefix-numeric-value current-prefix-arg)
@@ -955,7 +950,6 @@
 
   (global-set-key (kbd "M-q") 'editutil-zap-to-char)
   (global-set-key (kbd "ESC Q") 'editutil-zap-to-char-backward)
-  (global-set-key (kbd "ESC ESC q") 'editutil-zap-to-char1)
 
   (global-set-key (kbd "C-M-o") 'editutil-other-window)
   (global-set-key (kbd "C-M-u") 'editutil-backward-up)
