@@ -49,6 +49,15 @@
     (let ((expected (current-indentation)))
       (goto-char (point-max))
       (call-interactively 'editutil-indent-same-as-previous-line)
-      (should (= (current-column) expected)))))
+      (should (= (current-indentation) expected))))
+
+  (with-editutil-temp-buffer 'fundamental-mode
+    "    foo bar
+
+             baz bar"
+    (let ((expected (current-indentation)))
+      (goto-char (point-max))
+      (call-interactively 'editutil-indent-same-as-previous-line)
+      (should (= (current-indentation) expected)))))
 
 ;;; test-moving-utility.el ends here

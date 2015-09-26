@@ -510,11 +510,11 @@
                                (setq finish t column (current-indentation)))
                              (forward-line -1)))
                          column))))
-    (save-excursion
-      (if (< cur-indent prev-indent)
-          (progn
-            (back-to-indentation)
-            (insert-char (string-to-char " ") (- prev-indent cur-indent)))
+    (if (< cur-indent prev-indent)
+        (progn
+          (back-to-indentation)
+          (insert-char (string-to-char " ") (- prev-indent cur-indent)))
+      (save-excursion
         (goto-char (line-beginning-position))
         (delete-horizontal-space)
         (insert-char (string-to-char " ") prev-indent)))))
