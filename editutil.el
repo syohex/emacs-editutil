@@ -899,24 +899,6 @@
   (interactive)
   (editutil-newline-common #'newline-and-indent))
 
-(defun editutil-move-to-column ()
-  (interactive)
-  (let (column)
-    (save-excursion
-      (let ((finish nil))
-        (forward-line -1)
-        (while (not finish)
-          (when (bobp)
-            (setq finish t))
-          (let ((line (buffer-substring-no-properties
-                       (line-beginning-position) (line-end-position))))
-            (unless (string-match-p "\\`\\s-*\\'" line)
-              (setq finish t
-                    column (current-indentation))))
-          (forward-line -1))))
-    (when column
-      (move-to-column column t))))
-
 (define-minor-mode editutil-global-minor-mode
   "Most superior minir mode"
   t
@@ -987,8 +969,6 @@
   (global-set-key (kbd "C-x y") 'editutil-copy-line)
 
   (global-set-key (kbd "C-x j") 'editutil-join-line)
-
-  (global-set-key (kbd "M-g M-c") 'editutil-move-to-column)
 
   ;; org utility
   (global-set-key (kbd "<f10>") 'editutil-open-organizer-file)
