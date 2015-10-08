@@ -1012,6 +1012,7 @@
   (global-set-key (kbd "C-x C-p") 'helm-editutil-git-ls-files)
   (global-set-key (kbd "C-x C-r") 'helm-editutil-recentf-and-bookmark)
   (global-set-key (kbd "C-x C-x") 'helm-editutil-find-files)
+  (global-set-key (kbd "C-x b") 'helm-editutil-switch-buffer)
   (global-set-key (kbd "C-M-r") 'helm-editutil-search-buffer)
 
   (dolist (hook '(prog-mode-hook org-mode-hook text-mode-hook markdown-mode-hook))
