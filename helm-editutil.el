@@ -92,16 +92,13 @@
   (dired-goto-file file))
 
 (defvar helm-editutil-source-recentf
-  `((name . "Recently open files")
-    (init . (lambda ()
-              (require 'recentf)
-              (recentf-mode 1)))
-    (candidates . recentf-list)
-    (filtered-candidate-transformer . helm-editutil--recentf-transform)
-    (action . (("Find File" . find-file)
-               ("Find Files in dired" . helm-editutil--file-in-dired)
-               ("Find File other window" . find-file-other-window)
-               ("Insert File" . insert-file)))))
+  (helm-build-sync-source "Recently open files"
+    :candidates recentf-list
+    :filtered-candidate-transformer 'helm-editutil--recentf-transform
+    :action '(("Find File" . find-file)
+              ("Find Files in dired" . helm-editutil--file-in-dired)
+              ("Find File other window" . find-file-other-window)
+              ("Insert File" . insert-file))))
 
 ;;;###autoload
 (defun helm-editutil-recentf-and-bookmark ()
