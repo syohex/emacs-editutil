@@ -148,6 +148,30 @@
       (call-interactively 'helm-do-ag-this-file)
     (call-interactively 'helm-occur)))
 
+;;;###autoload
+(defun helm-editutil-switch-buffer ()
+  (interactive)
+  (let ((bufs (cl-loop with normals = nil
+                       with stars = nil
+
+                       for buf in (buffer-list)
+                       for name = (buffer-name buf)
+                       do
+                       (cond ((string-prefix-p "*" name)
+                              (push name stars))
+                             ((not (string-prefix-p " " name))
+                              (push name normals)))
+                       finally
+                       return (cons (reverse normals) (reverse stars)))))
+    (helm :sources (list
+                    (helm-build-sync-source "Buffers"
+                      :candidates (car bufs)
+                      :action 'switch-to-buffer)
+                    (helm-build-sync-source "Other Buffers"
+                      :candidates (cdr bufs)
+                      :action 'switch-to-buffer))
+          :buffer "*Helm Switch Buffer*")))
+
 (provide 'helm-editutil)
 
 ;;; helm-editutil.el ends here
