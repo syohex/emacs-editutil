@@ -96,6 +96,7 @@
   (helm-build-sync-source "Recently open files"
     :candidates recentf-list
     :filtered-candidate-transformer 'helm-editutil--recentf-transform
+    :candidate-number-limit 9999
     :volatile t
     :action '(("Find File" . find-file)
               ("Find Files in dired" . helm-editutil--file-in-dired)
