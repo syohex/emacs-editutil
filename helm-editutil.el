@@ -28,6 +28,7 @@
 (require 'helm-files)
 (require 'helm-mode)
 (require 'subr-x)
+(require 'recentf)
 
 (defun helm-editutil--open-dired (file)
   (dired (file-name-directory file)))
@@ -95,6 +96,7 @@
   (helm-build-sync-source "Recently open files"
     :candidates recentf-list
     :filtered-candidate-transformer 'helm-editutil--recentf-transform
+    :volatile t
     :action '(("Find File" . find-file)
               ("Find Files in dired" . helm-editutil--file-in-dired)
               ("Find File other window" . find-file-other-window)
