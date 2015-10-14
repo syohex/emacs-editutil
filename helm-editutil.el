@@ -94,7 +94,7 @@
 
 (defvar helm-editutil-source-recentf
   (helm-build-sync-source "Recently open files"
-    :candidates recentf-list
+    :candidates (lambda () recentf-list)
     :filtered-candidate-transformer 'helm-editutil--recentf-transform
     :candidate-number-limit 9999
     :volatile t
