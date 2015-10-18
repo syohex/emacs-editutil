@@ -148,27 +148,44 @@
       (call-interactively 'helm-do-ag-this-file)
     (call-interactively 'helm-occur)))
 
+(defun helm-editutil--buffer-display (bufname)
+  (with-current-buffer bufname
+    (let ((path (helm-aif (buffer-file-name)
+                    (abbreviate-file-name it)
+                  default-directory)))
+      (format "%-25s %s" bufname path))))
+
 ;;;###autoload
 (defun helm-editutil-switch-buffer ()
   (interactive)
-  (let ((bufs (cl-loop with normals = nil
-                       with stars = nil
+  (let ((bufs (cl-loop with files = nil
+                       with directories = nil
+                       with others = nil
 
                        for buf in (buffer-list)
                        for name = (buffer-name buf)
                        do
                        (cond ((string-prefix-p "*" name)
-                              (push name stars))
+                              (push name others))
                              ((not (string-prefix-p " " name))
-                              (push name normals)))
+                              (if (buffer-file-name buf)
+                                  (push name files)
+                                (push name directories))))
                        finally
-                       return (cons (reverse normals) (reverse stars)))))
+                       return (list :files (reverse files)
+                                    :directories (reverse directories)
+                                    :others (reverse others)))))
     (helm :sources (list
-                    (helm-build-sync-source "Buffers"
-                      :candidates (car bufs)
+                    (helm-build-sync-source "File Buffers"
+                      :candidates (plist-get bufs :files)
+                      :real-to-display 'helm-editutil--buffer-display
+                      :action 'switch-to-buffer)
+                    (helm-build-sync-source "Directory Buffers"
+                      :candidates (plist-get bufs :directories)
+                      :real-to-display 'helm-editutil--buffer-display
                       :action 'switch-to-buffer)
                     (helm-build-sync-source "Other Buffers"
-                      :candidates (cdr bufs)
+                      :candidates (plist-get bufs :others)
                       :action 'switch-to-buffer))
           :buffer "*Helm Switch Buffer*")))
 
