@@ -165,7 +165,8 @@
                        for name = (buffer-name buf)
                        do
                        (cond ((string-prefix-p "*" name)
-                              (push name others))
+                              (unless (string-prefix-p "*helm" name t)
+                                (push name others)))
                              ((not (string-prefix-p " " name))
                               (if (buffer-file-name buf)
                                   (push name files)
@@ -174,18 +175,17 @@
                        return (list :files (reverse files)
                                     :directories (reverse directories)
                                     :others (reverse others)))))
-    (helm :sources (list
-                    (helm-build-sync-source "File Buffers"
-                      :candidates (plist-get bufs :files)
-                      :real-to-display 'helm-editutil--buffer-display
-                      :action 'switch-to-buffer)
-                    (helm-build-sync-source "Directory Buffers"
-                      :candidates (plist-get bufs :directories)
-                      :real-to-display 'helm-editutil--buffer-display
-                      :action 'switch-to-buffer)
-                    (helm-build-sync-source "Other Buffers"
-                      :candidates (plist-get bufs :others)
-                      :action 'switch-to-buffer))
+    (helm :sources (cl-loop for (prop . name) in '((:files . "File Buffers")
+                                                   (:directories . "Directory Buffers")
+                                                   (:others . "Other Buffers"))
+                            for display-fn = (unless (eq prop :others)
+                                               'helm-editutil--buffer-display)
+                            when (plist-get bufs prop)
+                            collect
+                            (helm-build-sync-source name
+                              :candidates it
+                              :real-to-display display-fn
+                              :action 'switch-to-buffer))
           :buffer "*Helm Switch Buffer*")))
 
 (provide 'helm-editutil)
