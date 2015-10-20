@@ -893,7 +893,7 @@
 (defun editutil-newline-common (newline-fn)
   (if (not electric-pair-mode)
       (funcall newline-fn)
-    (if (and (looking-at-p "[])}]") (looking-back "[\[({]"))
+    (if (and (looking-at-p "[])}]") (looking-back "[\[({]" (1- (point))))
         (progn
           (funcall #'newline-and-indent)
           (save-excursion
