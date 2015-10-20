@@ -744,8 +744,13 @@
 
 (defvar editutil-vc-mode-line
   '(:propertize
-    (:eval (let ((backend (symbol-name (vc-backend (buffer-file-name)))))
-             (concat "(" (substring vc-mode (+ (length backend) 2)) ")")))
+    (:eval (let* ((file (buffer-file-name))
+                  (backend (symbol-name (vc-backend file)))
+                  (branch (substring vc-mode (+ (length backend) 2)))
+                  (state (cl-case (vc-state file)
+                           (edited ":Mod")
+                           (otherwise ""))))
+             (concat "(" branch state ")")))
     face editutils-vc-branch)
   "Mode line format for VC Mode.")
 (put 'editutil-vc-mode-line 'risky-local-variable t)
