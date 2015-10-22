@@ -932,7 +932,6 @@
 
   (global-unset-key (kbd "C-x c"))
   (global-unset-key (kbd "C-x z"))
-  (global-unset-key (kbd "C-x d"))
   (global-unset-key (kbd "C-x t"))
   (global-unset-key (kbd "C-x w"))
   (global-unset-key (kbd "C-x s"))
