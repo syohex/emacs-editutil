@@ -92,9 +92,12 @@
   (dired (file-name-directory file))
   (dired-goto-file file))
 
+(defun helm-editutil--recentf-candidates ()
+  (mapcar (lambda (f) (abbreviate-file-name f )) recentf-list))
+
 (defvar helm-editutil-source-recentf
   (helm-build-sync-source "Recently open files"
-    :candidates (lambda () recentf-list)
+    :candidates #'helm-editutil--recentf-candidates
     :filtered-candidate-transformer 'helm-editutil--recentf-transform
     :candidate-number-limit 9999
     :volatile t
