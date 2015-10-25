@@ -93,12 +93,12 @@
   (dired-goto-file file))
 
 (defun helm-editutil--recentf-candidates ()
-  (mapcar (lambda (f) (abbreviate-file-name f )) recentf-list))
+  (mapcar #'abbreviate-file-name recentf-list))
 
 (defvar helm-editutil-source-recentf
   (helm-build-sync-source "Recently open files"
     :candidates #'helm-editutil--recentf-candidates
-    :filtered-candidate-transformer 'helm-editutil--recentf-transform
+    :filtered-candidate-transformer #'helm-editutil--recentf-transform
     :candidate-number-limit 9999
     :volatile t
     :action '(("Find File" . find-file)
@@ -120,10 +120,10 @@
                                      choice)))
          (src (helm-build-sync-source "Choose a snippet"
                 :candidates names
-                :action 'identity))
+                :action #'identity))
          (selected (helm :sources (list src) :buffer "*helm yas-prompt*")))
     (if selected
-        (nth (cl-position selected names :test 'equal) choices)
+        (nth (cl-position selected names :test #'equal) choices)
       (signal 'quit "user quit!"))))
 
 (defun helm-editutil--find-files-init ()
@@ -133,7 +133,7 @@
 
 (defvar helm-editutil-source-find-files
   (helm-build-in-buffer-source "Find Files"
-    :init 'helm-editutil--find-files-init
+    :init #'helm-editutil--find-files-init
     :action '(("Find File" . find-file)
               ("Find File other window" . find-file-other-window)
               ("Insert File" . insert-file))))
@@ -148,7 +148,7 @@
   (interactive)
   (if (buffer-file-name)
       (call-interactively 'helm-do-ag-this-file)
-    (call-interactively 'helm-occur)))
+    (call-interactively #'helm-occur)))
 
 (defun helm-editutil--buffer-display (bufname)
   (with-current-buffer bufname
@@ -182,13 +182,13 @@
                                                    (:directories . "Directory Buffers")
                                                    (:others . "Other Buffers"))
                             for display-fn = (unless (eq prop :others)
-                                               'helm-editutil--buffer-display)
+                                               #'helm-editutil--buffer-display)
                             when (plist-get bufs prop)
                             collect
                             (helm-build-sync-source name
                               :candidates it
                               :real-to-display display-fn
-                              :action 'switch-to-buffer))
+                              :action #'switch-to-buffer))
           :buffer "*Helm Switch Buffer*")))
 
 (provide 'helm-editutil)
