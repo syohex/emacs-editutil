@@ -925,6 +925,12 @@
     (,(kbd "C-M-o") . editutil-other-window)))
 
 ;;;###autoload
+(defun editutil-recentf-save-list ()
+  (interactive)
+  (recentf-save-list)
+  (message nil))
+
+;;;###autoload
 (defun editutil-default-setup ()
   (interactive)
 
