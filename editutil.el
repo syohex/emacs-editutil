@@ -930,6 +930,32 @@
   (recentf-save-list)
   (message nil))
 
+;;;
+;;; For Ruby Programming
+;;;
+
+(defun editutil-ruby-insert-bar ()
+  (interactive)
+  (if (looking-back "\\(?:do\\s-+\\|{\\)")
+      (progn
+        (insert "||")
+        (backward-char 1))
+    (insert "|")))
+
+(defun editutil-ruby-beginning-of-defun (&optional arg)
+  (interactive "p")
+  (and (re-search-backward (concat "^\\s-+\\(" ruby-block-beg-re "\\)\\_>")
+                           nil 'move)
+       (progn (back-to-indentation) t)))
+
+(defun editutil-ruby-end-of-defun (&optional arg)
+  (interactive "p")
+  (and (re-search-forward (concat "^\\s-+\\(" ruby-block-end-re "\\)\\($\\|\\b[^_]\\)")
+                          nil 'move (or arg 1))
+       (progn (beginning-of-line) t))
+  (forward-line 1)
+  (back-to-indentation))
+
 ;;;###autoload
 (defun editutil-default-setup ()
   (interactive)
@@ -1019,16 +1045,49 @@
   (add-hook 'after-change-major-mode-hook 'editutil-clear-mode-line)
 
   ;; helm-editutil
-  (global-set-key (kbd "C-x C-p") 'helm-editutil-git-ls-files)
-  (global-set-key (kbd "C-x C-r") 'helm-editutil-recentf-and-bookmark)
-  (global-set-key (kbd "C-x C-x") 'helm-editutil-find-files)
-  (global-set-key (kbd "C-x b") 'helm-editutil-switch-buffer)
-  (global-set-key (kbd "C-M-r") 'helm-editutil-search-buffer)
+  (global-set-key (kbd "C-x C-p") #'helm-editutil-git-ls-files)
+  (global-set-key (kbd "C-x C-r") #'helm-editutil-recentf-and-bookmark)
+  (global-set-key (kbd "C-x C-x") #'helm-editutil-find-files)
+  (global-set-key (kbd "C-x b") #'helm-editutil-switch-buffer)
+  (global-set-key (kbd "C-M-r") #'helm-editutil-search-buffer)
+
+  (with-eval-after-load 'helm
+    (define-key helm-map (kbd "C-e") 'helm-editutil-select-2nd-action)
+    (define-key helm-map (kbd "C-j") 'helm-editutil-select-3rd-action))
 
   (dolist (hook '(prog-mode-hook org-mode-hook text-mode-hook markdown-mode-hook))
     (add-hook hook 'editutil--add-watchwords))
 
   (run-with-idle-timer 10 t 'editutil-auto-save-buffers)
+
+  ;; Ruby
+  (with-eval-after-load 'ruby-mode
+    (define-key ruby-mode-map (kbd "|") #'editutil-ruby-insert-bar)
+    (define-key ruby-mode-map (kbd "C-M-a") #'editutil-ruby-beginning-of-defun)
+    (define-key ruby-mode-map (kbd "C-M-e") #'editutil-ruby-end-of-defun))
+
+  ;; view-mode
+  (with-eval-after-load 'view
+    (define-key view-mode-map (kbd "B") #'editutil-backward-symbol)
+    (define-key view-mode-map (kbd "e") #'editutil-view-word-end)
+    (define-key view-mode-map (kbd "G") #'editutil-goto-last-line)
+    (define-key view-mode-map (kbd "f") #'editutil-forward-char)
+    (define-key view-mode-map (kbd "F") #'editutil-backward-char)
+
+    (define-key view-mode-map (kbd "i") #'editutil-view-insert)
+    (define-key view-mode-map (kbd "a") #'editutil-view-insert-at-next)
+    (define-key view-mode-map (kbd "I") #'editutil-view-insert-at-bol)
+    (define-key view-mode-map (kbd "A") #'editutil-view-insert-at-eol)
+    (define-key view-mode-map (kbd "q") #'editutil-view-quit))
+
+  ;; paredit
+  (with-eval-after-load 'paredit
+    (define-key paredit-mode-map (kbd "C-c C-l") 'editutil-toggle-let)
+    (define-key paredit-mode-map (kbd "DEL") 'editutil-paredit-backward-delete))
+
+  ;; yasnippet
+  (with-eval-after-load 'yasnippet
+    (setq-default yas-prompt-functions '(helm-editutil-yas-prompt)))
 
   ;;(makunbound 'editutil-global-minor-mode-map)
   (editutil-global-minor-mode +1)

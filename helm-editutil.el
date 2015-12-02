@@ -191,6 +191,11 @@
                               :action #'switch-to-buffer))
           :buffer "*Helm Switch Buffer*")))
 
+;;;###autoload
+(defun helm-editutil-robe-completing-read (prompt choices &optional predicate require-match)
+  (let ((collection (mapcar (lambda (c) (if (listp c) (car c) c)) choices)))
+    (helm-comp-read prompt collection :test predicate :must-match require-match)))
+
 (provide 'helm-editutil)
 
 ;;; helm-editutil.el ends here
