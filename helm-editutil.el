@@ -102,8 +102,9 @@
     :candidate-number-limit 9999
     :volatile t
     :action '(("Find File" . find-file)
-              ("Find Files in dired" . helm-editutil--file-in-dired)
+              ("Find File alternate" . find-alternate-file)
               ("Find File other window" . find-file-other-window)
+              ("Find Files in dired" . helm-editutil--file-in-dired)
               ("Insert File" . insert-file))))
 
 ;;;###autoload
@@ -136,6 +137,7 @@
     :init #'helm-editutil--find-files-init
     :action '(("Find File" . find-file)
               ("Find File other window" . find-file-other-window)
+              ("Find File alternate" . find-alternate-file)
               ("Insert File" . insert-file))))
 
 ;;;###autoload
