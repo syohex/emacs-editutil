@@ -936,7 +936,7 @@
 
 (defun editutil-ruby-insert-bar ()
   (interactive)
-  (if (looking-back "\\(?:do\\s-+\\|{\\)")
+  (if (looking-back "\\(?:do\\s-+\\|{\\)" (line-beginning-position))
       (progn
         (insert "||")
         (backward-char 1))
@@ -945,13 +945,13 @@
 (defun editutil-ruby-beginning-of-defun (&optional arg)
   (interactive "p")
   (and (re-search-backward (concat "^\\s-+\\(" ruby-block-beg-re "\\)\\_>")
-                           nil 'move)
+                           nil 'move arg)
        (progn (back-to-indentation) t)))
 
 (defun editutil-ruby-end-of-defun (&optional arg)
   (interactive "p")
   (and (re-search-forward (concat "^\\s-+\\(" ruby-block-end-re "\\)\\($\\|\\b[^_]\\)")
-                          nil 'move (or arg 1))
+                          nil 'move arg)
        (progn (beginning-of-line) t))
   (forward-line 1)
   (back-to-indentation))
