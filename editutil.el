@@ -25,7 +25,6 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'org)
   (defvar my/ctrl-q-map))
 
 (require 'cl-lib)
@@ -872,10 +871,6 @@
     (compile command)))
 
 (defun editutil-auto-save-buffers ()
-(defun editutil-open-organizer-file ()
-  (interactive)
-  (require 'org)
-  (find-file org-default-notes-file))
   (save-window-excursion
     (save-excursion
       (cl-loop for buf in (buffer-list)
@@ -1018,9 +1013,6 @@
   (global-set-key (kbd "C-x y") 'editutil-copy-line)
 
   (global-set-key (kbd "C-x j") 'editutil-join-line)
-
-  ;; org utility
-  (global-set-key (kbd "<f10>") 'editutil-open-organizer-file)
 
   ;; 'C-x r' prefix
   (global-set-key (kbd "C-x r N") 'editutil-number-rectangle)
