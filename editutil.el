@@ -25,7 +25,6 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'org)
   (defvar my/ctrl-q-map))
 
 (require 'cl-lib)
@@ -872,18 +871,17 @@
     (compile command)))
 
 (defun editutil-auto-save-buffers ()
-  (save-excursion
-    (dolist (buffer (buffer-list))
-      (set-buffer buffer)
-      (let ((buffile (buffer-file-name)))
-        (when (and buffile (buffer-modified-p) (not buffer-read-only)
-                   (file-writable-p buffile))
-          (save-buffer))))))
-
-(defun editutil-open-organizer-file ()
-  (interactive)
-  (require 'org)
-  (find-file org-default-notes-file))
+  (save-window-excursion
+    (save-excursion
+      (cl-loop for buf in (buffer-list)
+               unless (string-match-p "\\`\\(?:\\s-+\\|[\\*#]\\)" (buffer-name buf))
+               do
+               (progn
+                 (set-buffer buf)
+                 (let ((buffile (buffer-file-name)))
+                   (when (and buffile (buffer-modified-p) (not buffer-read-only)
+                              (file-writable-p buffile))
+                     (save-buffer))))))))
 
 (defun editutil-join-line (arg)
   (interactive "p")
@@ -968,88 +966,85 @@
   (global-unset-key (kbd "C-x w"))
   (global-unset-key (kbd "C-x s"))
 
-  (global-set-key (kbd "RET") 'editutil-newline)
-  (global-set-key (kbd "C-j") 'editutil-newline-and-maybe-indent)
+  (global-set-key (kbd "RET") #'editutil-newline)
+  (global-set-key (kbd "C-j") #'editutil-newline-and-maybe-indent)
 
-  (global-set-key (kbd "C-M-s") 'editutil-forward-symbol-at-point)
+  (global-set-key (kbd "C-M-s") #'editutil-forward-symbol-at-point)
 
-  (global-set-key (kbd "C-w") 'editutil-kill-region)
-  (global-set-key (kbd "M-w") 'editutil-kill-ring-save)
+  (global-set-key (kbd "C-w") #'editutil-kill-region)
+  (global-set-key (kbd "M-w") #'editutil-kill-ring-save)
 
-  (global-set-key (kbd "M-q") 'editutil-zap-to-char)
-  (global-set-key (kbd "ESC Q") 'editutil-zap-to-char-backward)
+  (global-set-key (kbd "M-q") #'editutil-zap-to-char)
+  (global-set-key (kbd "ESC Q") #'editutil-zap-to-char-backward)
 
-  (global-set-key (kbd "C-M-o") 'editutil-other-window)
-  (global-set-key (kbd "C-M-u") 'editutil-backward-up)
+  (global-set-key (kbd "C-M-o") #'editutil-other-window)
+  (global-set-key (kbd "C-M-u") #'editutil-backward-up)
 
-  (global-set-key (kbd "C-k") 'editutil-kill-line)
-  (global-set-key (kbd "C-M-n") 'editutil-forward-list)
-  (global-set-key (kbd "C-M-d") 'editutil-down-list)
-  (global-set-key (kbd "M-o") 'editutil-edit-next-line)
-  (global-set-key (kbd "M-O") 'editutil-edit-previous-line)
+  (global-set-key (kbd "C-k") #'editutil-kill-line)
+  (global-set-key (kbd "C-M-n") #'editutil-forward-list)
+  (global-set-key (kbd "C-M-d") #'editutil-down-list)
+  (global-set-key (kbd "M-o") #'editutil-edit-next-line)
+  (global-set-key (kbd "M-O") #'editutil-edit-previous-line)
 
-  (global-set-key (kbd "M-k") 'editutil-delete-following-spaces)
+  (global-set-key (kbd "M-k") #'editutil-delete-following-spaces)
 
-  (global-set-key (kbd "C-y") 'editutil-yank)
-  (global-set-key (kbd "M-Y") 'editutil-yank-pop-next)
+  (global-set-key (kbd "C-y") #'editutil-yank)
+  (global-set-key (kbd "M-Y") #'editutil-yank-pop-next)
 
-  (global-set-key (kbd "M-d") 'editutil-delete-word)
-  (global-set-key [remap backward-kill-word] 'editutil-backward-delete-word)
-  (global-set-key (kbd "C-M-c") 'editutil-duplicate-thing)
+  (global-set-key (kbd "M-d") #'editutil-delete-word)
+  (global-set-key [remap backward-kill-word] #'editutil-backward-delete-word)
+  (global-set-key (kbd "C-M-c") #'editutil-duplicate-thing)
 
-  (global-set-key (kbd "C-x DEL") 'editutil-kill-whole-line)
+  (global-set-key (kbd "C-x DEL") #'editutil-kill-whole-line)
 
-  (global-set-key (kbd "M-I") 'editutil-indent-same-as-previous-line)
-  (global-set-key (kbd "M-(") 'editutil-insert-parentheses)
+  (global-set-key (kbd "M-I") #'editutil-indent-same-as-previous-line)
+  (global-set-key (kbd "M-(") #'editutil-insert-parentheses)
 
-  (global-set-key (kbd "C-x .") 'editutil-highlight-symbol-in-defun)
-  (global-set-key (kbd "C-x ,") 'editutil-highlight-clear-overlays)
+  (global-set-key (kbd "C-x .") #'editutil-highlight-symbol-in-defun)
+  (global-set-key (kbd "C-x ,") #'editutil-highlight-clear-overlays)
 
-  (global-set-key (kbd "C-x m") 'editutil-mark-inside-paired)
-  (global-set-key (kbd "C-x M") 'editutil-mark-around-paired)
-  (global-set-key (kbd "C-M-w") 'editutil-mark-sexp)
+  (global-set-key (kbd "C-x m") #'editutil-mark-inside-paired)
+  (global-set-key (kbd "C-x M") #'editutil-mark-around-paired)
+  (global-set-key (kbd "C-M-w") #'editutil-mark-sexp)
 
-  (global-set-key (kbd "C-c w") 'editutil-dictionary-search)
-  (global-set-key (kbd "C-c W") 'editutil-browse-weblio-sentence)
+  (global-set-key (kbd "C-c w") #'editutil-dictionary-search)
+  (global-set-key (kbd "C-c W") #'editutil-browse-weblio-sentence)
 
-  (global-set-key (kbd "C-x y") 'editutil-copy-line)
+  (global-set-key (kbd "C-x y") #'editutil-copy-line)
 
-  (global-set-key (kbd "C-x j") 'editutil-join-line)
-
-  ;; org utility
-  (global-set-key (kbd "<f10>") 'editutil-open-organizer-file)
+  (global-set-key (kbd "C-x j") #'editutil-join-line)
 
   ;; 'C-x r' prefix
-  (global-set-key (kbd "C-x r N") 'editutil-number-rectangle)
+  (global-set-key (kbd "C-x r N") #'editutil-number-rectangle)
 
   ;; 'C-x c' prefix
-  (global-set-key (kbd "C-x c c") 'editutil-compile)
+  (global-set-key (kbd "C-x c c") #'editutil-compile)
 
   ;; 'C-x t' prefix
-  (global-set-key (kbd "C-x t n") 'editutil-move-line-down)
-  (global-set-key (kbd "C-x t p") 'editutil-move-line-up)
+  (global-set-key (kbd "C-x t n") #'editutil-move-line-down)
+  (global-set-key (kbd "C-x t p") #'editutil-move-line-up)
 
   ;; 'C-x s' prefix
-  (global-set-key (kbd "C-x s s") 'editutil-unwrap-at-point)
-  (global-set-key (kbd "C-x s r") 'editutil-replace-wrapped-string)
-  (global-set-key (kbd "M-s s") 'editutil-unwrap-at-point)
-  (global-set-key (kbd "M-s r") 'editutil-replace-wrapped-string)
+  (global-set-key (kbd "C-x s s") #'editutil-unwrap-at-point)
+  (global-set-key (kbd "C-x s r") #'editutil-replace-wrapped-string)
+  (global-set-key (kbd "M-s s") #'editutil-unwrap-at-point)
+  (global-set-key (kbd "M-s r") #'editutil-replace-wrapped-string)
 
   ;; 'C-x w' prefix
-  (global-set-key (kbd "C-x w w") 'editutil-browse-github)
+  (global-set-key (kbd "C-x w w") #'editutil-browse-github)
 
-  (define-key my/ctrl-q-map (kbd "C-t") 'editutil-toggle-cleanup-spaces)
+  (define-key my/ctrl-q-map (kbd "C-t") #'editutil-toggle-cleanup-spaces)
 
-  (define-key minibuffer-local-map (kbd "C-M-u") 'editutil-minibuffer-up-dir)
+  (define-key minibuffer-local-map (kbd "C-M-u") #'editutil-minibuffer-up-dir)
 
-  (add-hook 'after-change-major-mode-hook 'editutil-clear-mode-line)
+  (add-hook 'after-change-major-mode-hook #'editutil-clear-mode-line)
 
   ;; helm-editutil
-  (global-set-key (kbd "C-x C-p") #'helm-editutil-git-ls-files)
-  (global-set-key (kbd "C-x C-r") #'helm-editutil-recentf-and-bookmark)
-  (global-set-key (kbd "C-x C-x") #'helm-editutil-find-files)
-  (global-set-key (kbd "C-x b") #'helm-editutil-switch-buffer)
-  (global-set-key (kbd "C-M-r") #'helm-editutil-search-buffer)
+  (global-set-key (kbd "C-x C-p") 'helm-editutil-git-ls-files)
+  (global-set-key (kbd "C-x C-r") 'helm-editutil-recentf-and-bookmark)
+  (global-set-key (kbd "C-x C-x") 'helm-editutil-find-files)
+  (global-set-key (kbd "C-x b") 'helm-editutil-switch-buffer)
+  (global-set-key (kbd "C-M-r") 'helm-editutil-search-buffer)
 
   (with-eval-after-load 'helm
     (define-key helm-map (kbd "C-e") 'helm-editutil-select-2nd-action)
@@ -1058,7 +1053,7 @@
   (dolist (hook '(prog-mode-hook org-mode-hook text-mode-hook markdown-mode-hook))
     (add-hook hook 'editutil--add-watchwords))
 
-  (run-with-idle-timer 10 t 'editutil-auto-save-buffers)
+  (run-with-idle-timer 10 t #'editutil-auto-save-buffers)
 
   ;; Ruby
   (with-eval-after-load 'ruby-mode
@@ -1082,8 +1077,8 @@
 
   ;; paredit
   (with-eval-after-load 'paredit
-    (define-key paredit-mode-map (kbd "C-c C-l") 'editutil-toggle-let)
-    (define-key paredit-mode-map (kbd "DEL") 'editutil-paredit-backward-delete))
+    (define-key paredit-mode-map (kbd "C-c C-l") #'editutil-toggle-let)
+    (define-key paredit-mode-map (kbd "DEL") #'editutil-paredit-backward-delete))
 
   ;; yasnippet
   (with-eval-after-load 'yasnippet
