@@ -874,7 +874,7 @@
   (save-window-excursion
     (save-excursion
       (cl-loop for buf in (buffer-list)
-               unless (string-match-p "\\`\\(?:\\s-+\\|*\\)" (buffer-name buf))
+               unless (string-match-p "\\`\\(?:\\s-+\\|[\\*#]\\)" (buffer-name buf))
                do
                (progn
                  (set-buffer buf)
