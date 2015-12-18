@@ -1053,7 +1053,7 @@
   (dolist (hook '(prog-mode-hook org-mode-hook text-mode-hook markdown-mode-hook))
     (add-hook hook 'editutil--add-watchwords))
 
-  (run-with-idle-timer 10 t 'editutil-auto-save-buffers)
+  (run-with-idle-timer 10 t #'editutil-auto-save-buffers)
 
   ;; Ruby
   (with-eval-after-load 'ruby-mode
