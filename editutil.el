@@ -872,18 +872,21 @@
     (compile command)))
 
 (defun editutil-auto-save-buffers ()
-  (save-excursion
-    (dolist (buffer (buffer-list))
-      (set-buffer buffer)
-      (let ((buffile (buffer-file-name)))
-        (when (and buffile (buffer-modified-p) (not buffer-read-only)
-                   (file-writable-p buffile))
-          (save-buffer))))))
-
 (defun editutil-open-organizer-file ()
   (interactive)
   (require 'org)
   (find-file org-default-notes-file))
+  (save-window-excursion
+    (save-excursion
+      (cl-loop for buf in (buffer-list)
+               unless (string-match-p "\\`\\(?:\\s-+\\|*\\)" (buffer-name buf))
+               do
+               (progn
+                 (set-buffer buf)
+                 (let ((buffile (buffer-file-name)))
+                   (when (and buffile (buffer-modified-p) (not buffer-read-only)
+                              (file-writable-p buffile))
+                     (save-buffer))))))))
 
 (defun editutil-join-line (arg)
   (interactive "p")
