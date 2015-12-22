@@ -912,6 +912,12 @@
   (interactive)
   (editutil-newline-common #'newline-and-indent))
 
+(defun editutil-delete-line (arg)
+  (interactive "p")
+  (dotimes (_i arg)
+    (delete-region (line-beginning-position)
+                   (min (1+ (line-end-position)) (point-max)))))
+
 (define-minor-mode editutil-global-minor-mode
   "Most superior minir mode"
   t
@@ -992,6 +998,8 @@
   (global-set-key (kbd "M-Y") #'editutil-yank-pop-next)
 
   (global-set-key (kbd "M-d") #'editutil-delete-word)
+  (global-set-key (kbd "M-D") #'editutil-delete-line)
+
   (global-set-key [remap backward-kill-word] #'editutil-backward-delete-word)
   (global-set-key (kbd "C-M-c") #'editutil-duplicate-thing)
 

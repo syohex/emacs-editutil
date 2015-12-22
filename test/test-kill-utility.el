@@ -23,6 +23,7 @@
 
 (require 'ert)
 (require 'editutil)
+(require 'subr-x)
 
 (ert-deftest kill-region ()
   "My own kill-region."
@@ -60,5 +61,14 @@
     "foo bar"
     (editutil-zap-to-char 1 ?b)
     (should (string= (buffer-string) "bar"))))
+
+(ert-deftest delete-line ()
+  "delete-current-line."
+  (with-editutil-temp-buffer 'text-mode
+    "foo
+bar
+baz"
+    (editutil-delete-line 3)
+    (should (string-empty-p (buffer-string)))))
 
 ;;; test-kill-utility.el ends here
