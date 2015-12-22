@@ -39,10 +39,11 @@
       (apply 'process-file "git" nil t nil "ls-files" options))))
 
 (defvar helm-editutil--git-ls-actions
-  '(("Open File" . find-file)
-    ("Open Directory" . helm-editutil--open-dired)
-    ("Open File other window" . find-file-other-window)
-    ("Insert buffer" . insert-file)))
+  (helm-make-actions
+   "Open File" #'find-file
+   "Open Directory" #'helm-editutil--open-dired
+   "Open File other window" #'find-file-other-window
+   "Insert buffer" #'insert-file))
 
 (defun helm-editutil--git-ls-files-source (pwd)
   (cl-loop with is-first = t
@@ -101,11 +102,12 @@
     :filtered-candidate-transformer #'helm-editutil--recentf-transform
     :candidate-number-limit 9999
     :volatile t
-    :action '(("Find File" . find-file)
-              ("Find File alternate" . find-alternate-file)
-              ("Find File other window" . find-file-other-window)
-              ("Find Files in dired" . helm-editutil--file-in-dired)
-              ("Insert File" . insert-file))))
+    :action (helm-make-actions
+             "Find File" #'find-file
+             "Find File alternate" #'find-alternate-file
+             "Find File other window" #'find-file-other-window
+             "Find Files in dired" #'helm-editutil--file-in-dired
+             "Insert File" #'insert-file)))
 
 ;;;###autoload
 (defun helm-editutil-recentf-and-bookmark ()
@@ -135,10 +137,11 @@
 (defvar helm-editutil-source-find-files
   (helm-build-in-buffer-source "Find Files"
     :init #'helm-editutil--find-files-init
-    :action '(("Find File" . find-file)
-              ("Find File other window" . find-file-other-window)
-              ("Find File alternate" . find-alternate-file)
-              ("Insert File" . insert-file))))
+    :action (helm-make-actions
+             "Find File" #'find-file
+             "Find File other window" #'find-file-other-window
+             "Find File alternate" #'find-alternate-file
+             "Insert File" 3'insert-file)))
 
 ;;;###autoload
 (defun helm-editutil-find-files ()
