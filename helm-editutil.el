@@ -141,7 +141,7 @@
              "Find File" #'find-file
              "Find File other window" #'find-file-other-window
              "Find File alternate" #'find-alternate-file
-             "Insert File" 3'insert-file)))
+             "Insert File" #'insert-file)))
 
 ;;;###autoload
 (defun helm-editutil-find-files ()
