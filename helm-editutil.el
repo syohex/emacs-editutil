@@ -193,7 +193,9 @@
                             (helm-build-sync-source name
                               :candidates it
                               :real-to-display display-fn
-                              :action #'switch-to-buffer))
+                              :action (helm-make-actions
+                                       "Switch buffer" #'switch-to-buffer
+                                       "Insert buffer" #'insert-buffer)))
           :buffer "*Helm Switch Buffer*")))
 
 ;;;###autoload
