@@ -711,6 +711,11 @@
         (error "Error: URL not found"))
       (browse-url url))))
 
+(defun editutil-browse-weblio-word (word)
+  (interactive
+   (list (read-string "Word: ")))
+  (browse-url (format "http://ejje.weblio.jp/content/%s" word)))
+
 (defun editutil-browse-weblio-sentence (sentence)
   (interactive
    (list (read-string "Sentence: ")))
@@ -1062,6 +1067,10 @@
     (add-hook hook 'editutil--add-watchwords))
 
   (run-with-idle-timer 10 t #'editutil-auto-save-buffers)
+
+  ;; helm-ispell
+  (custom-set-variables
+   '(helm-ispell-browse-url-function #'editutil-browse-weblio-word))
 
   ;; Ruby
   (with-eval-after-load 'ruby-mode
