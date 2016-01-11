@@ -939,6 +939,11 @@
   (recentf-save-list)
   (message nil))
 
+(defun editutil-comment-line ()
+  (interactive)
+  (save-excursion
+    (call-interactively #'comment-line)))
+
 ;;;
 ;;; For Ruby Programming
 ;;;
@@ -1026,6 +1031,8 @@
   (global-set-key (kbd "C-x y") #'editutil-copy-line)
 
   (global-set-key (kbd "C-x j") #'editutil-join-line)
+
+  (global-set-key (kbd "C-x ;") #'editutil-comment-line)
 
   ;; 'C-x r' prefix
   (global-set-key (kbd "C-x r N") #'editutil-number-rectangle)
