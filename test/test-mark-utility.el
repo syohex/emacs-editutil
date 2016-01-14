@@ -1,6 +1,6 @@
 ;;; test-mark-utility.el --- test for mark utilities
 
-;; Copyright (C) 2015 by Syohei YOSHIDA
+;; Copyright (C) 2016 by Syohei YOSHIDA
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 

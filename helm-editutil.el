@@ -1,6 +1,6 @@
 ;;; helm-editutil.el --- My own editing utilities with helm -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2015 by Syohei YOSHIDA
+;; Copyright (C) 2016 by Syohei YOSHIDA
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; Version: 0.01
