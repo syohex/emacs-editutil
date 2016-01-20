@@ -792,7 +792,7 @@
     (flyspell-mode . " FS")
     ;; Major modes
     (lisp-interaction-mode . "Li")
-    (git-commit-mode . "Commit")
+    (git-commit-mode . " Commit")
     (python-mode . "Py")
     (ruby-mode   . "Rb")
     (emacs-lisp-mode . "El")
