@@ -752,7 +752,8 @@
                   (backend (symbol-name (vc-backend file)))
                   (branch (substring vc-mode (+ (length backend) 2)))
                   (state (cl-case (vc-state file)
-                           (edited ":Mod")
+                           (edited
+                            (format ":%d" (length (bound-and-true-p git-gutter:diffinfos))))
                            (otherwise ""))))
              (concat "(" branch state ")")))
     face editutils-vc-branch)
