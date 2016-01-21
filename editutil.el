@@ -945,6 +945,13 @@
   (save-excursion
     (call-interactively #'comment-line)))
 
+(cl-defun editutil-pop-to-mark-advice (orig-fun &rest args)
+  (let ((orig (point)))
+    (dotimes (_i 10)
+      (apply orig-fun args)
+      (unless (= orig (point))
+        (cl-return-from editutil-pop-to-mark-advice)))))
+
 ;;;
 ;;; For Ruby Programming
 ;;;
@@ -1030,7 +1037,6 @@
   (global-set-key (kbd "C-c W") #'editutil-browse-weblio-sentence)
 
   (global-set-key (kbd "C-x y") #'editutil-copy-line)
-
   (global-set-key (kbd "C-x j") #'editutil-join-line)
 
   (global-set-key (kbd "C-x ;") #'editutil-comment-line)
@@ -1108,6 +1114,11 @@
   ;; yasnippet
   (with-eval-after-load 'yasnippet
     (setq-default yas-prompt-functions '(helm-editutil-yas-prompt)))
+
+  ;; pop-to-mark-command
+  (advice-add 'pop-to-mark-command :around #'editutil-pop-to-mark-advice)
+  (custom-set-variables
+   '(set-mark-command-repeat-pop t))
 
   ;;(makunbound 'editutil-global-minor-mode-map)
   (editutil-global-minor-mode +1)
