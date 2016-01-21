@@ -952,6 +952,24 @@
       (unless (= orig (point))
         (cl-return-from editutil-pop-to-mark-advice)))))
 
+(defun editutil-case-func-common (word-fn region-fn arg)
+  (interactive)
+  (if (use-region-p)
+      (call-interactively region-fn)
+    (funcall word-fn arg)))
+
+(defun editutil-upcase (arg)
+  (interactive "p")
+  (editutil-case-func-common #'upcase-word #'upcase-region arg))
+
+(defun editutil-downcase (arg)
+  (interactive "p")
+  (editutil-case-func-common #'downcase-word #'downcase-region arg))
+
+(defun editutil-capitalize (arg)
+  (interactive "p")
+  (editutil-case-func-common #'capitalize-word #'capitalize-region arg))
+
 ;;;
 ;;; For Ruby Programming
 ;;;
@@ -1017,6 +1035,10 @@
 
   (global-set-key (kbd "M-d") #'editutil-delete-word)
   (global-set-key (kbd "M-D") #'editutil-delete-line)
+
+  (global-set-key (kbd "M-u") #'editutil-upcase)
+  (global-set-key (kbd "M-l") #'editutil-downcase)
+  (global-set-key (kbd "M-c") #'editutil-capitalize)
 
   (global-set-key [remap backward-kill-word] #'editutil-backward-delete-word)
   (global-set-key (kbd "C-M-c") #'editutil-duplicate-thing)
