@@ -47,4 +47,50 @@
     (should (= (point) 1))
     (should (string= (buffer-string) "\nfoo"))))
 
+(ert-deftest edit-upcase ()
+  "Upcase both word and region"
+  (with-editutil-temp-buffer 'fundamental-mode
+    "foo bar"
+    (call-interactively 'editutil-upcase)
+    (should (string= (buffer-string) "FOO bar")))
+
+  (with-editutil-temp-buffer 'fundamental-mode
+    "foo bar"
+    (transient-mark-mode +1)
+    (set-mark (point))
+    (goto-char (point-max))
+    (call-interactively 'editutil-upcase)
+    (should (string= (buffer-string) "FOO BAR"))))
+
+(ert-deftest edit-downcase ()
+  "Downcase both word and region"
+  (with-editutil-temp-buffer 'fundamental-mode
+    "FOO BAR"
+    (goto-char (point-max))
+    (editutil-downcase -1)
+    (should (string= (buffer-string) "FOO bar")))
+
+  (with-editutil-temp-buffer 'fundamental-mode
+    "FOO BAR"
+    (transient-mark-mode +1)
+    (set-mark (point))
+    (goto-char (point-max))
+    (call-interactively 'editutil-downcase)
+    (should (string= (buffer-string) "foo bar"))))
+
+(ert-deftest edit-capitalize ()
+  "Capitalize both word and region"
+  (with-editutil-temp-buffer 'fundamental-mode
+    "foo bar"
+    (call-interactively 'capitalize-word)
+    (should (string= (buffer-string) "Foo bar")))
+
+  (with-editutil-temp-buffer 'fundamental-mode
+    "foo bar"
+    (transient-mark-mode +1)
+    (set-mark (point))
+    (goto-char (point-max))
+    (call-interactively 'editutil-capitalize)
+    (should (string= (buffer-string) "Foo Bar"))))
+
 ;;; test-editing-utility.el ends here
