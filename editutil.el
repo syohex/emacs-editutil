@@ -634,9 +634,13 @@
     (call-interactively 'View-quit)))
 
 (defun editutil--add-watchwords ()
-  (font-lock-add-keywords
-   nil '(("\\_<\\(FIXME\\|TODO\\|XXX\\|@@@\\)\\_>"
-          1 '((:foreground "pink") (:weight bold)) t))))
+  (unless (memq major-mode '(org-mode))
+    (font-lock-add-keywords
+     nil '(("\\_<\\(FIXME\\|TODO\\|XXX\\|@@@\\)\\_>"
+            1 '((:foreground "pink") (:weight bold)) t)))
+    (font-lock-add-keywords
+     nil '(("\\_<\\(DONE\\)\\_>"
+            1 '((:foreground "green") (:weight bold)) t)))))
 
 ;; for `cde' command
 (defun editutil-current-buffer-directory ()
@@ -1099,8 +1103,8 @@
     (define-key helm-map (kbd "C-e") 'helm-editutil-select-2nd-action)
     (define-key helm-map (kbd "C-j") 'helm-editutil-select-3rd-action))
 
-  (dolist (hook '(prog-mode-hook org-mode-hook text-mode-hook markdown-mode-hook))
-    (add-hook hook 'editutil--add-watchwords))
+  (dolist (hook '(prog-mode-hook text-mode-hook markdown-mode-hook))
+    (add-hook hook #'editutil--add-watchwords))
 
   (run-with-idle-timer 10 t #'editutil-auto-save-buffers)
 
