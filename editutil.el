@@ -286,7 +286,7 @@
   (set-transient-map
    (let ((m (make-sparse-keymap)))
      (define-key m (kbd "M-e") (lambda () (interactive) (editutil-forward-char 1 char)))
-     (define-key m (kbd "M-a") (lambda () (interactive) (editutil-forward-char -1 char)))
+     (define-key m (kbd "M-E") (lambda () (interactive) (editutil-forward-char -1 char)))
      m)))
 
 (defun editutil-backward-char (arg char)
@@ -914,7 +914,7 @@
   `((,(kbd "C-M-j") . editutil-hippie-expand)
     (,(kbd "M-q") . editutil-zap-to-char)
     (,(kbd "M-e") . editutil-forward-char)
-    (,(kbd "M-a") . editutil-backward-char)
+    (,(kbd "M-E") . editutil-backward-char)
     (,(kbd "C-M-o") . editutil-other-window)))
 
 ;;;###autoload
