@@ -841,27 +841,6 @@
       (read-only-mode +1)
       (pop-to-buffer (current-buffer)))))
 
-(defvar editutil--gitignore-cache nil)
-
-(defun editutil--gitignore-candidates ()
-  (or editutil--gitignore-cache
-      (with-temp-buffer
-        (unless (zerop (process-file "curl" nil t nil "-s" "https://www.gitignore.io/api/list"))
-          (error "Can't get candidates"))
-        (let ((candidates (split-string
-                           (buffer-substring-no-properties (point-min) (point-max))
-                           ",")))
-          (setq editutil--gitignore-cache candidates)))))
-
-(defun editutil-generate-gitignore (stuff)
-  (interactive
-   (list
-    (let ((candidates (editutil--gitignore-candidates)))
-      (completing-read "What ignore? " candidates nil t))))
-  (let ((url (concat "https://www.gitignore.io/api/" stuff)))
-    (unless (zerop (process-file "curl" nil t nil "-s" url))
-      (error "Can't get '%s'" url))))
-
 (defvar editutil--compile-history nil)
 (defvar editutil--last-command nil)
 
@@ -999,6 +978,10 @@
        (progn (beginning-of-line) t))
   (forward-line 1)
   (back-to-indentation))
+
+;;
+;; Setup
+;;
 
 ;;;###autoload
 (defun editutil-default-setup ()
