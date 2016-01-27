@@ -41,8 +41,9 @@
 (defvar helm-editutil--git-ls-actions
   (helm-make-actions
    "Open File" #'find-file
-   "Open Directory" #'helm-editutil--open-dired
    "Open File other window" #'find-file-other-window
+   "Find File alternate" #'find-alternate-file
+   "Open Directory" #'helm-editutil--open-dired
    "Insert buffer" #'insert-file))
 
 (defun helm-editutil--git-ls-files-source (pwd)
@@ -104,8 +105,8 @@
     :volatile t
     :action (helm-make-actions
              "Find File" #'find-file
-             "Find File alternate" #'find-alternate-file
              "Find File other window" #'find-file-other-window
+             "Find File alternate" #'find-alternate-file
              "Find Files in dired" #'helm-editutil--file-in-dired
              "Insert File" #'insert-file)))
 
