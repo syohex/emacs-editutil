@@ -71,4 +71,20 @@ baz"
     (editutil-delete-line 3)
     (should (string-empty-p (buffer-string)))))
 
+(ert-deftest delete-horizontal-space ()
+  "delete spaces around cursor."
+  (with-editutil-temp-buffer 'text-mode
+    "foo                              bar"
+    (forward-cursor-on "bar")
+    (call-interactively #'editutil-delete-horizontal-space)
+    (should (string= (buffer-string) "foobar"))))
+
+(ert-deftest delete-horizontal-space-inserting-a-space ()
+  "Insert a space if there is no spaces around cursor."
+  (with-editutil-temp-buffer 'text-mode
+    "foobar"
+    (forward-cursor-on "bar")
+    (call-interactively #'editutil-delete-horizontal-space)
+    (should (string= (buffer-string) "foo bar"))))
+
 ;;; test-kill-utility.el ends here
