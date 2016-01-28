@@ -953,6 +953,15 @@
   (interactive "p")
   (editutil-case-func-common #'capitalize-word #'capitalize-region arg))
 
+(defun editutil-delete-horizontal-space ()
+  (interactive)
+  (let ((has-spaces
+         (save-match-data
+           (or (looking-back "\\s-+" nil) (looking-at-p "\\s-+")))))
+    (if has-spaces
+        (call-interactively #'delete-horizontal-space)
+      (insert " "))))
+
 ;;;
 ;;; For Ruby Programming
 ;;;
@@ -1026,6 +1035,8 @@
   (global-set-key (kbd "M-u") #'editutil-upcase)
   (global-set-key (kbd "M-l") #'editutil-downcase)
   (global-set-key (kbd "M-c") #'editutil-capitalize)
+
+  (global-set-key (kbd "M-\\") #'editutil-delete-horizontal-space)
 
   (global-set-key [remap backward-kill-word] #'editutil-backward-delete-word)
   (global-set-key (kbd "C-M-c") #'editutil-duplicate-thing)
