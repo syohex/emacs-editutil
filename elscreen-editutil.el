@@ -26,17 +26,6 @@
 (require 'elscreen)
 (require 'cl-lib)
 
-(defun elscreen-editutil--convert-name (screen-name)
-  (let ((case-fold-search nil))
-    (when (string-match-p "Minibuf" screen-name)
-      (setq screen-name (replace-regexp-in-string "\\*Minibuf-\\w\\*" "" screen-name)))
-    (when (string-match "Dired(\\([^)]+\\))" screen-name)
-      (let* ((path (match-string-no-properties 1 screen-name))
-             (base (file-name-base (directory-file-name path)))
-             (new-name (format "Dired(%s/)" base)))
-        (setq screen-name (replace-match new-name nil nil screen-name))))
-    screen-name))
-
 ;;;###autoload
 (defun elscreen-editutil-update-frame-title ()
   (interactive)
@@ -45,7 +34,6 @@
              with screen-list = (cl-copy-list (elscreen-get-screen-to-name-alist))
              for (index . name) in (sort screen-list sort-func)
              for status = (elscreen-status-label index)
-             for name = (elscreen-editutil--convert-name name)
              collect (format "%d%s %s" index status name) into screen-names
              finally
              (set-frame-name (mapconcat #'identity screen-names " ")))))
