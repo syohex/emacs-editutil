@@ -1079,6 +1079,10 @@
 
   ;; 'C-x w' prefix
   (global-set-key (kbd "C-x w w") #'editutil-browse-github)
+  (global-set-key (kbd "C-x w h") 'windmove-left)
+  (global-set-key (kbd "C-x w l") 'windmove-right)
+  (global-set-key (kbd "C-x w k") 'windmove-up)
+  (global-set-key (kbd "C-x w j") 'windmove-down)
 
   (define-key my/ctrl-q-map (kbd "C-t") #'editutil-toggle-cleanup-spaces)
 
