@@ -460,41 +460,6 @@
           (insert str "\n"))))
     (move-to-column orig-column)))
 
-(defun editutil-view-word-end (arg)
-  (interactive "p")
-  (forward-char 1)
-  (forward-word arg)
-  (backward-char 1))
-
-(defun editutil-view-insert ()
-  (interactive)
-  (read-only-mode -1))
-
-(defun editutil-view-insert-at-next ()
-  (interactive)
-  (read-only-mode -1)
-  (forward-char 1))
-
-(defun editutil-view-insert-at-bol ()
-  (interactive)
-  (read-only-mode -1)
-  (back-to-indentation))
-
-(defun editutil-view-insert-at-eol ()
-  (interactive)
-  (when view-mode
-    (view-mode -1))
-  (goto-char (line-end-position)))
-
-(defun editutil-goto-last-line ()
-  (interactive)
-  (goto-char (point-max))
-  (goto-char (line-beginning-position)))
-
-(defun editutil-backward-symbol ()
-  (interactive)
-  (forward-symbol -1))
-
 (defun editutil-indent-same-as-previous-line ()
   (interactive)
   (let ((cur-indent (current-indentation))
@@ -626,12 +591,6 @@
         (kill-whole-line num)
       (let ((current-prefix-arg nil))
         (call-interactively 'kill-line)))))
-
-(defun editutil-view-quit ()
-  (interactive)
-  (if (buffer-file-name)
-      (call-interactively 'read-only-mode)
-    (call-interactively 'View-quit)))
 
 (defun editutil--add-watchwords ()
   (unless (memq major-mode '(org-mode))
@@ -1115,20 +1074,6 @@
     (define-key ruby-mode-map (kbd "|") #'editutil-ruby-insert-bar)
     (define-key ruby-mode-map (kbd "C-M-a") #'editutil-ruby-beginning-of-defun)
     (define-key ruby-mode-map (kbd "C-M-e") #'editutil-ruby-end-of-defun))
-
-  ;; view-mode
-  (with-eval-after-load 'view
-    (define-key view-mode-map (kbd "B") #'editutil-backward-symbol)
-    (define-key view-mode-map (kbd "e") #'editutil-view-word-end)
-    (define-key view-mode-map (kbd "G") #'editutil-goto-last-line)
-    (define-key view-mode-map (kbd "f") #'editutil-forward-char)
-    (define-key view-mode-map (kbd "F") #'editutil-backward-char)
-
-    (define-key view-mode-map (kbd "i") #'editutil-view-insert)
-    (define-key view-mode-map (kbd "a") #'editutil-view-insert-at-next)
-    (define-key view-mode-map (kbd "I") #'editutil-view-insert-at-bol)
-    (define-key view-mode-map (kbd "A") #'editutil-view-insert-at-eol)
-    (define-key view-mode-map (kbd "q") #'editutil-view-quit))
 
   ;; paredit
   (with-eval-after-load 'paredit
