@@ -132,7 +132,7 @@
 
 (defun helm-editutil--find-files-init ()
   (with-current-buffer (helm-candidate-buffer 'global)
-    (unless (zerop (process-file "perl" nil t nil "-wE" "say for grep {-T $_} glob('* .*')"))
+    (unless (zerop (process-file "perl" nil t nil "-E" "say for grep {-T $_} glob('* .*')"))
       (error "Failed: collect files"))))
 
 (defvar helm-editutil-source-find-files
@@ -144,10 +144,23 @@
              "Find File alternate" #'find-alternate-file
              "Insert File" #'insert-file)))
 
+(defvar helm-editutil-source-find-directories
+  (helm-build-sync-source "Find directories"
+    :candidates (lambda ()
+                  (cl-loop for f in (directory-files default-directory)
+                           when (and (file-directory-p f)
+                                     (not (string-prefix-p "." f)))
+                           collect (file-name-as-directory f)))
+    :action (helm-make-actions
+             "Find File" #'find-file
+             "Find File other window" #'find-file-other-window
+             "Find File alternate" #'find-alternate-file)))
+
 ;;;###autoload
 (defun helm-editutil-find-files ()
   (interactive)
-  (helm :sources '(helm-editutil-source-find-files) :buffer "*Helm Find Files*"))
+  (helm :sources '(helm-editutil-source-find-files helm-editutil-source-find-directories)
+        :buffer "*Helm Find Files*"))
 
 ;;;###autoload
 (defun helm-editutil-search-buffer ()
