@@ -1081,8 +1081,8 @@
     (define-key paredit-mode-map (kbd "DEL") #'editutil-paredit-backward-delete))
 
   ;; yasnippet
-  (with-eval-after-load 'yasnippet
-    (setq-default yas-prompt-functions '(helm-editutil-yas-prompt)))
+  (custom-set-variables
+   '(yas-prompt-functions '(helm-editutil-yas-prompt)))
 
   ;; pop-to-mark-command
   (advice-add 'pop-to-mark-command :around #'editutil-pop-to-mark-advice)
