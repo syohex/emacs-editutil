@@ -638,10 +638,19 @@
   (interactive "P")
   (editutil--kill-command-common arg 'kill-region 'symbol))
 
+(defsubst editutil--github-url ()
+  (car (process-lines "hub" "browse" "-u")))
+
 (defun editutil-browse-github ()
   (interactive)
-  (let ((url (car (process-lines "hub" "browse" "-u"))))
-    (browse-url url)))
+  (browse-url (editutil--github-url)))
+
+(defun editutil-browse-github-file ()
+  (interactive)
+  (let ((url (editutil--github-url))
+        (file (file-relative-name (buffer-file-name) (vc-root-dir)))
+        (branch (editutil--vc-branch)))
+    (browse-url (concat url "/blob/" branch "/" file))))
 
 (defun editutil-browse-weblio-word (word)
   (interactive
@@ -1026,6 +1035,7 @@
 
   ;; 'C-x w' prefix
   (global-set-key (kbd "C-x w w") #'editutil-browse-github)
+  (global-set-key (kbd "C-x w f") #'editutil-browse-github-file)
   (global-set-key (kbd "C-x w h") 'windmove-left)
   (global-set-key (kbd "C-x w l") 'windmove-right)
   (global-set-key (kbd "C-x w k") 'windmove-up)
