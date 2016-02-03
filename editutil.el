@@ -1001,6 +1001,9 @@
   (global-set-key (kbd "M-d") #'editutil-delete-word)
   (global-set-key (kbd "M-D") #'editutil-delete-line)
 
+  (global-set-key (kbd "M-h") #'editutil-mark-inside-paired)
+  (global-set-key (kbd "M-H") #'editutil-mark-around-paired)
+
   (global-set-key (kbd "M-u") #'editutil-upcase)
   (global-set-key (kbd "M-l") #'editutil-downcase)
   (global-set-key (kbd "M-c") #'editutil-capitalize)
@@ -1015,11 +1018,8 @@
   (global-set-key (kbd "M-I") #'editutil-indent-same-as-previous-line)
   (global-set-key (kbd "M-(") #'editutil-insert-parentheses)
 
-  (global-set-key (kbd "C-x .") #'editutil-highlight-symbol-in-defun)
-  (global-set-key (kbd "C-x ,") #'editutil-highlight-clear-overlays)
-
-  (global-set-key (kbd "C-x m") #'editutil-mark-inside-paired)
-  (global-set-key (kbd "C-x M") #'editutil-mark-around-paired)
+  (global-set-key (kbd "C-x m") #'editutil-highlight-symbol-in-defun)
+  (global-set-key (kbd "C-x M") #'editutil-highlight-clear-overlays)
   (global-set-key (kbd "C-M-w") #'editutil-mark-sexp)
 
   (global-set-key (kbd "C-c w") #'editutil-dictionary-search)
