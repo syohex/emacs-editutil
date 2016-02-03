@@ -638,32 +638,10 @@
   (interactive "P")
   (editutil--kill-command-common arg 'kill-region 'symbol))
 
-(defun editutil--github-url (remote branch)
-  (with-temp-buffer
-    (unless (zerop (process-file "git" nil t nil "remote" "-v"))
-      (error "Failed: git remote -v"))
-    (goto-char (point-min))
-    (when (re-search-forward (concat "\\<" remote "\\>") nil t)
-      (let ((line (editutil--current-line)))
-        (when (string-match "github.com[:/]?\\(\\S-+?\\)?\\(?:\\.git\\)" line)
-          (let ((path (match-string-no-properties 1 line)))
-            (if (string= branch "master")
-                (concat "https://github.com/" path)
-              (concat "https://github.com/" path "/tree/" branch))))))))
-
-(defun editutil-browse-github (remote)
-  (interactive
-   (list
-    (let ((remotes (process-lines "git" "remote")))
-      (if (= (length remotes) 1)
-          (car remotes)
-        (completing-read "Remote(default: origin): " remotes nil t nil nil
-                         "origin")))))
-  (let ((current-branch (car (vc-git-branches))))
-    (let ((url (editutil--github-url remote current-branch)))
-      (unless url
-        (error "Error: URL not found"))
-      (browse-url url))))
+(defun editutil-browse-github ()
+  (interactive)
+  (let ((url (car (process-lines "hub" "browse" "-u"))))
+    (browse-url url)))
 
 (defun editutil-browse-weblio-word (word)
   (interactive
