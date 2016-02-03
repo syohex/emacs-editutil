@@ -228,15 +228,6 @@
          (read-char nil t)))
   (editutil--zap-to-char-common arg char 0))
 
-(defun editutil-zap-to-char-backward (arg)
-  (interactive "p")
-  (let ((input (char-to-string (read-char nil t)))
-        (curpoint (point))
-        (case-fold-search nil))
-    (save-excursion
-      (when (search-backward input nil t arg)
-        (delete-region (1+ (point)) curpoint)))))
-
 (defun editutil--char-to-thing (char)
   (cl-case char
     (?w 'word)
@@ -989,7 +980,6 @@
   (global-set-key (kbd "M-w") #'editutil-kill-ring-save)
 
   (global-set-key (kbd "M-q") #'editutil-zap-to-char)
-  (global-set-key (kbd "ESC Q") #'editutil-zap-to-char-backward)
 
   (global-set-key (kbd "C-M-o") #'editutil-other-window)
   (global-set-key (kbd "C-M-u") #'editutil-backward-up)
