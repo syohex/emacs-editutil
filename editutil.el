@@ -921,6 +921,23 @@
         (call-interactively #'delete-horizontal-space)
       (insert " "))))
 
+(defun editutil-forward-WORD (arg)
+  (interactive "p")
+  (dotimes (_i arg)
+    (skip-syntax-forward "^\\s-")
+    (skip-syntax-forward "\\s-")))
+
+(defun editutil-backward-WORD (arg)
+  (interactive "p")
+  (let ((pos (point)))
+    (skip-syntax-backward "^\\s-")
+    (unless (= pos (point))
+      (cl-decf arg))
+    (dotimes (_i arg)
+      (backward-char 1)
+      (skip-syntax-backward "\\s-")
+      (skip-syntax-backward "^\\s-"))))
+
 ;;;
 ;;; For Ruby Programming
 ;;;
@@ -987,6 +1004,9 @@
 
   (global-set-key (kbd "C-y") #'editutil-yank)
   (global-set-key (kbd "M-Y") #'editutil-yank-pop-next)
+
+  (global-set-key (kbd "M-F") #'editutil-forward-WORD)
+  (global-set-key (kbd "M-B") #'editutil-backward-WORD)
 
   (global-set-key (kbd "M-d") #'editutil-delete-word)
   (global-set-key (kbd "M-D") #'editutil-delete-line)
