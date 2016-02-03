@@ -11,7 +11,6 @@ ELPA_DIR = \
 
 test: elpa
 	$(CASK) exec $(EMACS) -Q -batch $(LOADPATH) $(LOAD_HELPER) \
-		-l test/test-browser-utility.el \
 		-l test/test-lisp-utility.el \
 		-l test/test-mark-utility.el \
 		-l test/test-kill-utility.el \
