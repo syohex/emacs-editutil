@@ -687,15 +687,19 @@
   "Branch information in mode-line"
   :group 'editutil)
 
+(defun editutil--vc-branch ()
+  (let ((backend (symbol-name (vc-backend (buffer-file-name)))))
+    (substring-no-properties vc-mode (+ (length backend) 2))))
+
 (defvar editutil-vc-mode-line
   '(:propertize
-    (:eval (let* ((file (buffer-file-name))
-                  (backend (symbol-name (vc-backend file)))
-                  (branch (substring vc-mode (+ (length backend) 2)))
-                  (state (cl-case (vc-state file)
-                           (edited
-                            (format ":%d" (length (bound-and-true-p git-gutter:diffinfos))))
-                           (otherwise ""))))
+    (:eval (let ((branch (editutil--vc-branch))
+                 (state (if (bound-and-true-p git-gutter-mode)
+                            (cl-case (vc-state (buffer-file-name))
+                              (edited
+                               (format ":%d" (git-gutter:buffer-hunks)))
+                              (otherwise ""))
+                          "")))
              (concat "(" branch state ")")))
     face editutils-vc-branch)
   "Mode line format for VC Mode.")
