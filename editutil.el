@@ -649,8 +649,11 @@
   (interactive)
   (let ((url (editutil--github-url))
         (file (file-relative-name (buffer-file-name) (vc-root-dir)))
-        (branch (editutil--vc-branch)))
-    (browse-url (concat url "/blob/" branch "/" file))))
+        (branch (editutil--vc-branch))
+        (line (if current-prefix-arg
+                  (format "#L%d" (line-number-at-pos))
+                "")))
+    (browse-url (concat url "/blob/" branch "/" file line))))
 
 (defun editutil-browse-weblio-word (word)
   (interactive
