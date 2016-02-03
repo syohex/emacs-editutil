@@ -60,4 +60,36 @@
       (call-interactively 'editutil-indent-same-as-previous-line)
       (should (= (current-indentation) expected)))))
 
+(ert-deftest forward-WORD ()
+  "forward word like vim's 'W'"
+  (with-editutil-temp-buffer 'fundamental-mode
+    "foo!!!!bar baz"
+    (call-interactively #'editutil-forward-WORD)
+    (should (looking-at-p "baz")))
+
+  (with-editutil-temp-buffer 'fundamental-mode
+    "apple!!orange''''#banana melon@@@grape egg"
+    (editutil-forward-WORD 2)
+    (should (looking-at-p "egg"))))
+
+(ert-deftest backward-WORD ()
+  "forward word like vim's 'B'"
+  (with-editutil-temp-buffer 'fundamental-mode
+    "foo!!!!bar baz"
+    (goto-char (point-max))
+    (call-interactively #'editutil-backward-WORD)
+    (looking-at-p "baz")
+    (call-interactively #'editutil-backward-WORD)
+    (looking-at-p "foo"))
+
+  (with-editutil-temp-buffer 'fundamental-mode
+    "apple!!orange''''#banana melon@@@grape egg"
+    (goto-char (point-max))
+    (editutil-backward-WORD 2)
+    (should (looking-at-p "melon"))
+
+    (goto-char (point-max))
+    (editutil-backward-WORD 3)
+    (should (looking-at-p "apple"))))
+
 ;;; test-moving-utility.el ends here
