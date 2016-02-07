@@ -818,8 +818,12 @@
 
 (defun editutil-join-line (arg)
   (interactive "p")
-  (dotimes (_i arg)
-    (delete-indentation -1)))
+  (save-excursion
+    (when (< arg 0)
+      (setq arg (1- (abs arg)))
+      (forward-line (- arg)))
+    (dotimes (_i (abs arg))
+      (delete-indentation -1))))
 
 (defun editutil-hippie-expand ()
   (interactive)
