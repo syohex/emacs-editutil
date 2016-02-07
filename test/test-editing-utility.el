@@ -93,4 +93,20 @@
     (call-interactively 'editutil-capitalize)
     (should (string= (buffer-string) "Foo Bar"))))
 
+(ert-deftest join-line ()
+  "Join lines"
+  (with-editutil-temp-buffer 'fundamental-mode
+    "foo
+bar
+baz"
+    (editutil-join-line 3)
+    (should (string= (buffer-string) "foo bar baz")))
+
+  (with-editutil-temp-buffer 'fundamental-mode
+    "foo
+bar
+baz"
+    (editutil-join-line -3)
+    (should (string= (buffer-string) "foo bar baz"))))
+
 ;;; test-editing-utility.el ends here
