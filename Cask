@@ -6,4 +6,5 @@
 (depends-on "elscreen")
 
 (development
+ (depends-on "git-gutter")
  (depends-on "ert"))
