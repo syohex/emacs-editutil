@@ -209,6 +209,7 @@
                               :real-to-display display-fn
                               :action (helm-make-actions
                                        "Switch buffer" #'switch-to-buffer
+                                       "Switch buffer other window" #'switch-to-buffer-other-window
                                        "Insert buffer" #'insert-buffer)))
           :buffer "*Helm Switch Buffer*")))
 
