@@ -968,6 +968,7 @@
   (global-unset-key (kbd "C-x t"))
   (global-unset-key (kbd "C-x w"))
   (global-unset-key (kbd "C-x s"))
+  (global-unset-key (kbd "C-x a"))
 
   (global-set-key (kbd "RET") #'editutil-newline)
   (global-set-key (kbd "C-j") #'editutil-newline-and-maybe-indent)
@@ -1051,6 +1052,10 @@
   (global-set-key (kbd "C-x w l") 'windmove-right)
   (global-set-key (kbd "C-x w k") 'windmove-up)
   (global-set-key (kbd "C-x w j") 'windmove-down)
+
+  ;; 'C-x a' prefix
+  (global-set-key (kbd "C-x a n") #'next-logical-line)
+  (global-set-key (kbd "C-x a p") #'previous-logical-line)
 
   (define-key my/ctrl-q-map (kbd "C-t") #'editutil-toggle-cleanup-spaces)
 
