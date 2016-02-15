@@ -1079,6 +1079,9 @@
 
   (run-with-idle-timer 10 t #'editutil-auto-save-buffers)
 
+  ;; registers
+  (set-register ?m '(file . "~/Dropbox/memo.txt"))
+
   ;; helm-ispell
   (custom-set-variables
    '(helm-ispell-browse-url-function #'editutil-browse-weblio-word))
