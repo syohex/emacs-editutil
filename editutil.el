@@ -864,8 +864,6 @@
   ""
   `((,(kbd "C-M-j") . editutil-hippie-expand)
     (,(kbd "M-q") . editutil-zap-to-char)
-    (,(kbd "M-e") . editutil-forward-char)
-    (,(kbd "M-E") . editutil-backward-char)
     (,(kbd "C-M-o") . editutil-other-window)))
 
 ;;;###autoload
@@ -966,6 +964,9 @@
 
   (global-set-key (kbd "C-M-o") #'editutil-other-window)
   (global-set-key (kbd "C-M-u") #'editutil-backward-up)
+
+  (global-set-key (kbd "M-z") #'editutil-forward-char)
+  (global-set-key (kbd "M-Z") #'editutil-backward-char)
 
   (global-set-key (kbd "C-k") #'editutil-kill-line)
   (global-set-key (kbd "C-M-n") #'editutil-forward-list)
