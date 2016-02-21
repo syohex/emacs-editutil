@@ -25,7 +25,8 @@
 ;;; Code:
 
 (eval-when-compile
-  (defvar my/ctrl-q-map))
+  (defvar my/ctrl-q-map)
+  (defvar popwin:popup-window))
 
 (require 'cl-lib)
 (require 'subr-x)
@@ -37,6 +38,8 @@
 (declare-function subword-forward "subword")
 (declare-function subword-backward "subword")
 (declare-function elscreen-editutil-current-directory "elscreen-editutil")
+(declare-function popwin:popup-last-buffer "popwin")
+(declare-function popwin:popup-window-live-p "popwin")
 
 (defgroup editutil nil
   "My own editing utilities"
@@ -927,6 +930,13 @@
       (skip-syntax-backward "\\s-")
       (skip-syntax-backward "^\\s-"))))
 
+(defun editutil-popwin-select-popup-window ()
+  (interactive)
+  (if (popwin:popup-window-live-p)
+      (select-window popwin:popup-window)
+    (popwin:popup-last-buffer)
+    (select-window popwin:popup-window)))
+
 ;;
 ;; Setup
 ;;
@@ -1002,6 +1012,8 @@
   (global-set-key (kbd "C-x j") #'editutil-join-line)
 
   (global-set-key (kbd "C-x ;") #'editutil-comment-line)
+
+  (global-set-key (kbd "C-x l") #'editutil-popwin-select-popup-window)
 
   ;; 'C-x r' prefix
   (global-set-key (kbd "C-x r N") #'editutil-number-rectangle)
