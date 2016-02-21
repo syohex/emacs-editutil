@@ -927,32 +927,6 @@
       (skip-syntax-backward "\\s-")
       (skip-syntax-backward "^\\s-"))))
 
-;;;
-;;; For Ruby Programming
-;;;
-
-(defun editutil-ruby-insert-bar ()
-  (interactive)
-  (if (looking-back "\\(?:do\\s-+\\|{\\)" (line-beginning-position))
-      (progn
-        (insert "||")
-        (backward-char 1))
-    (insert "|")))
-
-(defun editutil-ruby-beginning-of-defun (&optional arg)
-  (interactive "p")
-  (and (re-search-backward (concat "^\\s-+\\(" ruby-block-beg-re "\\)\\_>")
-                           nil 'move arg)
-       (progn (back-to-indentation) t)))
-
-(defun editutil-ruby-end-of-defun (&optional arg)
-  (interactive "p")
-  (and (re-search-forward (concat "^\\s-+\\(" ruby-block-end-re "\\)\\($\\|\\b[^_]\\)")
-                          nil 'move arg)
-       (progn (beginning-of-line) t))
-  (forward-line 1)
-  (back-to-indentation))
-
 ;;
 ;; Setup
 ;;
@@ -1085,12 +1059,6 @@
   ;; helm-ispell
   (custom-set-variables
    '(helm-ispell-browse-url-function #'editutil-browse-weblio-word))
-
-  ;; Ruby
-  (with-eval-after-load 'ruby-mode
-    (define-key ruby-mode-map (kbd "|") #'editutil-ruby-insert-bar)
-    (define-key ruby-mode-map (kbd "C-M-a") #'editutil-ruby-beginning-of-defun)
-    (define-key ruby-mode-map (kbd "C-M-e") #'editutil-ruby-end-of-defun))
 
   ;; paredit
   (with-eval-after-load 'paredit
