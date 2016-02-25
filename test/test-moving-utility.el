@@ -92,4 +92,28 @@
     (editutil-backward-WORD 3)
     (should (looking-at-p "apple"))))
 
+(ert-deftest forward-word-end ()
+  "forward word like vim's 'e'"
+  (with-editutil-temp-buffer 'fundamental-mode
+    "foo-bar baz"
+    (call-interactively #'editutil-forward-word-end)
+    (should (looking-back "fo")))
+
+  (with-editutil-temp-buffer 'fundamental-mode
+    "foo-bar baz"
+    (editutil-forward-word-end 2)
+    (should (looking-back "-ba"))))
+
+(ert-deftest forward-WORD-end ()
+  "forward word like vim's 'E'"
+  (with-editutil-temp-buffer 'fundamental-mode
+    "foo-bar baz"
+    (call-interactively #'editutil-forward-WORD-end)
+    (should (looking-back "-ba")))
+
+  (with-editutil-temp-buffer 'fundamental-mode
+    "foo-bar   baz    boo"
+    (editutil-forward-WORD-end 2)
+    (should (looking-back "ba"))))
+
 ;;; test-moving-utility.el ends here
