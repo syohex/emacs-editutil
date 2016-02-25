@@ -858,6 +858,14 @@
     (delete-region (line-beginning-position)
                    (min (1+ (line-end-position)) (point-max)))))
 
+(define-minor-mode editutil-global-minor-mode
+  "Most superior minir mode"
+  t
+  ""
+  `((,(kbd "C-M-j") . editutil-hippie-expand)
+    (,(kbd "M-q") . editutil-zap-to-char)
+    (,(kbd "C-M-o") . editutil-other-window)))
+
 ;;;###autoload
 (defun editutil-recentf-save-list ()
   (interactive)
@@ -927,16 +935,6 @@
     (popwin:popup-last-buffer)
     (select-window popwin:popup-window)))
 
-(define-minor-mode editutil-global-minor-mode
-  "Most superior minir mode"
-  t
-  ""
-  `((,(kbd "C-M-j") . editutil-hippie-expand)
-    (,(kbd "M-q") . editutil-zap-to-char)
-    (,(kbd "M-e") . editutil-forward-WORD)
-    (,(kbd "M-a") . editutil-backward-WORD)
-    (,(kbd "C-M-o") . editutil-other-window)))
-
 ;;
 ;; Setup
 ;;
@@ -980,6 +978,9 @@
 
   (global-set-key (kbd "C-y") #'editutil-yank)
   (global-set-key (kbd "M-Y") #'editutil-yank-pop-next)
+
+  (global-set-key (kbd "M-F") #'editutil-forward-WORD)
+  (global-set-key (kbd "M-B") #'editutil-backward-WORD)
 
   (global-set-key (kbd "M-d") #'editutil-delete-word)
   (global-set-key (kbd "M-D") #'editutil-delete-line)
