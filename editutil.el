@@ -858,14 +858,6 @@
     (delete-region (line-beginning-position)
                    (min (1+ (line-end-position)) (point-max)))))
 
-(define-minor-mode editutil-global-minor-mode
-  "Most superior minir mode"
-  t
-  ""
-  `((,(kbd "C-M-j") . editutil-hippie-expand)
-    (,(kbd "M-q") . editutil-zap-to-char)
-    (,(kbd "C-M-o") . editutil-other-window)))
-
 ;;;###autoload
 (defun editutil-recentf-save-list ()
   (interactive)
@@ -934,6 +926,14 @@
       (select-window popwin:popup-window)
     (popwin:popup-last-buffer)
     (select-window popwin:popup-window)))
+
+(define-minor-mode editutil-global-minor-mode
+  "Most superior minir mode"
+  t
+  ""
+  `((,(kbd "C-M-j") . editutil-hippie-expand)
+    (,(kbd "M-q") . editutil-zap-to-char)
+    (,(kbd "C-M-o") . editutil-other-window)))
 
 ;;
 ;; Setup
