@@ -903,6 +903,17 @@
         (call-interactively #'delete-horizontal-space)
       (insert " "))))
 
+(defun editutil-forward-word-end (arg)
+  (interactive "p")
+  (forward-word arg)
+  (backward-char +1))
+
+(defun editutil-forward-WORD-end (arg)
+  (interactive "p")
+  (editutil-forward-WORD arg)
+  (skip-syntax-backward "\\s-")
+  (backward-char +1))
+
 (defun editutil-forward-WORD (arg)
   (interactive "p")
   (dotimes (_i arg)
@@ -978,6 +989,9 @@
 
   (global-set-key (kbd "C-y") #'editutil-yank)
   (global-set-key (kbd "M-Y") #'editutil-yank-pop-next)
+
+  (global-set-key (kbd "M-e") #'editutil-forward-word-end)
+  (global-set-key (kbd "M-E") #'editutil-forward-WORD-end)
 
   (global-set-key (kbd "M-F") #'editutil-forward-WORD)
   (global-set-key (kbd "M-B") #'editutil-backward-WORD)
