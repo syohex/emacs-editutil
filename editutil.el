@@ -942,7 +942,8 @@
   "Most superior minir mode"
   t
   ""
-  `((,(kbd "C-M-j") . editutil-hippie-expand)
+  `((,(kbd "C-h") . backward-delete-char)
+    (,(kbd "C-M-j") . editutil-hippie-expand)
     (,(kbd "M-q") . editutil-zap-to-char)
     (,(kbd "C-M-o") . editutil-other-window)))
 
@@ -962,6 +963,10 @@
   (global-unset-key (kbd "C-x w"))
   (global-unset-key (kbd "C-x s"))
   (global-unset-key (kbd "C-x a"))
+  (global-unset-key (kbd "C-x o"))
+
+  (global-set-key (kbd "C-h") #'backward-delete-char)
+  (global-set-key (kbd "M-h") #'help-command)
 
   (global-set-key (kbd "RET") #'editutil-newline)
   (global-set-key (kbd "C-j") #'editutil-newline-and-maybe-indent)
@@ -999,9 +1004,6 @@
   (global-set-key (kbd "M-d") #'editutil-delete-word)
   (global-set-key (kbd "M-D") #'editutil-delete-line)
 
-  (global-set-key (kbd "M-h") #'editutil-mark-inside-paired)
-  (global-set-key (kbd "M-H") #'editutil-mark-around-paired)
-
   (global-set-key (kbd "M-u") #'editutil-upcase)
   (global-set-key (kbd "M-l") #'editutil-downcase)
   (global-set-key (kbd "M-c") #'editutil-capitalize)
@@ -1035,6 +1037,10 @@
 
   ;; 'C-x c' prefix
   (global-set-key (kbd "C-x c c") #'editutil-compile)
+
+  ;; 'C-x o' prefix
+  (global-set-key (kbd "C-x o i") #'editutil-mark-inside-paired)
+  (global-set-key (kbd "C-x o a") #'editutil-mark-around-paired)
 
   ;; 'C-x t' prefix
   (global-set-key (kbd "C-x t n") #'editutil-move-line-down)
