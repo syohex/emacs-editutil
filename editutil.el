@@ -942,8 +942,7 @@
   "Most superior minir mode"
   t
   ""
-  `((,(kbd "C-h") . backward-delete-char)
-    (,(kbd "C-M-j") . editutil-hippie-expand)
+  `((,(kbd "C-M-j") . editutil-hippie-expand)
     (,(kbd "M-q") . editutil-zap-to-char)
     (,(kbd "C-M-o") . editutil-other-window)))
 
@@ -964,9 +963,6 @@
   (global-unset-key (kbd "C-x s"))
   (global-unset-key (kbd "C-x a"))
   (global-unset-key (kbd "C-x o"))
-
-  (global-set-key (kbd "C-h") #'backward-delete-char)
-  (global-set-key (kbd "M-h") #'help-command)
 
   (global-set-key (kbd "RET") #'editutil-newline)
   (global-set-key (kbd "C-j") #'editutil-newline-and-maybe-indent)
