@@ -97,7 +97,14 @@
   (with-editutil-temp-buffer 'fundamental-mode
     "foo-bar baz"
     (call-interactively #'editutil-forward-word-end)
-    (should (looking-back "fo")))
+    (should (looking-back "fo"))
+
+    (goto-char (point-min))
+    (dotimes (_ 2)
+      (call-interactively #'editutil-forward-word-end))
+    (should (looking-back "-ba"))
+    (call-interactively #'editutil-forward-word-end)
+    (should (looking-back " ba")))
 
   (with-editutil-temp-buffer 'fundamental-mode
     "foo-bar baz"
@@ -109,7 +116,10 @@
   (with-editutil-temp-buffer 'fundamental-mode
     "foo-bar baz"
     (call-interactively #'editutil-forward-WORD-end)
-    (should (looking-back "-ba")))
+    (should (looking-back "-ba"))
+
+    (call-interactively #'editutil-forward-WORD-end)
+    (should (looking-back " ba")))
 
   (with-editutil-temp-buffer 'fundamental-mode
     "foo-bar   baz    boo"
