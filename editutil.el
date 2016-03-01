@@ -1046,9 +1046,6 @@
   ;; 'C-x r' prefix
   (global-set-key (kbd "C-x r N") #'editutil-number-rectangle)
 
-  ;; 'C-x c' prefix
-  (global-set-key (kbd "C-x c c") #'editutil-compile)
-
   ;; 'C-x o' prefix
   (global-set-key (kbd "C-x o i") #'editutil-mark-inside-paired)
   (global-set-key (kbd "C-x o a") #'editutil-mark-around-paired)
@@ -1074,6 +1071,9 @@
   ;; 'C-x a' prefix
   (global-set-key (kbd "C-x a n") #'next-logical-line)
   (global-set-key (kbd "C-x a p") #'previous-logical-line)
+
+  ;; 'M-g' prefix
+  (global-set-key (kbd "M-g c") #'editutil-compile)
 
   (define-key my/ctrl-q-map (kbd "C-t") #'editutil-toggle-cleanup-spaces)
 
