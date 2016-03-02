@@ -1107,7 +1107,7 @@
 
   ;; paredit
   (with-eval-after-load 'paredit
-    (define-key paredit-mode-map (kbd "C-c C-l") #'editutil-toggle-let)
+    (define-key paredit-mode-map (kbd "C-c l") #'editutil-toggle-let)
     (define-key paredit-mode-map (kbd "DEL") #'editutil-paredit-backward-delete))
 
   ;; yasnippet
