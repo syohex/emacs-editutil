@@ -526,7 +526,9 @@
 (defun editutil-other-window ()
   (interactive)
   (when (one-window-p)
-    (split-window-right))
+    (if (> (window-width) 120)
+        (split-window-right)
+      (split-window-below)))
   (unless current-prefix-arg
     (other-window 1)))
 
