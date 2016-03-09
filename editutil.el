@@ -512,13 +512,6 @@
     (editutil-backward-up arg)
     (forward-sexp arg)))
 
-(defun editutil-minibuffer-up-dir ()
-  (interactive)
-  (backward-char 1)
-  (when (search-backward "/" nil t)
-    (delete-region (1+ (point)) (line-end-position))
-    (forward-char 1)))
-
 (defun editutil-insert-parentheses (arg)
   (interactive "P")
   (insert-parentheses (or arg 1)))
@@ -1078,8 +1071,6 @@
   (global-set-key (kbd "M-g c") #'editutil-compile)
 
   (define-key my/ctrl-q-map (kbd "C-t") #'editutil-toggle-cleanup-spaces)
-
-  (define-key minibuffer-local-map (kbd "C-M-u") #'editutil-minibuffer-up-dir)
 
   (add-hook 'after-change-major-mode-hook #'editutil-clear-mode-line)
 
