@@ -949,7 +949,6 @@
   (global-unset-key (kbd "C-x w"))
   (global-unset-key (kbd "C-x s"))
   (global-unset-key (kbd "C-x a"))
-  (global-unset-key (kbd "C-x o"))
 
   (global-set-key (kbd "RET") #'editutil-newline)
   (global-set-key (kbd "C-j") #'editutil-newline-and-maybe-indent)
