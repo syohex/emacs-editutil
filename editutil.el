@@ -533,29 +533,6 @@
   "highlight symbol"
   :group 'editutil)
 
-(defun editutil-highlight-clear-overlays ()
-  (interactive)
-  (dolist (ov (overlays-in (point-min) (point-max)))
-    (when (overlay-get ov 'editutils-highlight)
-      (delete-overlay ov))))
-
-(defun editutil-highlight-symbol-in-defun ()
-  (interactive)
-  (let ((symbol (thing-at-point 'symbol)))
-    (unless symbol
-      (error "Here is not on symbol!!"))
-    (let ((bounds (bounds-of-thing-at-point 'defun)))
-      (let ((begin (or (car bounds) (point-min)))
-            (end (or (cdr bounds) (point-max))))
-        (editutil-highlight-clear-overlays)
-        (save-excursion
-          (goto-char begin)
-          (let ((regexp (concat "\\_<" symbol "\\_>")))
-            (while (re-search-forward regexp end t)
-              (let ((ov (make-overlay (match-beginning 0) (match-end 0))))
-                (overlay-put ov 'face 'editutils-highlight)
-                (overlay-put ov 'editutils-highlight t)))))))))
-
 (defun editutil-toggle-let ()
   (interactive)
   (save-excursion
@@ -1024,8 +1001,8 @@
   (global-set-key (kbd "M-I") #'editutil-indent-same-as-previous-line)
   (global-set-key (kbd "M-(") #'editutil-insert-parentheses)
 
-  (global-set-key (kbd "C-x m") #'editutil-highlight-symbol-in-defun)
-  (global-set-key (kbd "C-x M") #'editutil-highlight-clear-overlays)
+  (global-set-key (kbd "C-x m") #'editutil-mark-inside-paired)
+  (global-set-key (kbd "C-x M") #'editutil-mark-around-paired)
   (global-set-key (kbd "C-M-w") #'editutil-mark-sexp)
 
   (global-set-key (kbd "C-c w") #'editutil-dictionary-search)
@@ -1040,10 +1017,6 @@
 
   ;; 'C-x r' prefix
   (global-set-key (kbd "C-x r N") #'editutil-number-rectangle)
-
-  ;; 'C-x o' prefix
-  (global-set-key (kbd "C-x o i") #'editutil-mark-inside-paired)
-  (global-set-key (kbd "C-x o a") #'editutil-mark-around-paired)
 
   ;; 'C-x t' prefix
   (global-set-key (kbd "C-x t n") #'editutil-move-line-down)
