@@ -26,6 +26,8 @@
 
 (eval-when-compile
   (defvar my/ctrl-q-map)
+  (defvar paredit-mode-map)
+  (defvar helm-map)
   (defvar popwin:popup-window))
 
 (require 'cl-lib)
@@ -40,6 +42,7 @@
 (declare-function elscreen-editutil-current-directory "elscreen-editutil")
 (declare-function popwin:popup-last-buffer "popwin")
 (declare-function popwin:popup-window-live-p "popwin")
+(declare-function recentf-save-list "recentf")
 
 (defgroup editutil nil
   "My own editing utilities"
