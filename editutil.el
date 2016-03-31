@@ -644,6 +644,15 @@
   (let ((query (mapconcat 'identity (split-string sentence) "+")))
     (browse-url (format "http://ejje.weblio.jp/sentence/content/%s" query))))
 
+(defun editutil-browse-google-search (query)
+  (interactive
+   (list
+    (if (use-region-p)
+        (buffer-substring-no-properties (region-beginning) (region-end))
+      (read-string "Query: "))))
+  (let ((search-url (format "https://www.google.com/search?ion=1&q=%s" query)))
+    (browse-url search-url)))
+
 (defun editutil-toggle-cleanup-spaces ()
   (interactive)
   (cond ((memq 'delete-trailing-whitespace before-save-hook)
@@ -1033,6 +1042,7 @@
   ;; 'C-x w' prefix
   (global-set-key (kbd "C-x w w") #'editutil-browse-github)
   (global-set-key (kbd "C-x w f") #'editutil-browse-github-file)
+  (global-set-key (kbd "C-x w g") #'editutil-browse-google-search)
   (global-set-key (kbd "C-x w h") 'windmove-left)
   (global-set-key (kbd "C-x w l") 'windmove-right)
   (global-set-key (kbd "C-x w k") 'windmove-up)
