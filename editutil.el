@@ -1078,6 +1078,7 @@
   ;; registers
   (set-register ?m '(file . "~/Dropbox/memo.txt"))
   (set-register ?w '(file . "~/Dropbox/work.txt"))
+  (set-register ?t '(file . "~/TODO/tasks.org"))
 
   ;; helm-ispell
   (custom-set-variables
