@@ -937,6 +937,21 @@
     (popwin:popup-last-buffer)
     (select-window popwin:popup-window)))
 
+(defun editutil-ibuffer-mark-delete-by-filename (regexp)
+  "Mark delete all buffers whose filename matches REGEXP."
+  (interactive
+   (list (read-string "Mark by file name (regexp): ")))
+  (ibuffer-mark-on-buffer
+   (lambda (buf)
+     (with-current-buffer buf
+       (let ((filename (buffer-file-name buf)))
+         (string-match-p
+          regexp
+          (cond (filename filename)
+                ((eq major-mode 'dired-mode) dired-directory)
+                (t default-directory))))))
+   ?D))
+
 (define-minor-mode editutil-global-minor-mode
   "Most superior minir mode"
   t
@@ -1083,6 +1098,10 @@
   ;; helm-ispell
   (custom-set-variables
    '(helm-ispell-browse-url-function #'editutil-browse-weblio-word))
+
+  ;; ibuffer
+  (with-eval-after-load 'ibuffer
+    (define-key ibuffer-mode-map (kbd "M-d") #'editutil-ibuffer-mark-delete-by-filename))
 
   ;; paredit
   (with-eval-after-load 'paredit
