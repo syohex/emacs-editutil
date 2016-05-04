@@ -272,8 +272,6 @@
   (interactive
    (list (prefix-numeric-value current-prefix-arg)
          (read-char)))
-  (unless (char-or-string-p char)
-    (error "Error: Input Invalid Char %d" char))
   (when (>= arg 0)
     (forward-char 1))
   (let ((case-fold-search nil))
@@ -282,8 +280,8 @@
     (backward-char 1))
   (set-transient-map
    (let ((m (make-sparse-keymap)))
-     (define-key m (kbd "M-z") (lambda () (interactive) (editutil-forward-char 1 char)))
-     (define-key m (kbd "M-Z") (lambda () (interactive) (editutil-forward-char -1 char)))
+     (define-key m (kbd "M-e") (lambda () (interactive) (editutil-forward-char 1 char)))
+     (define-key m (kbd "M-a") (lambda () (interactive) (editutil-forward-char -1 char)))
      m)))
 
 (defun editutil-backward-char (arg char)
@@ -990,8 +988,8 @@
   (global-set-key (kbd "C-M-o") #'editutil-other-window)
   (global-set-key (kbd "C-M-u") #'editutil-backward-up)
 
-  (global-set-key (kbd "M-z") #'editutil-forward-char)
-  (global-set-key (kbd "M-Z") #'editutil-backward-char)
+  (global-set-key (kbd "C-x f") #'editutil-forward-char)
+  (global-set-key (kbd "C-x a") #'editutil-backward-char)
 
   (global-set-key (kbd "C-k") #'editutil-kill-line)
   (global-set-key (kbd "C-M-n") #'editutil-forward-list)
@@ -1062,10 +1060,6 @@
   (global-set-key (kbd "C-x w l") 'windmove-right)
   (global-set-key (kbd "C-x w k") 'windmove-up)
   (global-set-key (kbd "C-x w j") 'windmove-down)
-
-  ;; 'C-x a' prefix
-  (global-set-key (kbd "C-x a n") #'next-logical-line)
-  (global-set-key (kbd "C-x a p") #'previous-logical-line)
 
   ;; 'M-g' prefix
   (global-set-key (kbd "M-g c") #'editutil-compile)
