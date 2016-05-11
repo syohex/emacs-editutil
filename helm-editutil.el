@@ -38,9 +38,15 @@
     (with-current-buffer (helm-candidate-buffer 'global)
       (apply 'process-file "git" nil t nil "ls-files" options))))
 
+(defun helm-editutil--find-file (file)
+  (if current-prefix-arg
+      (let ((current-prefix-arg nil))
+        (find-file-other-window file))
+    (find-file file)))
+
 (defvar helm-editutil--git-ls-actions
   (helm-make-actions
-   "Open File" #'find-file
+   "Open File" #'helm-editutil--find-file
    "Open File other window" #'find-file-other-window
    "Find File alternate" #'find-alternate-file
    "Open Directory" #'helm-editutil--open-dired
@@ -104,7 +110,7 @@
     :candidate-number-limit 9999
     :volatile t
     :action (helm-make-actions
-             "Find File" #'find-file
+             "Find File" #'helm-editutil--find-file
              "Find File other window" #'find-file-other-window
              "Find File alternate" #'find-alternate-file
              "Find Files in dired" #'helm-editutil--file-in-dired
@@ -139,7 +145,7 @@
   (helm-build-in-buffer-source "Find Files"
     :init #'helm-editutil--find-files-init
     :action (helm-make-actions
-             "Find File" #'find-file
+             "Find File" #'helm-editutil--find-file
              "Find File other window" #'find-file-other-window
              "Find File alternate" #'find-alternate-file
              "Insert File" #'insert-file)))
@@ -152,7 +158,7 @@
                                      (not (string-prefix-p "." f)))
                            collect (file-name-as-directory f)))
     :action (helm-make-actions
-             "Find File" #'find-file
+             "Find File" #'helm-editutil--find-file
              "Find File other window" #'find-file-other-window
              "Find File alternate" #'find-alternate-file)))
 
