@@ -65,7 +65,8 @@
            collect
            (helm-build-in-buffer-source header
              :init (helm-editutil--make-git-ls-function options)
-             :action helm-editutil--git-ls-actions)))
+             :action helm-editutil--git-ls-actions
+             :keymap helm-find-files-map)))
 
 ;;;###autoload
 (defun helm-editutil-git-ls-files ()
@@ -77,8 +78,7 @@
                                  default-directory
                                topdir))
           (sources (helm-editutil--git-ls-files-source topdir)))
-      (helm :sources sources :buffer "*Helm Git Project*"
-            :keymap helm-find-files-map))))
+      (helm :sources sources :buffer "*Helm Git Project*"))))
 
 ;;;###autoload
 (defun helm-editutil-select-2nd-action ()
