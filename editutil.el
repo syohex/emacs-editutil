@@ -562,11 +562,8 @@
 (defun editutil--add-watchwords ()
   (unless (memq major-mode '(org-mode))
     (font-lock-add-keywords
-     nil '(("\\_<\\(FIXME\\|TODO\\|XXX\\|@@@\\)\\_>"
-            1 '((:foreground "pink") (:weight bold)) t)))
-    (font-lock-add-keywords
-     nil '(("\\_<\\(DONE\\)\\_>"
-            1 '((:foreground "green") (:weight bold)) t)))))
+     nil '(("\\s-\\(FIXME\\|TODO\\|XXX\\|@@@\\)\\s-"
+            1 '((:foreground "pink") (:weight bold)) t)))))
 
 ;; for `cde' command
 (defun editutil-current-buffer-directory ()
