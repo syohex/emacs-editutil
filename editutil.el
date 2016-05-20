@@ -551,6 +551,13 @@
   (when (looking-at-p "^")
     (back-to-indentation)))
 
+(defun editutil-newline-after-sexp (arg)
+  (interactive "p")
+  (when (< arg 0)
+    (editutil-backward-up arg))
+  (forward-sexp arg)
+  (newline-and-indent))
+
 (defun editutil-kill-line (arg)
   (interactive "P")
   (let ((num (prefix-numeric-value arg)))
@@ -1097,6 +1104,7 @@
   ;; paredit
   (with-eval-after-load 'paredit
     (define-key paredit-mode-map (kbd "C-c l") #'editutil-toggle-let)
+    (define-key paredit-mode-map (kbd "C-c j") #'editutil-newline-after-sexp)
     (define-key paredit-mode-map (kbd "DEL") #'editutil-paredit-backward-delete))
 
   ;; yasnippet
