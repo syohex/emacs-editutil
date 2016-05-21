@@ -28,7 +28,7 @@
   (defvar my/ctrl-q-map)
   (defvar paredit-mode-map)
   (defvar helm-map)
-  (defvar popwin:popup-window))
+  (defvar ibuffer-mode-map))
 
 (require 'cl-lib)
 (require 'subr-x)
@@ -40,9 +40,9 @@
 (declare-function subword-forward "subword")
 (declare-function subword-backward "subword")
 (declare-function elscreen-editutil-current-directory "elscreen-editutil")
-(declare-function popwin:popup-last-buffer "popwin")
-(declare-function popwin:popup-window-live-p "popwin")
+(declare-function popwin:find-file "popwin")
 (declare-function recentf-save-list "recentf")
+(declare-function ibuffer-mark-on-buffer "ibuffer")
 
 (defgroup editutil nil
   "My own editing utilities"
@@ -936,13 +936,6 @@
   (interactive)
   (popwin:find-file "~/TODO/tasks.org"))
 
-(defun editutil-popwin-select-popup-window ()
-  (interactive)
-  (if (popwin:popup-window-live-p)
-      (select-window popwin:popup-window)
-    (popwin:popup-last-buffer)
-    (select-window popwin:popup-window)))
-
 (defun editutil-ibuffer-mark-delete-by-filename (regexp)
   "Mark delete all buffers whose filename matches REGEXP."
   (interactive
@@ -1044,8 +1037,6 @@
   (global-set-key (kbd "C-x j") #'editutil-join-line)
 
   (global-set-key (kbd "C-x ;") #'editutil-comment-line)
-
-  (global-set-key (kbd "C-x l") #'editutil-popwin-select-popup-window)
 
   ;; 'C-x r' prefix
   (global-set-key (kbd "C-x r N") #'editutil-number-rectangle)
