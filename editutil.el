@@ -932,6 +932,10 @@
       (skip-syntax-backward "\\s-")
       (skip-syntax-backward "^\\s-"))))
 
+(defun editutil-popwin-task ()
+  (interactive)
+  (popwin:find-file "~/TODO/tasks.org"))
+
 (defun editutil-popwin-select-popup-window ()
   (interactive)
   (if (popwin:popup-window-live-p)
@@ -1092,6 +1096,7 @@
   (set-register ?m '(file . "~/Dropbox/memo.txt"))
   (set-register ?w '(file . "~/Dropbox/work.txt"))
   (set-register ?t '(file . "~/TODO/tasks.org"))
+  (global-set-key  (kbd "<f12>") #'editutil-popwin-task)
 
   ;; helm-ispell
   (custom-set-variables
