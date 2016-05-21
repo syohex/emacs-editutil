@@ -554,6 +554,7 @@
 (defun editutil-newline-after-sexp (arg)
   (interactive "p")
   (when (< arg 0)
+    (setq arg (- arg))
     (editutil-backward-up arg))
   (forward-sexp arg)
   (newline-and-indent))
