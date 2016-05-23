@@ -933,9 +933,14 @@
       (skip-syntax-backward "\\s-")
       (skip-syntax-backward "^\\s-"))))
 
+(defvar editutil--task-file (expand-file-name "~/TODO/tasks.org"))
+
 (defun editutil-popwin-task ()
   (interactive)
-  (popwin:find-file "~/TODO/tasks.org"))
+  (popwin:find-file editutil--task-file))
+
+(defun editutil-org-timer-done ()
+  (find-file editutil--task-file))
 
 (defun editutil-ibuffer-mark-delete-by-filename (regexp)
   "Mark delete all buffers whose filename matches REGEXP."
@@ -1087,7 +1092,7 @@
   ;; registers
   (set-register ?m '(file . "~/Dropbox/memo.txt"))
   (set-register ?w '(file . "~/Dropbox/work.txt"))
-  (set-register ?t '(file . "~/TODO/tasks.org"))
+  (set-register ?t `(file . ,editutil--task-file))
   (global-set-key  (kbd "<f12>") #'editutil-popwin-task)
 
   ;; helm-ispell
@@ -1112,6 +1117,11 @@
   (advice-add 'pop-to-mark-command :around #'editutil-pop-to-mark-advice)
   (custom-set-variables
    '(set-mark-command-repeat-pop t))
+
+  ;; org-mode
+  (with-eval-after-load 'org
+    (add-hook 'org-timer-done-hook #'editutil-org-timer-done)
+    (add-hook 'org-timer-stop-hook #'editutil-org-timer-done))
 
   ;;(makunbound 'editutil-global-minor-mode-map)
   (editutil-global-minor-mode +1)
