@@ -30,6 +30,8 @@
 (require 'subr-x)
 (require 'recentf)
 
+(declare-function popwin:find-file "popwin")
+
 (defun helm-editutil--open-dired (file)
   (dired (file-name-directory file)))
 
@@ -49,6 +51,7 @@
    "Open File" #'helm-editutil--find-file
    "Open File other window" #'find-file-other-window
    "Find File alternate" #'find-alternate-file
+   "Popwin File" 'popwin:find-file
    "Open Directory" #'helm-editutil--open-dired
    "Insert buffer" #'insert-file))
 
@@ -113,6 +116,7 @@
              "Find File" #'helm-editutil--find-file
              "Find File other window" #'find-file-other-window
              "Find File alternate" #'find-alternate-file
+             "Popwin File" 'popwin:find-file
              "Find Files in dired" #'helm-editutil--file-in-dired
              "Insert File" #'insert-file)))
 
@@ -148,6 +152,7 @@
              "Find File" #'helm-editutil--find-file
              "Find File other window" #'find-file-other-window
              "Find File alternate" #'find-alternate-file
+             "Popwin File" 'popwin:find-file
              "Insert File" #'insert-file)))
 
 (defvar helm-editutil-source-find-directories

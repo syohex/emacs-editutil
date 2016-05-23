@@ -7,4 +7,5 @@
 
 (development
  (depends-on "git-gutter")
+ (depends-on "popwin")
  (depends-on "ert"))
