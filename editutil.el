@@ -957,6 +957,23 @@
                 (t default-directory))))))
    ?D))
 
+(defun editutil--cycle-buffer-common ()
+  (set-transient-map
+   (let ((m (make-sparse-keymap)))
+     (define-key m (kbd "[") #'editutil-cycle-next-buffer)
+     (define-key m (kbd "]") #'editutil-cycle-previous-buffer)
+     m)))
+
+(defun editutil-cycle-next-buffer ()
+  (interactive)
+  (bs-cycle-next)
+  (editutil--cycle-buffer-common))
+
+(defun editutil-cycle-previous-buffer ()
+  (interactive)
+  (bs-cycle-previous)
+  (editutil--cycle-buffer-common))
+
 (define-minor-mode editutil-global-minor-mode
   "Most superior minir mode"
   t
@@ -1068,6 +1085,8 @@
 
   ;; 'M-g' prefix
   (global-set-key (kbd "M-g c") #'editutil-compile)
+  (global-set-key (kbd "M-g [") #'editutil-cycle-next-buffer)
+  (global-set-key (kbd "M-g ]") #'editutil-cycle-previous-buffer)
 
   (define-key my/ctrl-q-map (kbd "C-t") #'editutil-toggle-cleanup-spaces)
 
