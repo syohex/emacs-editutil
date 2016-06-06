@@ -699,9 +699,11 @@
 (put 'editutil-vc-mode-line 'risky-local-variable t)
 
 (defun editutil--init-mode-line ()
+  (setq mode-line-misc-info (list (car mode-line-misc-info)))
   (setq-default mode-line-format
-                '("%e"
+                `("%e"
                   editutil-cleanup-space-mode-line
+                  ((global-mode-string ("" global-mode-string " ")))
                   mode-line-front-space
                   mode-line-mule-info
                   mode-line-client
