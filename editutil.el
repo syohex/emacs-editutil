@@ -570,7 +570,7 @@
 (defun editutil--add-watchwords ()
   (unless (memq major-mode '(org-mode))
     (font-lock-add-keywords
-     nil '(("\\s-\\(FIXME\\|TODO\\|XXX\\|@@@\\)\\s-"
+     nil '(("\\(?:^\\|\\s-\\)\\(FIXME\\|TODO\\|XXX\\|@@@\\)\\(?:\\s-\\|$\\)"
             1 '((:foreground "pink") (:weight bold)) t)))))
 
 ;; for `cde' command
