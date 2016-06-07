@@ -941,9 +941,6 @@
   (interactive)
   (popwin:find-file editutil--task-file))
 
-(defun editutil-org-timer-done ()
-  (find-file editutil--task-file))
-
 (defun editutil-ibuffer-mark-delete-by-filename (regexp)
   "Mark delete all buffers whose filename matches REGEXP."
   (interactive
@@ -1080,10 +1077,6 @@
   (global-set-key (kbd "C-x w w") #'editutil-browse-github)
   (global-set-key (kbd "C-x w f") #'editutil-browse-github-file)
   (global-set-key (kbd "C-x w g") #'editutil-browse-google-search)
-  (global-set-key (kbd "C-x w h") 'windmove-left)
-  (global-set-key (kbd "C-x w l") 'windmove-right)
-  (global-set-key (kbd "C-x w k") 'windmove-up)
-  (global-set-key (kbd "C-x w j") 'windmove-down)
 
   ;; 'M-g' prefix
   (global-set-key (kbd "M-g c") #'editutil-compile)
@@ -1116,10 +1109,6 @@
   (set-register ?t `(file . ,editutil--task-file))
   (global-set-key  (kbd "<f12>") #'editutil-popwin-task)
 
-  ;; helm-ispell
-  (custom-set-variables
-   '(helm-ispell-browse-url-function #'editutil-browse-weblio-word))
-
   ;; ibuffer
   (with-eval-after-load 'ibuffer
     (define-key ibuffer-mode-map (kbd "M-d") #'editutil-ibuffer-mark-delete-by-filename))
@@ -1138,11 +1127,6 @@
   (advice-add 'pop-to-mark-command :around #'editutil-pop-to-mark-advice)
   (custom-set-variables
    '(set-mark-command-repeat-pop t))
-
-  ;; org-mode
-  (with-eval-after-load 'org
-    (add-hook 'org-timer-done-hook #'editutil-org-timer-done)
-    (add-hook 'org-timer-stop-hook #'editutil-org-timer-done))
 
   ;;(makunbound 'editutil-global-minor-mode-map)
   (editutil-global-minor-mode +1)
