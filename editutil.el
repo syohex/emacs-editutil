@@ -537,8 +537,7 @@
      :background "yellow")
     (((class color) (background dark))
      :background "yellow" :foreground "black"))
-  "highlight symbol"
-  :group 'editutil)
+  "highlight symbol")
 
 (defun editutil-toggle-let ()
   (interactive)
@@ -672,8 +671,7 @@
 
 (defface editutils-clean-space
   '((t (:inherit font-lock-keyword-face :weight bold)))
-  "Clean spaces statement in mode-line."
-  :group 'editutil)
+  "Clean spaces statement in mode-line.")
 
 (defvar editutil-cleanup-space-mode-line
   '(:eval (if (memq 'delete-trailing-whitespace before-save-hook)
@@ -683,8 +681,7 @@
 
 (defface editutils-vc-branch
   '((t (:inherit font-lock-constant-face :weight bold)))
-  "Branch information in mode-line"
-  :group 'editutil)
+  "Branch information in mode-line")
 
 (defun editutil--vc-branch ()
   (let ((backend (symbol-name (vc-backend (buffer-file-name)))))
