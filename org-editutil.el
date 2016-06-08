@@ -23,6 +23,10 @@
 
 (require 'org)
 
+(defface org-editutil-check
+  '((t (:foreground "green" :weight semi-bold)))
+  "Check sign")
+
 (defvar org-editutil--current-task nil)
 
 (defun org-editutil--timer-start-hook ()
@@ -37,13 +41,26 @@
     (funcall find-fn "~/Dropbox/pomodoro.org")
     (outline-show-all)))
 
+(defun org-editutil-insert-check ()
+  (interactive)
+  (insert "✔"))
+
+(defun org-editutil--add-keywords ()
+  (font-lock-add-keywords
+   nil '(("\\(✔\\)" 1 'org-editutil-check))))
+
 ;;;###autoload
 (defun org-editutil-setup ()
+  (interactive)
   (dolist (hook '(org-timer-set-hook))
     (add-hook hook #'org-editutil--timer-start-hook))
 
   (dolist (hook '(org-timer-done-hook org-timer-cancel-hook))
-    (add-hook hook #'org-editutil--timer-end-hook)))
+    (add-hook hook #'org-editutil--timer-end-hook))
+
+  (define-key org-mode-map (kbd "C-c d") #'org-editutil-insert-check)
+
+  (add-hook 'org-mode-hook #'org-editutil--add-keywords))
 
 (provide 'org-editutil)
 
