@@ -340,7 +340,7 @@
     (move-to-column curcolumn)
     (set-transient-map
      (let ((m (make-sparse-keymap)))
-       (define-key m (kbd "DEL") 'editutil-kill-whole-line)
+       (define-key m (kbd "C-d") 'editutil-kill-whole-line)
        m))))
 
 (defun editutil-yank (arg)
@@ -1050,7 +1050,7 @@
   (global-set-key [remap backward-kill-word] #'editutil-backward-delete-word)
   (global-set-key (kbd "C-M-c") #'editutil-duplicate-thing)
 
-  (global-set-key (kbd "C-x DEL") #'editutil-kill-whole-line)
+  (global-set-key (kbd "C-x C-d") #'editutil-kill-whole-line)
 
   (global-set-key (kbd "M-I") #'editutil-indent-same-as-previous-line)
   (global-set-key (kbd "M-(") #'editutil-insert-parentheses)
