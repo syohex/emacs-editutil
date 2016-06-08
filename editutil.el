@@ -40,7 +40,6 @@
 (declare-function subword-forward "subword")
 (declare-function subword-backward "subword")
 (declare-function elscreen-editutil-current-directory "elscreen-editutil")
-(declare-function popwin:find-file "popwin")
 (declare-function recentf-save-list "recentf")
 (declare-function ibuffer-mark-on-buffer "ibuffer")
 
@@ -942,12 +941,6 @@
       (skip-syntax-backward "\\s-")
       (skip-syntax-backward "^\\s-"))))
 
-(defvar editutil--task-file (expand-file-name "~/TODO/tasks.org"))
-
-(defun editutil-popwin-task ()
-  (interactive)
-  (popwin:find-file editutil--task-file))
-
 (defun editutil-ibuffer-mark-delete-by-filename (regexp)
   "Mark delete all buffers whose filename matches REGEXP."
   (interactive
@@ -1115,8 +1108,7 @@
   ;; registers
   (set-register ?m '(file . "~/Dropbox/memo.txt"))
   (set-register ?w '(file . "~/Dropbox/work.txt"))
-  (set-register ?t `(file . ,editutil--task-file))
-  (global-set-key  (kbd "<f12>") #'editutil-popwin-task)
+  (set-register ?p '(file . "~/Dropbox/pomodoro.org"))
 
   ;; ibuffer
   (with-eval-after-load 'ibuffer
