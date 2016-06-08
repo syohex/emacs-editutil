@@ -189,6 +189,13 @@
         (end-of-line)
         (newline-and-indent)))))
 
+(defun editutil-mark-line (arg)
+  (interactive "p")
+  (set-mark (line-beginning-position))
+  (goto-char (line-end-position))
+  (when (> arg 1)
+    (forward-line (1- arg))))
+
 (defun editutil-edit-next-line (arg)
   (interactive "p")
   (if (>= arg 0)
@@ -1047,6 +1054,8 @@
 
   (global-set-key (kbd "M-I") #'editutil-indent-same-as-previous-line)
   (global-set-key (kbd "M-(") #'editutil-insert-parentheses)
+
+  (global-set-key (kbd "C-x l") #'editutil-mark-line)
 
   (global-set-key (kbd "C-x m") #'editutil-mark-inside-paired)
   (global-set-key (kbd "C-x M") #'editutil-mark-around-paired)
