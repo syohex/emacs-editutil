@@ -1102,11 +1102,6 @@
 
   (run-with-idle-timer 10 t #'editutil-auto-save-buffers)
 
-  ;; registers
-  (set-register ?m '(file . "~/Dropbox/memo.txt"))
-  (set-register ?w '(file . "~/Dropbox/work.txt"))
-  (set-register ?p '(file . "~/Dropbox/pomodoro.org"))
-
   ;; ibuffer
   (with-eval-after-load 'ibuffer
     (define-key ibuffer-mode-map (kbd "M-d") #'editutil-ibuffer-mark-delete-by-filename))
