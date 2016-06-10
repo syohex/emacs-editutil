@@ -47,6 +47,10 @@
   "My own editing utilities"
   :group 'editing)
 
+(defcustom editutil-task-directory "~/Tasks/"
+  "Task files directory"
+  :type 'directory)
+
 (defsubst editutil--current-line ()
   (buffer-substring-no-properties (line-beginning-position) (line-end-position)))
 
@@ -1101,6 +1105,13 @@
     (add-hook hook #'editutil--add-watchwords))
 
   (run-with-idle-timer 10 t #'editutil-auto-save-buffers)
+
+  ;; Set task files to registers
+  (cl-loop for (key . file) in '((?m . "memo.org")
+                                 (?w . "work.org")
+                                 (?p . "pomodoro.org"))
+           do
+           (set-register key `(file . ,(concat editutil-task-directory file))))
 
   ;; ibuffer
   (with-eval-after-load 'ibuffer

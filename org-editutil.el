@@ -22,14 +22,11 @@
 ;;; Code:
 
 (require 'org)
+(require 'editutil)
 
 (defgroup org-editutil nil
   "edit utilities for org-mode"
   :group 'editutil)
-
-(defcustom org-editutil-task-directory "~/Tasks/"
-  "Task files directory"
-  :type 'directory)
 
 (defface org-editutil-check
   '((t (:foreground "green" :weight semi-bold)))
@@ -46,7 +43,7 @@
   (let ((find-fn (if (featurep 'elscreen)
                      'elscreen-find-file
                    'find-file)))
-    (funcall find-fn (concat org-editutil-task-directory "pomodoro.org"))
+    (funcall find-fn (concat editutil-task-directory "pomodoro.org"))
     (outline-show-all)))
 
 (defun org-editutil-insert-check ()
@@ -60,13 +57,6 @@
 ;;;###autoload
 (defun org-editutil-setup ()
   (interactive)
-
-  ;; Set task files to registers
-  (cl-loop for (key . file) in '((?m . "memo.org")
-                                 (?w . "work.org")
-                                 (?p . "pomodoro.org"))
-           do
-           (set-register key `(file . ,file)))
 
   (dolist (hook '(org-timer-set-hook))
     (add-hook hook #'org-editutil--timer-start-hook))
