@@ -23,6 +23,7 @@
 
 (require 'org)
 (require 'editutil)
+(require 'cl-lib)
 
 (defgroup org-editutil nil
   "edit utilities for org-mode"
@@ -36,9 +37,17 @@
 
 (defun org-editutil--timer-start-hook ()
   (setq org-editutil--current-task (nth 4 (org-heading-components)))
+  (cl-loop for buf in (buffer-list)
+           unless (string-match-p "\\`[[:space:]*]" (buffer-name buf))
+           do
+           (with-current-buffer buf
+             (setq-local header-line-format '((" " org-editutil--current-task " ")))))
   (setq-default header-line-format '((" " org-editutil--current-task " "))))
 
 (defun org-editutil--timer-end-hook ()
+  (cl-loop for buf in (buffer-list)
+           do
+           (setq header-line-format nil))
   (setq-default header-line-format nil)
   (let ((find-fn (if (featurep 'elscreen)
                      'elscreen-find-file
