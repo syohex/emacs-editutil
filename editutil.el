@@ -197,7 +197,8 @@
   (set-mark (line-beginning-position))
   (goto-char (line-end-position))
   (when (> arg 1)
-    (forward-line (1- arg))))
+    (forward-line (1- arg))
+    (goto-char (line-end-position))))
 
 (defun editutil-edit-next-line (arg)
   (interactive "p")
