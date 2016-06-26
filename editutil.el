@@ -646,11 +646,6 @@
                 "")))
     (browse-url (concat url "/blob/" branch "/" file line))))
 
-(defun editutil-browse-weblio-word (word)
-  (interactive
-   (list (read-string "Word: ")))
-  (browse-url (format "http://ejje.weblio.jp/content/%s" word)))
-
 (defun editutil-browse-weblio-sentence (sentence)
   (interactive
    (list (read-string "Sentence: ")))
