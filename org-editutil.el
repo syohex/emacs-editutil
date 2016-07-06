@@ -55,9 +55,10 @@
     (funcall find-fn (concat editutil-task-directory "pomodoro.org"))
     (outline-show-all)))
 
-(defun org-editutil-insert-check ()
-  (interactive)
-  (insert "✔"))
+(defun org-editutil-insert-check (arg)
+  (interactive "p")
+  (dotimes (_ arg)
+    (insert "✔")))
 
 (defun org-editutil--add-keywords ()
   (font-lock-add-keywords
