@@ -739,6 +739,8 @@
     (python-mode . "Py")
     (ruby-mode   . "Rb")
     (emacs-lisp-mode . "El")
+    (js-mode . "JS")
+    (js2-mode . "JS2")
     (markdown-mode . "Md")))
 
 (defun editutil-clear-mode-line ()
