@@ -7,7 +7,7 @@ LOADPATH = -L .
 LOAD_HELPER = -l test/test-helper.el
 
 ELPA_DIR = \
-	.cask/$(shell $(EMACS) -Q --batch --eval '(princ emacs-version)')/elpa
+	.cask/$(shell $(EMACS) -Q --batch --eval '(princ (concat emacs-major-version "." emacs-minor-version))')/elpa
 
 test: elpa
 	$(CASK) exec $(EMACS) -Q -batch $(LOADPATH) $(LOAD_HELPER) \
