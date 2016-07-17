@@ -1113,7 +1113,7 @@
 
   ;; ibuffer
   (with-eval-after-load 'ibuffer
-    (define-key ibuffer-mode-map (kbd "M-d") #'editutil-ibuffer-mark-delete-by-filename))
+    (define-key ibuffer-mode-map (kbd "C-c C-d") #'editutil-ibuffer-mark-delete-by-filename))
 
   ;; paredit
   (with-eval-after-load 'paredit
