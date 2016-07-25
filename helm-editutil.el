@@ -222,7 +222,8 @@
                               :action (helm-make-actions
                                        "Switch buffer" #'switch-to-buffer
                                        "Switch buffer other window" #'switch-to-buffer-other-window
-                                       "Insert buffer" #'insert-buffer)))
+                                       "Insert buffer" #'insert-buffer
+                                       "Kill buffer" #'kill-buffer)))
           :buffer "*Helm Switch Buffer*")))
 
 ;;;###autoload
