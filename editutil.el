@@ -822,6 +822,12 @@
     (dotimes (_i (abs arg))
       (delete-indentation -1))))
 
+(defun editutil-delete-indentation ()
+  (interactive)
+  (save-excursion
+    (back-to-indentation)
+    (delete-region (line-beginning-position) (point))))
+
 (defun editutil-hippie-expand ()
   (interactive)
   (let ((case-fold-search nil))
@@ -1060,6 +1066,7 @@
 
   (global-set-key (kbd "C-x y") #'editutil-copy-line)
   (global-set-key (kbd "C-x j") #'editutil-join-line)
+  (global-set-key (kbd "C-x \\") #'editutil-delete-indentation)
 
   (global-set-key (kbd "C-x ;") #'editutil-comment-line)
 
