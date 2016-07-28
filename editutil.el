@@ -1012,6 +1012,8 @@
 
   (global-set-key (kbd "C-x f") #'editutil-forward-char)
   (global-set-key (kbd "C-x a") #'editutil-backward-char)
+  (global-set-key (kbd "C-M-)") #'editutil-forward-char)
+  (global-set-key (kbd "C-M-(") #'editutil-backward-char)
 
   (global-set-key (kbd "C-k") #'editutil-kill-line)
   (global-set-key (kbd "C-M-n") #'editutil-forward-list)
