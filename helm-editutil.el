@@ -178,7 +178,8 @@
 (defun helm-editutil-search-buffer ()
   (interactive)
   (if (buffer-file-name)
-      (call-interactively 'helm-do-ag-this-file)
+      (let ((helm-source-do-ag (cons '(follow . 1) helm-source-do-ag)))
+        (call-interactively 'helm-do-ag-this-file))
     (call-interactively #'helm-occur)))
 
 (defun helm-editutil--buffer-display (bufname)
