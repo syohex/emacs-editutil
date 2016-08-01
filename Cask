@@ -8,4 +8,5 @@
 (depends-on "git-gutter")
 
 (development
+ (depends-on "helm-ag")
  (depends-on "ert"))
