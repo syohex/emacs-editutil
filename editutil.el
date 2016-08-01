@@ -953,7 +953,8 @@
   (ibuffer-mark-on-buffer
    (lambda (buf)
      (with-current-buffer buf
-       (let ((filename (buffer-file-name buf)))
+       (let ((filename (buffer-file-name buf))
+             (case-fold-search nil))
          (string-match-p
           regexp
           (cond (filename filename)
