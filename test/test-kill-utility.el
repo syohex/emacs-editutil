@@ -87,4 +87,12 @@ baz"
     (call-interactively #'editutil-delete-horizontal-space)
     (should (string= (buffer-string) "foo bar"))))
 
+(ert-deftest delete-indent ()
+  "Insert a space if there is no spaces around cursor."
+  (with-editutil-temp-buffer 'text-mode
+    "    foobar"
+    (forward-cursor-on "bar")
+    (call-interactively #'editutil-delete-indentation)
+    (should (string= (buffer-string) "foobar"))))
+
 ;;; test-kill-utility.el ends here

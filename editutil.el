@@ -978,6 +978,12 @@
   (bs-cycle-previous)
   (editutil--cycle-buffer-common))
 
+(defun editutil-delete-indent ()
+  (interactive)
+  (save-excursion
+    (back-to-indentation)
+    (delete-region (line-beginning-position) (point))))
+
 (define-minor-mode editutil-global-minor-mode
   "Most superior minir mode"
   t
@@ -1069,6 +1075,8 @@
   (global-set-key (kbd "C-x \\") #'editutil-delete-indentation)
 
   (global-set-key (kbd "C-x ;") #'editutil-comment-line)
+
+  (global-set-key (kbd "C-x <") #'editutil-delete-indent)
 
   ;; 'C-x r' prefix
   (global-set-key (kbd "C-x r N") #'editutil-number-rectangle)
