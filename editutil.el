@@ -985,6 +985,13 @@
     (back-to-indentation)
     (delete-region (line-beginning-position) (point))))
 
+(defun editutil-json-format (start end)
+  (interactive
+   (list (if (use-region-p) (region-beginning) (point-min))
+         (if (use-region-p) (region-end) (point-max))))
+  (deactivate-mark)
+  (shell-command-on-region start end "jq ''" nil t))
+
 (define-minor-mode editutil-global-minor-mode
   "Most superior minir mode"
   t
