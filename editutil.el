@@ -989,8 +989,12 @@
   (interactive
    (list (if (use-region-p) (region-beginning) (point-min))
          (if (use-region-p) (region-end) (point-max))))
-  (deactivate-mark)
-  (shell-command-on-region start end "jq ''" nil t))
+  (let ((file (buffer-file-name)))
+    (with-temp-buffer
+      (unless (zerop (process-file "jq" nil t nil "" file))
+        (error "%s" (buffer-string))))
+    (deactivate-mark)
+    (shell-command-on-region start end "jq ''" nil t)))
 
 (define-minor-mode editutil-global-minor-mode
   "Most superior minir mode"
