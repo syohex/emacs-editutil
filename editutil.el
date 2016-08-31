@@ -693,7 +693,10 @@
                  (state (if (bound-and-true-p git-gutter-mode)
                             (cl-case (vc-state (buffer-file-name))
                               (edited
-                               (format ":%d" (git-gutter:buffer-hunks)))
+                               (let ((hunks (git-gutter:buffer-hunks)))
+                                 (if (zerop hunks)
+                                     ""
+                                   (format ":%d" hunks))))
                               (otherwise ""))
                           "")))
              (concat "(" branch state ")")))
