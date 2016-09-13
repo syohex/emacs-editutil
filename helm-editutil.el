@@ -23,6 +23,9 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (defvar helm-source-do-ag))
+
 (require 'cl-lib)
 (require 'helm)
 (require 'helm-files)
