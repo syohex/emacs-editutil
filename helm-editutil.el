@@ -29,6 +29,7 @@
 (require 'helm-mode)
 (require 'subr-x)
 (require 'recentf)
+(require 'elscreen)
 
 (declare-function popwin:find-file "popwin")
 
@@ -231,6 +232,32 @@
 (defun helm-editutil-robe-completing-read (prompt choices &optional predicate require-match)
   (let ((collection (mapcar (lambda (c) (if (listp c) (car c) c)) choices)))
     (helm-comp-read prompt collection :test predicate :must-match require-match)))
+
+(defun helm-editutil--elscreen-candidates ()
+  (cl-loop with sort-func = (lambda (a b) (< (car a) (car b)))
+           with screen-list = (cl-copy-list (elscreen-get-screen-to-name-alist))
+           with remove-regexp = (format ":?%s:?" (regexp-quote "*helm-elscreen*"))
+           for (index . screen-name) in (sort screen-list sort-func)
+           collect
+           (let ((name (replace-regexp-in-string remove-regexp "" screen-name)))
+             (cons (format "[%d] %s" index name) index))))
+
+(defun helm-editutil--elscreen-kill-screens (_candidate)
+  (dolist (screen (helm-marked-candidates))
+    (elscreen-goto screen)
+    (elscreen-kill)))
+
+(defvar helm-editutil-source-elscreen
+  (helm-build-in-buffer-source "Elscreen"
+    :candidates #'helm-editutil--elscreen-candidates
+    :action (helm-make-actions
+             "Change screen" #'elscreen-goto
+             "Kill screen" #'helm-editutil--elscreen-kill-screens)))
+
+;;;###autoload
+(defun helm-editutil-elscreen ()
+  (interactive)
+  (helm :sources '(helm-editutil-source-elscreen) :buffer "*helm-elscreen*"))
 
 (provide 'helm-editutil)
 
