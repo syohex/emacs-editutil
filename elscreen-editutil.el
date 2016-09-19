@@ -3,7 +3,7 @@
 ;; Copyright (C) 2016 by Syohei YOSHIDA
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
-;; Package-Requires: ((emacs "24.5"))
+;; Package-Requires: ((emacs "25"))
 ;; Version: 0.01
 
 ;; This program is free software; you can redistribute it and/or modify
