@@ -999,6 +999,20 @@
     (deactivate-mark)
     (shell-command-on-region start end "jq ''" nil t)))
 
+(defvar editutil--last-killed-buffer nil)
+
+(defun editutil-kill-this-buffer ()
+  (interactive)
+  (when-let (file (buffer-file-name))
+    (setq editutil--last-killed-buffer file))
+  (call-interactively #'kill-this-buffer))
+
+(defun editutil-restore-last-killed-buffer ()
+  (interactive)
+  (unless editutil--last-killed-buffer
+    (user-error "No killed buffer"))
+  (find-file editutil--last-killed-buffer))
+
 (define-minor-mode editutil-global-minor-mode
   "Most superior minir mode"
   t
@@ -1047,6 +1061,9 @@
   (global-set-key (kbd "C-M-d") #'editutil-down-list)
   (global-set-key (kbd "M-o") #'editutil-edit-next-line)
   (global-set-key (kbd "M-O") #'editutil-edit-previous-line)
+
+  (global-set-key (kbd "C-x k") #'editutil-kill-this-buffer)
+  (global-set-key (kbd "C-x K") #'editutil-restore-last-killed-buffer)
 
   (global-set-key (kbd "M-k") #'editutil-delete-following-spaces)
 
