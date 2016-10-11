@@ -4,7 +4,7 @@
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; Version: 0.01
-;; Package-Requires: ((emacs "25") (helm "1.77"))
+;; Package-Requires: ((emacs "25") (helm "2.0") (helm-ag "0.56"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -23,9 +23,6 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (defvar helm-source-do-ag))
-
 (require 'cl-lib)
 (require 'helm)
 (require 'helm-files)
@@ -33,6 +30,7 @@
 (require 'subr-x)
 (require 'recentf)
 (require 'elscreen)
+(require 'helm-ag)
 
 (declare-function popwin:find-file "popwin")
 
@@ -182,12 +180,10 @@
 (defun helm-editutil-search-buffer ()
   (interactive)
   (if (buffer-file-name)
-      (progn
-        (require 'helm-ag)
-        (let* ((helm-source-do-ag (cons '(follow . 1) helm-source-do-ag))
-               (helm-ag-insert-at-point (and current-prefix-arg helm-ag-insert-at-point))
-               (current-prefix-arg nil))
-          (call-interactively 'helm-do-ag-this-file)))
+      (let* ((helm-source-do-ag (cons '(follow . 1) helm-source-do-ag))
+             (helm-ag-insert-at-point (and current-prefix-arg helm-ag-insert-at-point))
+             (current-prefix-arg nil))
+        (call-interactively 'helm-do-ag-this-file))
     (call-interactively #'helm-occur)))
 
 (defun helm-editutil--buffer-display (bufname)
