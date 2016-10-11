@@ -182,8 +182,12 @@
 (defun helm-editutil-search-buffer ()
   (interactive)
   (if (buffer-file-name)
-      (let ((helm-source-do-ag (cons '(follow . 1) helm-source-do-ag)))
-        (call-interactively 'helm-do-ag-this-file))
+      (progn
+        (require 'helm-ag)
+        (let* ((helm-source-do-ag (cons '(follow . 1) helm-source-do-ag))
+               (helm-ag-insert-at-point (and current-prefix-arg helm-ag-insert-at-point))
+               (current-prefix-arg nil))
+          (call-interactively 'helm-do-ag-this-file)))
     (call-interactively #'helm-occur)))
 
 (defun helm-editutil--buffer-display (bufname)
