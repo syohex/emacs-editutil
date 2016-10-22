@@ -29,10 +29,12 @@
 (require 'helm-mode)
 (require 'subr-x)
 (require 'recentf)
-(require 'elscreen)
 (require 'helm-ag)
 
 (declare-function popwin:find-file "popwin")
+(declare-function elscreen-get-screen-to-name-alist "elscreen")
+(declare-function elscreen-goto, "elscreen")
+(declare-function elscreen-kill "elscreen")
 
 (defun helm-editutil--open-dired (file)
   (dired (file-name-directory file)))
@@ -260,6 +262,7 @@
 ;;;###autoload
 (defun helm-editutil-elscreen ()
   (interactive)
+  (require 'elscreen)
   (helm :sources '(helm-editutil-source-elscreen) :buffer "*helm-elscreen*"))
 
 (provide 'helm-editutil)
