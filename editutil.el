@@ -22,6 +22,8 @@
 
 ;;; Commentary:
 
+;; My utility collections for using Emacs
+
 ;;; Code:
 
 (eval-when-compile
@@ -1013,6 +1015,12 @@
     (user-error "No killed buffer"))
   (find-file editutil--last-killed-buffer))
 
+;; fixed line position after scrollup, scrolldown
+(defun editutil-scroll-move-around (orig-fn &rest args)
+  (let ((orig-line (count-lines (window-start) (point))))
+    (apply orig-fn args)
+    (move-to-window-line orig-line)))
+
 (define-minor-mode editutil-global-minor-mode
   "Most superior minir mode"
   t
@@ -1152,6 +1160,9 @@
     (add-hook hook #'editutil--add-watchwords))
 
   (run-with-idle-timer 10 t #'editutil-auto-save-buffers)
+
+  (advice-add 'scroll-up :around 'editutil-scroll-move-around)
+  (advice-add 'scroll-down :around 'editutil-scroll-move-around)
 
   ;; Set task files to registers
   (cl-loop for (key . file) in '((?m . "memo.org")
