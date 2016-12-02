@@ -651,8 +651,8 @@
 (defun editutil-browse-weblio-sentence (sentence)
   (interactive
    (list (read-string "Sentence: ")))
-  (let ((query (mapconcat 'identity (split-string sentence) "+")))
-    (browse-url (format "http://ejje.weblio.jp/sentence/content/%s" query))))
+  (let ((query (string-join (split-string sentence) "+")))
+    (browse-url (format "http://ejje.weblio.jp/sentence/content/\"%s\"" query))))
 
 (defun editutil-browse-google-search (query)
   (interactive
