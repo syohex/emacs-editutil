@@ -659,7 +659,11 @@
    (list
     (if (use-region-p)
         (buffer-substring-no-properties (region-beginning) (region-end))
-      (read-string "Query: "))))
+      (let* ((default (thing-at-point 'symbol))
+             (prompt (if default
+                         (format "Query (default: %s): " default)
+                       "Query: ")))
+        (read-string prompt nil nil default)))))
   (let ((search-url (format "https://www.google.com/search?ion=1&q=%s" query)))
     (browse-url search-url)))
 
