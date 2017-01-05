@@ -1115,7 +1115,7 @@
   (global-set-key (kbd "C-c W") #'editutil-browse-weblio-sentence)
 
   (global-set-key (kbd "C-x y") #'editutil-copy-line)
-  (global-set-key (kbd "C-x j") #'editutil-join-line)
+  (global-set-key (kbd "C-x J") #'editutil-join-line)
   (global-set-key (kbd "C-x \\") #'editutil-delete-indentation)
 
   (global-set-key (kbd "C-x ;") #'editutil-comment-line)
