@@ -1,6 +1,6 @@
 ;;; test-moving-utility.el --- test for moving utilities
 
-;; Copyright (C) 2016 by Syohei YOSHIDA
+;; Copyright (C) 2017 by Syohei YOSHIDA
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 

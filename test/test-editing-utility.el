@@ -1,6 +1,6 @@
 ;;; test-editing-utility.el --- editing utilities test
 
-;; Copyright (C) 2016 by Syohei YOSHIDA
+;; Copyright (C) 2017 by Syohei YOSHIDA
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 
