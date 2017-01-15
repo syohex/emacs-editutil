@@ -335,8 +335,8 @@
   (let ((orig-point (point)))
     (save-excursion
       (if (<= arg 0)
-          (skip-chars-backward " \t")
-        (skip-chars-forward " \t"))
+          (forward-whitespace -1)
+        (forward-whitespace +1))
       (delete-region orig-point (point)))))
 
 (defun editutil-kill-whole-line (arg)
@@ -369,7 +369,7 @@
 
 (defun editutil--forward-next-space ()
   (save-excursion
-    (skip-chars-forward " \t")
+    (forward-whitespace +1)
     (skip-chars-forward "^ \t")
     (point)))
 
@@ -389,7 +389,7 @@
     (when (= (point) bol)
       (backward-char 1))
     (when (looking-back "\\s-+" nil)
-      (skip-chars-backward " \t"))
+      (forward-whitespace -1))
     (let ((start (save-excursion
                    (if (editutil--enable-subword-mode-p)
                        (subword-backward arg)
