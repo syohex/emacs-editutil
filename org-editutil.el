@@ -47,7 +47,8 @@
 (defun org-editutil--timer-end-hook ()
   (cl-loop for buf in (buffer-list)
            do
-           (setq header-line-format nil))
+           (with-current-buffer buf
+             (setq header-line-format nil)))
   (setq-default header-line-format nil)
   (let ((find-fn (if (featurep 'elscreen)
                      'elscreen-find-file
