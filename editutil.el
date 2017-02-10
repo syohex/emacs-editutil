@@ -648,6 +648,28 @@
                 "")))
     (browse-url (concat url "/blob/" branch "/" file line))))
 
+(defun editutil--latest-commit-id-of-current-line ()
+  (let ((current-line (line-number-at-pos))
+        (filename (buffer-file-name)))
+    (with-temp-buffer
+      (let ((status (process-file "git" nil t nil
+                                  "blame" "-l" "-L"
+                                  (format "%s,+1" current-line) filename)))
+        (unless (zerop status)
+          (error "Failed: git blame"))
+        (goto-char (point-min))
+        (looking-at "\\(\\S-+\\)")
+        (let ((commit-id (match-string-no-properties 1)))
+          (when (string-match-p "\\`0+\\'" commit-id)
+            (error "This line is not committed yet"))
+          commit-id)))))
+
+(defun editutil-browse-github-commit ()
+  (interactive)
+  (let ((commit-id (editutil--latest-commit-id-of-current-line)))
+    (process-file "hub" nil nil nil
+                  "browse" "--" (concat "commit/" commit-id))))
+
 (defun editutil-browse-weblio-sentence (sentence)
   (interactive
    (list (read-string "Sentence: ")))
@@ -1138,6 +1160,7 @@
   ;; 'C-x w' prefix
   (global-set-key (kbd "C-x w w") #'editutil-browse-github)
   (global-set-key (kbd "C-x w f") #'editutil-browse-github-file)
+  (global-set-key (kbd "C-x w c") #'editutil-browse-github-commit)
   (global-set-key (kbd "C-x w g") #'editutil-browse-google-search)
 
   ;; 'M-g' prefix
