@@ -65,6 +65,11 @@
   (font-lock-add-keywords
    nil '(("\\(✔\\)" 1 'org-editutil-check))))
 
+(defun org-editutil-pomodoro-start (minutes)
+  (interactive
+   (list (if (not current-prefix-arg) 25 (read-number "Pomodoro minutes: "))))
+  (org-timer-set-timer minutes))
+
 ;;;###autoload
 (defun org-editutil-setup ()
   (interactive)
@@ -76,6 +81,7 @@
     (add-hook hook #'org-editutil--timer-end-hook))
 
   (define-key org-mode-map (kbd "C-c d") #'org-editutil-insert-check)
+  (define-key org-mode-map (kbd "C-c p") #'org-editutil-pomodoro-start)
 
   (add-hook 'org-mode-hook #'org-editutil--add-keywords))
 
