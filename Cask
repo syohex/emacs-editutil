@@ -9,4 +9,5 @@
 
 (development
  (depends-on "helm-ag")
+ (depends-on "company")
  (depends-on "ert"))
