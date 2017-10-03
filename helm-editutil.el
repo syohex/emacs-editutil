@@ -25,6 +25,7 @@
 
 (require 'cl-lib)
 (require 'helm)
+(require 'helm-bookmark)
 (require 'helm-files)
 (require 'helm-mode)
 (require 'subr-x)
