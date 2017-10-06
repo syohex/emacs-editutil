@@ -530,14 +530,14 @@
   (interactive "P")
   (insert-parentheses (or arg 1)))
 
-(defun editutil-other-window ()
-  (interactive)
+(defun editutil-other-window (arg)
+  (interactive "p")
   (when (one-window-p)
     (if (> (window-width) 120)
         (split-window-right)
       (split-window-below)))
-  (unless current-prefix-arg
-    (other-window 1)))
+  (unless (>= (prefix-numeric-value current-prefix-arg) 16)
+    (other-window arg)))
 
 (defface editutils-highlight
   '((((class color) (background light))
