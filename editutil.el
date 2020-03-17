@@ -5,7 +5,7 @@
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-editutil
 ;; Version: 0.01
-;; Package-Requires: ((emacs "25"))
+;; Package-Requires: ((emacs "26.1"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -718,10 +718,10 @@
 (defvar editutil-vc-mode-line
   '(:propertize
     (:eval (let ((branch (editutil--vc-branch))
-                 (state (if (bound-and-true-p git-gutter-mode)
+                 (state (if (bound-and-true-p git-gutter2-mode)
                             (cl-case (vc-state (buffer-file-name))
                               (edited
-                               (let ((hunks (git-gutter:buffer-hunks)))
+                               (let ((hunks (git-gutter2-buffer-hunks)))
                                  (if (zerop hunks)
                                      ""
                                    (format ":%d" hunks))))
@@ -750,7 +750,7 @@
                   mode-line-modes mode-line-misc-info mode-line-end-spaces)))
 
 (defvar editutil-mode-line-cleaner-alist
-  '( ;; For minor-mode, first char is 'space'
+  '(;; For minor-mode, first char is 'space'
     (yas-minor-mode . " Ys")
     (paredit-mode . " Pe")
     (company-mode . " Co")
@@ -761,7 +761,7 @@
     (elisp-slime-nav-mode . "")
     (helm-gtags-mode . " HG")
     (flymake-mode . " Fm")
-    (git-gutter-mode . " GG")
+    (git-gutter2-mode . " GG")
     (isearch-describe-mode . "")
     (flyspell-mode . " FS")
     ;; Major modes
