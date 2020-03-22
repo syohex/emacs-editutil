@@ -5,7 +5,7 @@
 
 (depends-on "helm")
 (depends-on "elscreen")
-(depends-on "git-gutter2")
+(depends-on "git-gutter2" :git "https://github.com/syohex/emacs-git-gutter2.git")
 
 (development
  (depends-on "ert"))

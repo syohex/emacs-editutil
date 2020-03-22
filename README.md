@@ -2,7 +2,6 @@
 
 ## Requirements
 
-- Emacs 25 or higher(I would like to support latest stable version).
 - Some commands related to github uses [hub](https://github.com/github/hub).
 
 
