@@ -1,9 +1,9 @@
 ;;; elscreen-editutil.el --- My own elscreen editing utilities
 
-;; Copyright (C) 2017 by Syohei YOSHIDA
+;; Copyright (C) 2020 by Shohei YOSHIDA
 
-;; Author: Syohei YOSHIDA <syohex@gmail.com>
-;; Package-Requires: ((emacs "25"))
+;; Author: Shohei YOSHIDA <syohex@gmail.com>
+;; Package-Requires: ((emacs "26.3"))
 ;; Version: 0.01
 
 ;; This program is free software; you can redistribute it and/or modify

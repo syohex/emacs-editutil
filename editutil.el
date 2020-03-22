@@ -1,11 +1,11 @@
 ;;; editutil.el --- My own Edit Utilities -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2017 by Syohei YOSHIDA
+;; Copyright (C) 2020 by Shohei YOSHIDA
 
-;; Author: Syohei YOSHIDA <syohex@gmail.com>
+;; Author: Shohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-editutil
 ;; Version: 0.01
-;; Package-Requires: ((emacs "26.1"))
+;; Package-Requires: ((emacs "26.3"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by

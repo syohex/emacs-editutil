@@ -1,10 +1,10 @@
 ;;; helm-editutil.el --- My own editing utilities with helm -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2017 by Syohei YOSHIDA
+;; Copyright (C) 2020 by Syohei YOSHIDA
 
-;; Author: Syohei YOSHIDA <syohex@gmail.com>
+;; Author: Shohei YOSHIDA <syohex@gmail.com>
 ;; Version: 0.01
-;; Package-Requires: ((emacs "26.1") (helm "2.0"))
+;; Package-Requires: ((emacs "26.3") (helm "3.6.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
