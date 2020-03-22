@@ -5,8 +5,7 @@
 
 (depends-on "helm")
 (depends-on "elscreen")
-(depends-on "git-gutter")
+(depends-on "git-gutter2")
 
 (development
- (depends-on "helm-ag")
  (depends-on "ert"))

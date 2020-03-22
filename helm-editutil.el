@@ -4,7 +4,7 @@
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; Version: 0.01
-;; Package-Requires: ((emacs "26.1") (helm "2.0") (helm-ag "0.56"))
+;; Package-Requires: ((emacs "26.1") (helm "2.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -30,7 +30,6 @@
 (require 'helm-mode)
 (require 'subr-x)
 (require 'recentf)
-(require 'helm-ag)
 
 (declare-function popwin:find-file "popwin")
 (declare-function elscreen-get-screen-to-name-alist "elscreen")
@@ -178,16 +177,6 @@
   (interactive)
   (helm :sources '(helm-editutil-source-find-files helm-editutil-source-find-directories)
         :buffer "*Helm Find Files*"))
-
-;;;###autoload
-(defun helm-editutil-search-buffer ()
-  (interactive)
-  (if (buffer-file-name)
-      (let* ((helm-source-do-ag (cons '(follow . 1) helm-source-do-ag))
-             (helm-ag-insert-at-point (and current-prefix-arg helm-ag-insert-at-point))
-             (current-prefix-arg nil))
-        (call-interactively 'helm-do-ag-this-file))
-    (call-interactively #'helm-occur)))
 
 (defun helm-editutil--buffer-display (bufname)
   (with-current-buffer bufname
