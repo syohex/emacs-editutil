@@ -30,6 +30,7 @@
 (require 'helm-mode)
 (require 'subr-x)
 (require 'recentf)
+(require 'tramp)
 
 (declare-function popwin:find-file "popwin")
 (declare-function elscreen-get-screen-to-name-alist "elscreen")
