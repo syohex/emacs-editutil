@@ -244,8 +244,8 @@
     (elscreen-kill)))
 
 (defvar helm-editutil-source-elscreen
-  (helm-build-in-buffer-source "Elscreen"
-    :data #'helm-editutil--elscreen-candidates
+  (helm-build-sync-source "Elscreen"
+    :candidates #'helm-editutil--elscreen-candidates
     :action (helm-make-actions
              "Change screen" #'elscreen-goto
              "Kill screen" #'helm-editutil--elscreen-kill-screens)))
