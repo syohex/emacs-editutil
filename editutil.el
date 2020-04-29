@@ -908,7 +908,12 @@
          (save-match-data
            (or (looking-back "\\s-+" nil) (looking-at-p "\\s-+")))))
     (if has-spaces
-        (call-interactively #'delete-horizontal-space)
+        (if current-prefix-arg
+            (call-interactively #'delete-horizontal-space)
+          (save-excursion
+            (let ((start (point)))
+              (skip-chars-forward " ")
+              (delete-region start (point)))))
       (insert " "))))
 
 (defun editutil-forward-word-end (arg)
