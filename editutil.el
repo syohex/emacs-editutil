@@ -49,10 +49,6 @@
   "My own editing utilities"
   :group 'editing)
 
-(defcustom editutil-task-directory "~/Tasks/"
-  "Task files directory"
-  :type 'directory)
-
 (defsubst editutil--current-line ()
   (buffer-substring-no-properties (line-beginning-position) (line-end-position)))
 
@@ -676,19 +672,6 @@
   (let ((query (string-join (split-string sentence) "+")))
     (browse-url (format "http://ejje.weblio.jp/sentence/content/\"%s\"" query))))
 
-(defun editutil-browse-google-search (query)
-  (interactive
-   (list
-    (if (use-region-p)
-        (buffer-substring-no-properties (region-beginning) (region-end))
-      (let* ((default (thing-at-point 'symbol))
-             (prompt (if default
-                         (format "Query (default: %s): " default)
-                       "Query: ")))
-        (read-string prompt nil nil default)))))
-  (let ((search-url (format "https://www.google.com/search?ion=1&q=%s" query)))
-    (browse-url search-url)))
-
 (defun editutil-toggle-cleanup-spaces ()
   (interactive)
   (cond ((memq 'delete-trailing-whitespace before-save-hook)
@@ -853,12 +836,6 @@
     (dotimes (_i (abs arg))
       (delete-indentation -1))))
 
-(defun editutil-delete-indentation ()
-  (interactive)
-  (save-excursion
-    (back-to-indentation)
-    (delete-region (line-beginning-position) (point))))
-
 (defun editutil-hippie-expand ()
   (interactive)
   (let ((case-fold-search nil))
@@ -1016,16 +993,13 @@
     (back-to-indentation)
     (delete-region (line-beginning-position) (point))))
 
-(defun editutil-json-format (start end)
-  (interactive
-   (list (if (use-region-p) (region-beginning) (point-min))
-         (if (use-region-p) (region-end) (point-max))))
-  (let ((file (buffer-file-name)))
-    (with-temp-buffer
-      (unless (zerop (process-file "jq" nil t nil "" file))
-        (error "%s" (buffer-string))))
-    (deactivate-mark)
-    (shell-command-on-region start end "jq ''" nil t)))
+(defun editutil-ansi-term ()
+  (interactive)
+  (if (string-prefix-p "*ansi-term" (buffer-name))
+      (editutil-cycle-next-buffer)
+    (if (get-buffer "*ansi-term*")
+        (switch-to-buffer "*ansi-term*")
+      (ansi-term shell-file-name))))
 
 (defvar editutil--last-killed-buffer nil)
 
@@ -1138,7 +1112,7 @@
 
   (global-set-key (kbd "C-x y") #'editutil-copy-line)
   (global-set-key (kbd "C-x J") #'editutil-join-line)
-  (global-set-key (kbd "C-x \\") #'editutil-delete-indentation)
+  (global-set-key (kbd "C-x \\") #'editutil-ansi-term)
 
   (global-set-key (kbd "C-x ;") #'editutil-comment-line)
 
@@ -1161,10 +1135,8 @@
   (global-set-key (kbd "C-x w w") #'editutil-browse-github)
   (global-set-key (kbd "C-x w f") #'editutil-browse-github-file)
   (global-set-key (kbd "C-x w c") #'editutil-browse-github-commit)
-  (global-set-key (kbd "C-x w g") #'editutil-browse-google-search)
 
   ;; 'M-g' prefix
-  (global-set-key (kbd "M-g c") #'editutil-compile)
   (global-set-key (kbd "M-g [") #'editutil-cycle-next-buffer)
   (global-set-key (kbd "M-g ]") #'editutil-cycle-previous-buffer)
 
@@ -1190,13 +1162,6 @@
 
   (advice-add 'scroll-up :around 'editutil-scroll-move-around)
   (advice-add 'scroll-down :around 'editutil-scroll-move-around)
-
-  ;; Set task files to registers
-  (cl-loop for (key . file) in '((?m . "memo.org")
-                                 (?w . "work.org")
-                                 (?p . "pomodoro.org"))
-           do
-           (set-register key `(file . ,(concat editutil-task-directory file))))
 
   ;; ibuffer
   (with-eval-after-load 'ibuffer
