@@ -76,7 +76,8 @@ baz"
   (with-editutil-temp-buffer 'text-mode
     "foo                              bar"
     (forward-cursor-on "bar")
-    (call-interactively #'editutil-delete-horizontal-space)
+    (let ((current-prefix-arg '(4)))
+      (editutil-delete-horizontal-space))
     (should (string= (buffer-string) "foobar"))))
 
 (ert-deftest delete-horizontal-space-inserting-a-space ()
