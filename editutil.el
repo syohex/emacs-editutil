@@ -800,17 +800,25 @@
 (defvar editutil--last-command nil)
 
 (defsubst editutil--compile-root-directory ()
-  (cl-loop for file in '(".git" ".hg" "Makefile" "Build.PL")
+  (cl-loop for (file . command) in '(("Makefile" . "make")
+                                     ("Cargo.lock" . "cargo")
+                                     ("yarn.lock" . "yarn")
+                                     ("package-lock.json" "npm")
+                                     (".git" . ""))
            when (locate-dominating-file default-directory file)
-           return it
-           finally return default-directory))
+           return (list it command)
+           finally return (list default-directory "")))
 
-(defun editutil-compile (command)
+(defun editutil-compile (command dir)
   (interactive
-   (list (read-string "Compile command: "
-                      editutil--last-command 'editutil--compile-history)))
+   (let* ((dir-cmd (editutil--compile-root-directory))
+          (dir (cl-first dir-cmd))
+          (cmd (cl-second dir-cmd)))
+     (list (read-string "Compile command: "
+                        cmd 'editutil--compile-history)
+           dir)))
   (setq editutil--last-command command)
-  (let ((default-directory (editutil--compile-root-directory))
+  (let ((default-directory dir)
         (compilation-scroll-output t))
     (compile command)))
 
@@ -1144,6 +1152,7 @@
   ;; 'M-g' prefix
   (global-set-key (kbd "M-g [") #'editutil-cycle-next-buffer)
   (global-set-key (kbd "M-g ]") #'editutil-cycle-previous-buffer)
+  (global-set-key (kbd "M-g c") #'editutil-compile)
 
   (define-key my/ctrl-q-map (kbd "C-t") #'editutil-toggle-cleanup-spaces)
 
