@@ -1006,13 +1006,41 @@
     (back-to-indentation)
     (delete-region (line-beginning-position) (point))))
 
+(defvar editutil--previous-buffer nil)
+
+(defun editutil--save-current-windows ()
+  (setq editutil--previous-buffer (current-buffer))
+  (window-configuration-to-register :editutil-ansiterm))
+
+(defun editutil--buffer-visible-p (bufname)
+  (cl-loop for win in (window-list)
+           for winbuf = (window-buffer win)
+           thereis (string= bufname (buffer-name winbuf))))
+
 (defun editutil-ansi-term ()
   (interactive)
-  (if (string-prefix-p "*ansi-term" (buffer-name))
-      (editutil-cycle-next-buffer)
-    (if (get-buffer "*ansi-term*")
-        (switch-to-buffer "*ansi-term*")
-      (ansi-term shell-file-name))))
+  (if (editutil--buffer-visible-p "*ansi-term*")
+      (other-window 1)
+    (editutil--save-current-windows)
+    (when (>= (length (window-list)) 3)
+      (delete-other-windows))
+    (when (one-window-p)
+      (if (> (window-width) 120)
+          (split-window-right)
+        (split-window-below)))
+    (other-window 1)
+    (let ((shell-buf (get-buffer "*ansi-term*")))
+      (if (buffer-live-p shell-buf)
+          (progn
+            (switch-to-buffer shell-buf)
+            (goto-char (point-max)))
+        (ansi-term shell-file-name)))))
+
+(defun editutil-restore-ansi-term ()
+  (interactive)
+  (unless (string= (buffer-name) "*ansi-term*")
+    (error "This buffer is not ansi-term buffer"))
+  (jump-to-register :editutil-ansiterm))
 
 (defvar editutil--last-killed-buffer nil)
 
@@ -1177,15 +1205,17 @@
   (advice-add 'scroll-up :around 'editutil-scroll-move-around)
   (advice-add 'scroll-down :around 'editutil-scroll-move-around)
 
-  ;; ibuffer
   (with-eval-after-load 'ibuffer
     (define-key ibuffer-mode-map (kbd "C-c C-d") #'editutil-ibuffer-mark-delete-by-filename))
 
-  ;; paredit
   (with-eval-after-load 'paredit
     (define-key paredit-mode-map (kbd "C-c l") #'editutil-toggle-let)
     (define-key paredit-mode-map (kbd "C-c j") #'editutil-newline-after-sexp)
     (define-key paredit-mode-map (kbd "DEL") #'editutil-paredit-backward-delete))
+
+  (with-eval-after-load 'term-mode
+    (define-key term-mode-map (kbd "C-x \\") #'editutil-restore-ansi-term)
+    (define-key term-raw-map (kbd "C-x \\") #'editutil-restore-ansi-term))
 
   ;; yasnippet
   (custom-set-variables
