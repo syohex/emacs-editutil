@@ -15,19 +15,14 @@ jobs:
         emacs_version:
           - '26.3'
           - 'snapshot'
-        cask_version:
-          - '0.8.4'
     steps:
       - uses: actions/checkout@v1
-      - uses: actions/setup-python@v1.1.1
-        with:
-          python-version: '3.6'
-          architecture: 'x64'
       - uses: purcell/setup-emacs@master
         with:
           version: ${{ matrix.emacs_version }}
-      - uses: conao3/setup-cask@master
-        with:
-          version: 'snapshot'
+      - name: Install cask
+        run: |
+          git clone https://github.com/cask/cask ~/.cask
+          echo "::add-path::${HOME}/.cask/bin"
       - name: Run tests
         run: make test
