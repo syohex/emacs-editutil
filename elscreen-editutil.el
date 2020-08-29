@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020 by Shohei YOSHIDA
 
 ;; Author: Shohei YOSHIDA <syohex@gmail.com>
-;; Package-Requires: ((emacs "26.3"))
+;; Package-Requires: ((emacs "27.1"))
 ;; Version: 0.01
 
 ;; This program is free software; you can redistribute it and/or modify

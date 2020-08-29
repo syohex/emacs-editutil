@@ -4,7 +4,7 @@
 
 ;; Author: Shohei YOSHIDA <syohex@gmail.com>
 ;; Version: 0.01
-;; Package-Requires: ((emacs "26.3") (helm "3.6.0"))
+;; Package-Requires: ((emacs "27.1") (helm "3.6.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
