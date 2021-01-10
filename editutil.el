@@ -1058,6 +1058,11 @@
     (apply orig-fn args)
     (move-to-window-line orig-line)))
 
+(defun editutil-dired-find-file-other-window ()
+  (interactive)
+  (save-selected-window
+    (call-interactively #'dired-find-file-other-window)))
+
 (define-minor-mode editutil-global-minor-mode
   "Most superior minir mode"
   t
@@ -1212,6 +1217,9 @@
   (with-eval-after-load 'term-mode
     (define-key term-mode-map (kbd "C-x \\") #'editutil-restore-ansi-term)
     (define-key term-raw-map (kbd "C-x \\") #'editutil-restore-ansi-term))
+
+  (with-eval-after-load 'dired-mode
+    (define-key dired-mode-map (kbd "o") #'editutil-dired-find-file-other-window))
 
   ;; yasnippet
   (custom-set-variables
