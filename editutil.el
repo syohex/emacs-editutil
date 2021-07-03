@@ -30,7 +30,9 @@
   (defvar my/ctrl-q-map)
   (defvar paredit-mode-map)
   (defvar helm-map)
-  (defvar ibuffer-mode-map))
+  (defvar ibuffer-mode-map)
+  (defvar term-mode-map)
+  (defvar term-raw-map))
 
 (require 'cl-lib)
 (require 'subr-x)
@@ -581,6 +583,8 @@
      nil '(("\\(?:^\\|\\s-\\)\\(FIXME\\|TODO\\|XXX\\|@@@\\)\\(?:\\s-\\|$\\)"
             1 '((:foreground "pink") (:weight bold)) t)))))
 
+(defvar editutil--previous-buffer nil)
+
 ;; for `cde' command
 (defun editutil-current-buffer-directory (&optional in-emacs)
   (if in-emacs
@@ -1002,8 +1006,6 @@
     (back-to-indentation)
     (delete-region (line-beginning-position) (point))))
 
-(defvar editutil--previous-buffer nil)
-
 (defun editutil--save-current-windows ()
   (setq editutil--previous-buffer (current-buffer))
   (window-configuration-to-register :editutil-ansiterm))
@@ -1065,8 +1067,9 @@
 
 (define-minor-mode editutil-global-minor-mode
   "Most superior minir mode"
-  t
-  ""
+  :global t
+  :lighter ""
+  :keymap
   `((,(kbd "C-M-j") . editutil-hippie-expand)
     (,(kbd "M-q") . editutil-zap-to-char)
     (,(kbd "C-M-o") . editutil-other-window)))
