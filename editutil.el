@@ -537,13 +537,6 @@
   (unless (>= (prefix-numeric-value current-prefix-arg) 16)
     (other-window arg)))
 
-(defface editutils-highlight
-  '((((class color) (background light))
-     :background "yellow")
-    (((class color) (background dark))
-     :background "yellow" :foreground "black"))
-  "highlight symbol")
-
 (defun editutil-toggle-let ()
   (interactive)
   (save-excursion
@@ -687,17 +680,17 @@
          (add-hook 'before-save-hook 'delete-trailing-whitespace)))
   (force-mode-line-update))
 
-(defface editutils-clean-space
+(defface editutil-clean-space
   '((t (:inherit font-lock-keyword-face :weight bold)))
   "Clean spaces statement in mode-line.")
 
 (defvar editutil-cleanup-space-mode-line
   '(:eval (if (memq 'delete-trailing-whitespace before-save-hook)
               ""
-            (propertize "[DT-]" 'face 'editutils-clean-space))))
+            (propertize "[DT-]" 'face 'editutil-clean-space))))
 (put 'editutil-cleanup-space-mode-line 'risky-local-variable t)
 
-(defface editutils-vc-branch
+(defface editutil-vc-branch
   '((t (:inherit font-lock-constant-face :weight bold)))
   "Branch information in mode-line")
 
@@ -718,7 +711,7 @@
                               (otherwise ""))
                           "")))
              (concat "(" branch state ")")))
-    face editutils-vc-branch)
+    face editutil-vc-branch)
   "Mode line format for VC Mode.")
 (put 'editutil-vc-mode-line 'risky-local-variable t)
 
