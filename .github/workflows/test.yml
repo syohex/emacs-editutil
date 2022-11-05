@@ -13,16 +13,16 @@ jobs:
     strategy:
       matrix:
         emacs_version:
-          - '28.1'
+          - '28.2'
           - 'snapshot'
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - uses: purcell/setup-emacs@master
         with:
           version: ${{ matrix.emacs_version }}
       - name: Install cask
         run: |
-          git clone https://github.com/cask/cask ~/.cask
+          git clone --depth=1 https://github.com/cask/cask ~/.cask
           echo "${HOME}/.cask/bin" >> $GITHUB_PATH
       - name: Run tests
         run: make test
