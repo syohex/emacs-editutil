@@ -1192,7 +1192,7 @@
   (global-set-key (kbd "M-g c") #'editutil-compile)
   (global-set-key (kbd "M-g e") #'editutil-toggle-viper)
 
-  (define-key global-map (kbd "C-q") 'editutil-ctrl-q-map)
+  (define-key global-map (kbd "C-q") editutil-ctrl-q-map)
   (define-key editutil-ctrl-q-map (kbd "C-q") 'quoted-insert)
 
   (add-hook 'after-change-major-mode-hook #'editutil-clear-mode-line)
