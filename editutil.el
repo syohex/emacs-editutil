@@ -1076,9 +1076,6 @@
 (defvar editutil-ctrl-q-map (make-sparse-keymap)
   "keymap binded to C-q")
 
-(define-key global-map (kbd "C-q") 'editutil-ctrl-q-map)
-(define-key editutil-ctrl-q-map (kbd "C-q") 'quoted-insert)
-
 ;;
 ;; Setup
 ;;
@@ -1194,6 +1191,7 @@
 
   (define-key global-map (kbd "C-q") editutil-ctrl-q-map)
   (define-key editutil-ctrl-q-map (kbd "C-q") 'quoted-insert)
+  (define-key editutil-ctrl-q-map (kbd "C-t") 'editutil-toggle-cleanup-spaces)
 
   (add-hook 'after-change-major-mode-hook #'editutil-clear-mode-line)
 
