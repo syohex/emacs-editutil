@@ -1,10 +1,10 @@
 ;;; helm-editutil.el --- My own editing utilities with helm -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2020 by Syohei YOSHIDA
+;; Copyright (C) 2022 by Shohei YOSHIDA
 
 ;; Author: Shohei YOSHIDA <syohex@gmail.com>
 ;; Version: 0.01
-;; Package-Requires: ((emacs "28.1") (helm "3.6.0"))
+;; Package-Requires: ((emacs "28.2") (helm "3.6.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -129,19 +129,6 @@
   (let ((helm-ff-transformer-show-only-basename nil))
     (helm :sources '(helm-editutil-source-recentf helm-source-bookmarks)
           :buffer "*helm recentf+bookmark*")))
-
-;;;###autoload
-(defun helm-editutil-yas-prompt (_prompt choices &optional display-fn)
-  (let* ((names (cl-loop for choice in choices
-                         collect (or (and display-fn (funcall display-fn choice))
-                                     choice)))
-         (src (helm-build-sync-source "Choose a snippet"
-                :candidates names
-                :action #'identity))
-         (selected (helm :sources (list src) :buffer "*helm yas-prompt*")))
-    (if selected
-        (nth (cl-position selected names :test #'equal) choices)
-      (signal 'quit "user quit!"))))
 
 (defun helm-editutil--find-files-init ()
   (with-current-buffer (helm-candidate-buffer 'global)

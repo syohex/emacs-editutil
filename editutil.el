@@ -1,11 +1,11 @@
 ;;; editutil.el --- My own Edit Utilities -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2020 by Shohei YOSHIDA
+;; Copyright (C) 2022 by Shohei YOSHIDA
 
 ;; Author: Shohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-editutil
 ;; Version: 0.01
-;; Package-Requires: ((emacs "28.1"))
+;; Package-Requires: ((emacs "28.2"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -27,7 +27,6 @@
 ;;; Code:
 
 (eval-when-compile
-  (defvar my/ctrl-q-map)
   (defvar paredit-mode-map)
   (defvar helm-map)
   (defvar ibuffer-mode-map)
@@ -46,6 +45,7 @@
 (declare-function elscreen-editutil-current-directory "elscreen-editutil")
 (declare-function recentf-save-list "recentf")
 (declare-function ibuffer-mark-on-buffer "ibuffer")
+(declare-function viper-go-away "viper")
 
 (defgroup editutil nil
   "My own editing utilities"
@@ -1058,6 +1058,12 @@
   (save-selected-window
     (call-interactively #'dired-find-file-other-window)))
 
+(defun editutil-toggle-viper ()
+  (interactive)
+  (if (bound-and-true-p viper-mode)
+      (viper-go-away)
+    (viper-mode)))
+
 (define-minor-mode editutil-global-minor-mode
   "Most superior minir mode"
   :global t
@@ -1066,6 +1072,12 @@
   `((,(kbd "C-M-j") . editutil-hippie-expand)
     (,(kbd "M-q") . editutil-zap-to-char)
     (,(kbd "C-M-o") . editutil-other-window)))
+
+(defvar editutil-ctrl-q-map (make-sparse-keymap)
+  "keymap binded to C-q")
+
+(define-key global-map (kbd "C-q") 'editutil-ctrl-q-map)
+(define-key editutil-ctrl-q-map (kbd "C-q") 'quoted-insert)
 
 ;;
 ;; Setup
@@ -1178,8 +1190,10 @@
   (global-set-key (kbd "M-g [") #'editutil-cycle-next-buffer)
   (global-set-key (kbd "M-g ]") #'editutil-cycle-previous-buffer)
   (global-set-key (kbd "M-g c") #'editutil-compile)
+  (global-set-key (kbd "M-g e") #'editutil-toggle-viper)
 
-  (define-key my/ctrl-q-map (kbd "C-t") #'editutil-toggle-cleanup-spaces)
+  (define-key global-map (kbd "C-q") 'editutil-ctrl-q-map)
+  (define-key editutil-ctrl-q-map (kbd "C-q") 'quoted-insert)
 
   (add-hook 'after-change-major-mode-hook #'editutil-clear-mode-line)
 
@@ -1216,10 +1230,6 @@
 
   (with-eval-after-load 'dired-mode
     (define-key dired-mode-map (kbd "o") #'editutil-dired-find-file-other-window))
-
-  ;; yasnippet
-  (custom-set-variables
-   '(yas-prompt-functions '(helm-editutil-yas-prompt)))
 
   ;; pop-to-mark-command
   (advice-add 'pop-to-mark-command :around #'editutil-pop-to-mark-advice)
