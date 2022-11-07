@@ -40,26 +40,6 @@
     (should (= (char-after) ?b))
     (should (string= (thing-at-point 'word) "bar"))))
 
-(ert-deftest same-as-previous-line-indent ()
-  "editutil-indent-same-as-previous-line"
-  (with-editutil-temp-buffer 'fundamental-mode
-    "    foo bar
-
-"
-    (let ((expected (current-indentation)))
-      (goto-char (point-max))
-      (call-interactively 'editutil-indent-same-as-previous-line)
-      (should (= (current-indentation) expected))))
-
-  (with-editutil-temp-buffer 'fundamental-mode
-    "    foo bar
-
-             baz bar"
-    (let ((expected (current-indentation)))
-      (goto-char (point-max))
-      (call-interactively 'editutil-indent-same-as-previous-line)
-      (should (= (current-indentation) expected)))))
-
 (ert-deftest forward-WORD ()
   "forward word like vim's 'W'"
   (with-editutil-temp-buffer 'fundamental-mode

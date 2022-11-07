@@ -31,7 +31,8 @@
   (defvar helm-map)
   (defvar ibuffer-mode-map)
   (defvar term-mode-map)
-  (defvar term-raw-map))
+  (defvar term-raw-map)
+  (defvar project-find-functions))
 
 (require 'cl-lib)
 (require 'subr-x)
@@ -51,9 +52,6 @@
   "My own editing utilities"
   :group 'editing)
 
-(defsubst editutil--current-line ()
-  (buffer-substring-no-properties (line-beginning-position) (line-end-position)))
-
 (defun editutil-forward-symbol-at-point ()
   (interactive)
   (let ((symbol (thing-at-point 'symbol))
@@ -63,121 +61,8 @@
       (setq regexp-search-ring
             (cons (substring-no-properties symbol) regexp-search-ring)))))
 
-(defvar editutil--pair-characters
-  '(("(" . ")") ("[" . "]") ("{" . "}") ("'" . "'") ("\"" . "\"")
-    ("<" . ">") ("|" . "|") ("`" . "`")))
-
-(defun editutil--unwrap-counterpart (sign)
-  (let ((pair (assoc-default sign editutil--pair-characters)))
-    (unless pair
-      (error "Not found: pair string of '%s'" sign))
-    pair))
-
-(defun editutil--find-pair-start (arg matched limit)
-  (let ((count 0)
-        (pair (editutil--unwrap-counterpart matched)))
-    (save-excursion
-      (forward-char 1)
-      (while (re-search-forward (regexp-quote pair) limit t)
-        (cl-incf count)))
-    (save-excursion
-      (let ((search-count (+ arg count))
-            (re (regexp-quote matched)))
-        (when (> count 0)
-          (backward-char 1)
-          (unless (re-search-backward re (point-min) t (1- search-count))
-            (error "This point is not wrapped")))
-        (point)))))
-
-(defun editutil-unwrap-at-point (arg &optional replaced)
-  (interactive "p")
-  (let ((paren-level (car (syntax-ppss))))
-    (when (zerop paren-level)
-      (error "Here is top level!!")))
-  (save-excursion
-    (let ((curpoint (point))
-          (count 0)
-          (replace-pair (and replaced (editutil--unwrap-counterpart replaced))))
-      (when (re-search-backward "\\([(\[{'\"`|<]\\)" (point-min) t arg)
-        (let* ((matched (match-string-no-properties 1))
-               (pair (editutil--unwrap-counterpart matched))
-               start)
-          (setq start (editutil--find-pair-start arg matched curpoint))
-          (goto-char start)
-          (if (string-match-p "[(\[{]" matched)
-              (forward-list 1)
-            (save-excursion
-              (forward-char 1)
-              (while (re-search-forward (regexp-quote matched) curpoint t)
-                (cl-incf count)))
-            (goto-char start)
-            (forward-char 1)
-            (when (re-search-forward (regexp-quote pair) nil t (1+ count))
-              (when (< (point) curpoint)
-                (error "This point is not wrapped!!"))))
-          (backward-char)
-          (delete-char 1)
-          (when replaced
-            (insert replace-pair))
-          (goto-char start)
-          (delete-char 1)
-          (when replaced
-            (insert replaced)))))))
-
-(defsubst editutil--convert-open-string (char)
-  (cl-case char
-    (?\) "(")
-    (?\] "[")
-    (?> "<")
-    (?} "{")
-    (otherwise (char-to-string char))))
-
 (defsubst editutil--in-string-p ()
   (nth 3 (syntax-ppss)))
-
-(defsubst editutil--goto-beginning-of-string-or-comment ()
-  (goto-char (nth 8 (syntax-ppss))))
-
-(defun editutil--mark-paired (char inner-p)
-  (interactive)
-  (let* ((current-prefix-arg nil)
-         (open-str (editutil--convert-open-string char))
-         (close-str (ignore-errors (editutil--unwrap-counterpart open-str))))
-    (if (memq char '(?' ?\"))
-        (while (editutil--in-string-p)
-          (editutil--goto-beginning-of-string-or-comment))
-      (if (= (char-syntax (string-to-char open-str)) ?\()
-          (progn
-            (when (editutil--in-string-p)
-              (editutil--goto-beginning-of-string-or-comment))
-            (backward-up-list 1))
-        (unless (re-search-backward (regexp-quote open-str) nil t)
-          (error "Can't find '%s'" open-str))))
-    (if inner-p
-        (set-mark (1+ (point)))
-      (set-mark (point)))
-    (if close-str
-        (if (member (char-syntax (string-to-char close-str)) '(?\" ?\)))
-            (forward-sexp 1)
-          (re-search-forward (regexp-quote close-str) nil t))
-      (forward-char 1)
-      (re-search-forward (regexp-quote open-str) nil t))
-    (and inner-p (backward-char 1))))
-
-(defun editutil-mark-inside-paired (char)
-  (interactive
-   (list (read-char)))
-  (editutil--mark-paired char t))
-
-(defun editutil-mark-around-paired (char)
-  (interactive
-   (list (read-char)))
-  (editutil--mark-paired char nil))
-
-(defun editutil-replace-wrapped-string (arg)
-  (interactive "p")
-  (let ((replaced (char-to-string (read-char))))
-    (editutil-unwrap-at-point arg replaced)))
 
 (defun editutil-edit-previous-line (arg)
   (interactive "p")
@@ -245,89 +130,6 @@
          (read-char nil t)))
   (editutil--zap-to-char-common arg char 0))
 
-(defun editutil--char-to-thing (char)
-  (cl-case char
-    (?w 'word)
-    (?q 'symbol)
-    (?l 'line)
-    (?s 'string)
-    (otherwise (error "'%s' is not supported" char))))
-
-(defun editutil--thing-bounds (char)
-  (let ((thing (editutil--char-to-thing char)))
-    (cl-case thing
-      (string (save-excursion
-                (unless (editutil--in-string-p)
-                  (error "Here is not in `string'."))
-                (editutil--goto-beginning-of-string-or-comment)
-                (let ((start (point)))
-                  (forward-sexp)
-                  (cons start (point)))))
-      (otherwise (bounds-of-thing-at-point thing)))))
-
-(defun editutil--thing-common (char callback)
-  (let ((bound (editutil--thing-bounds char)))
-    (unless bound
-      (error "Error: '%s' is not found" (editutil--char-to-thing char)))
-    (funcall callback bound)))
-
-(defun editutil-copy-thing (char)
-  (interactive
-   (list (read-char)))
-  (editutil--thing-common
-   char
-   (lambda (bound)
-     (kill-ring-save (car bound) (cdr bound)))))
-
-(defun editutil-forward-char (arg char)
-  (interactive
-   (list (prefix-numeric-value current-prefix-arg)
-         (read-char)))
-  (when (>= arg 0)
-    (forward-char 1))
-  (let ((case-fold-search nil))
-    (search-forward (char-to-string char) nil t arg))
-  (when (>= arg 0)
-    (backward-char 1))
-  (set-transient-map
-   (let ((m (make-sparse-keymap)))
-     (define-key m (kbd "M-e") (lambda () (interactive) (editutil-forward-char 1 char)))
-     (define-key m (kbd "M-a") (lambda () (interactive) (editutil-forward-char -1 char)))
-     m)))
-
-(defun editutil-backward-char (arg char)
-  (interactive
-   (list (prefix-numeric-value current-prefix-arg)
-         (read-char)))
-  (editutil-forward-char (- arg) char))
-
-(defun editutil--repeat-move-line-command ()
-  (message "'n': Move up, 'p': Move Down")
-  (set-transient-map
-   (let ((m (make-sparse-keymap)))
-     (define-key m (kbd "n") 'editutil-move-line-down)
-     (define-key m (kbd "p") 'editutil-move-line-up)
-     m)))
-
-(defun editutil-move-line-up ()
-  (interactive)
-  (let ((curindent (current-column)))
-    (transpose-lines 1)
-    (indent-according-to-mode)
-    (forward-line -2)
-    (move-to-column curindent)
-    (editutil--repeat-move-line-command)))
-
-(defun editutil-move-line-down ()
-  (interactive)
-  (let ((curindent (current-column)))
-    (forward-line 1)
-    (transpose-lines 1)
-    (forward-line -1)
-    (indent-according-to-mode)
-    (move-to-column curindent)
-    (editutil--repeat-move-line-command)))
-
 (defun editutil-delete-following-spaces (arg)
   (interactive "p")
   (let ((orig-point (point)))
@@ -336,16 +138,6 @@
           (forward-whitespace -1)
         (forward-whitespace +1))
       (delete-region orig-point (point)))))
-
-(defun editutil-kill-whole-line (arg)
-  (interactive "p")
-  (let ((curcolumn (current-column)))
-    (kill-whole-line arg)
-    (move-to-column curcolumn)
-    (set-transient-map
-     (let ((m (make-sparse-keymap)))
-       (define-key m (kbd "C-d") 'editutil-kill-whole-line)
-       m))))
 
 (defun editutil-yank (arg)
   (interactive "P")
@@ -465,29 +257,6 @@
         (dotimes (_ (or n 1))
           (insert str "\n"))))
     (move-to-column orig-column)))
-
-(defun editutil-indent-same-as-previous-line ()
-  (interactive)
-  (let ((cur-indent (current-indentation))
-        (prev-indent (save-excursion
-                       (forward-line -1)
-                       (let (finish column)
-                         (while (not finish)
-                           (when (bobp)
-                             (setq finish t))
-                           (let ((line (editutil--current-line)))
-                             (unless (string-match-p "\\`\\s-*\\'" line)
-                               (setq finish t column (current-indentation)))
-                             (forward-line -1)))
-                         column))))
-    (if (< cur-indent prev-indent)
-        (progn
-          (back-to-indentation)
-          (insert-char (string-to-char " ") (- prev-indent cur-indent)))
-      (save-excursion
-        (goto-char (line-beginning-position))
-        (delete-horizontal-space)
-        (insert-char (string-to-char " ") prev-indent)))))
 
 (defun editutil-copy-line (arg)
   (interactive "p")
@@ -627,51 +396,6 @@
   (interactive "P")
   (editutil--kill-command-common arg 'kill-region 'symbol))
 
-(defsubst editutil--github-url ()
-  (car (process-lines "hub" "browse" "-u")))
-
-(defun editutil-browse-github ()
-  (interactive)
-  (browse-url (editutil--github-url)))
-
-(defun editutil-browse-github-file ()
-  (interactive)
-  (let ((url (editutil--github-url))
-        (file (file-relative-name (buffer-file-name) (vc-root-dir)))
-        (branch (editutil--vc-branch))
-        (line (if current-prefix-arg
-                  (format "#L%d" (line-number-at-pos))
-                "")))
-    (browse-url (concat url "/blob/" branch "/" file line))))
-
-(defun editutil--latest-commit-id-of-current-line ()
-  (let ((current-line (line-number-at-pos))
-        (filename (buffer-file-name)))
-    (with-temp-buffer
-      (let ((status (process-file "git" nil t nil
-                                  "blame" "-l" "-L"
-                                  (format "%s,+1" current-line) filename)))
-        (unless (zerop status)
-          (error "Failed: git blame"))
-        (goto-char (point-min))
-        (looking-at "\\(\\S-+\\)")
-        (let ((commit-id (match-string-no-properties 1)))
-          (when (string-match-p "\\`0+\\'" commit-id)
-            (error "This line is not committed yet"))
-          commit-id)))))
-
-(defun editutil-browse-github-commit ()
-  (interactive)
-  (let ((commit-id (editutil--latest-commit-id-of-current-line)))
-    (process-file "hub" nil nil nil
-                  "browse" "--" (concat "commit/" commit-id))))
-
-(defun editutil-browse-weblio-sentence (sentence)
-  (interactive
-   (list (read-string "Sentence: ")))
-  (let ((query (string-join (split-string sentence) "+")))
-    (browse-url (format "http://ejje.weblio.jp/sentence/content/\"%s\"" query))))
-
 (defun editutil-toggle-cleanup-spaces ()
   (interactive)
   (cond ((memq 'delete-trailing-whitespace before-save-hook)
@@ -685,7 +409,8 @@
   "Clean spaces statement in mode-line.")
 
 (defvar editutil-cleanup-space-mode-line
-  '(:eval (if (memq 'delete-trailing-whitespace before-save-hook)
+  '(:eval (if (or (memq 'delete-trailing-whitespace before-save-hook)
+                  (bound-and-true-p eglot-mode))
               ""
             (propertize "[DT-]" 'face 'editutil-clean-space))))
 (put 'editutil-cleanup-space-mode-line 'risky-local-variable t)
@@ -766,60 +491,6 @@
              (when (eq mode major-mode)
                (setq mode-name mode-str)))))
 
-(defvar editutil--dictionary-history nil)
-
-(defun editutil-dictionary-search (word)
-  (interactive
-   (list
-    (let ((word (thing-at-point 'word)))
-      (or (and word (string-match-p "^[a-zA-Z]" word) word)
-          (read-string "Word: " nil 'editutil--dictionary-history)))))
-  (setq word (downcase (substring-no-properties word)))
-  (if (eq system-type 'darwin)
-      (process-file "open" nil nil nil (concat "dict://" word))
-    (with-current-buffer (get-buffer-create "*sdic*")
-      (read-only-mode -1)
-      (erase-buffer)
-      (unless current-prefix-arg
-        (unless (zerop (process-file "dict" nil t nil word))
-          (error "Failed: 'dict %s'" word)))
-      (when (or current-prefix-arg (string-empty-p (buffer-string)))
-        (unless (zerop (process-file "dict" nil t nil "-s" word))
-          (error "Failed: 'dict -s %s'" word))
-        (when (string-empty-p (buffer-string))
-          (error "Can't find any entries of '%s'" word)))
-      (goto-char (point-min))
-      (ansi-color-apply-on-region (point-min) (point-max))
-      (view-mode +1)
-      (read-only-mode +1)
-      (pop-to-buffer (current-buffer)))))
-
-(defvar editutil--compile-history nil)
-(defvar editutil--last-command nil)
-
-(defsubst editutil--compile-root-directory ()
-  (cl-loop for (file . command) in '(("Makefile" . "make")
-                                     ("Cargo.lock" . "cargo")
-                                     ("yarn.lock" . "yarn")
-                                     ("package-lock.json" "npm")
-                                     (".git" . ""))
-           when (locate-dominating-file default-directory file)
-           return (list it command)
-           finally return (list default-directory "")))
-
-(defun editutil-compile (command dir)
-  (interactive
-   (let* ((dir-cmd (editutil--compile-root-directory))
-          (dir (cl-first dir-cmd))
-          (cmd (cl-second dir-cmd)))
-     (list (read-string "Compile command: "
-                        cmd 'editutil--compile-history)
-           dir)))
-  (setq editutil--last-command command)
-  (let ((default-directory dir)
-        (compilation-scroll-output t))
-    (compile command)))
-
 (defun editutil-auto-save-buffers ()
   (save-window-excursion
     (save-excursion
@@ -877,11 +548,6 @@
   (interactive)
   (recentf-save-list)
   (message nil))
-
-(defun editutil-comment-line ()
-  (interactive)
-  (save-excursion
-    (call-interactively #'comment-line)))
 
 (cl-defun editutil-pop-to-mark-advice (orig-fun &rest args)
   (let ((orig (point)))
@@ -993,12 +659,6 @@
   (bs-cycle-previous)
   (editutil--cycle-buffer-common))
 
-(defun editutil-delete-indent ()
-  (interactive)
-  (save-excursion
-    (back-to-indentation)
-    (delete-region (line-beginning-position) (point))))
-
 (defun editutil--save-current-windows ()
   (setq editutil--previous-buffer (current-buffer))
   (window-configuration-to-register :editutil-ansiterm))
@@ -1026,6 +686,9 @@
             (switch-to-buffer shell-buf)
             (goto-char (point-max)))
         (ansi-term shell-file-name)))))
+
+(defun editutil-ansi-term-kill-buffer (&optional process _msg)
+  (kill-buffer (process-buffer process)))
 
 (defun editutil-restore-ansi-term ()
   (interactive)
@@ -1058,6 +721,10 @@
   (save-selected-window
     (call-interactively #'dired-find-file-other-window)))
 
+(defun editutil-find-rust-project-root (dir)
+  (when-let ((root (locate-dominating-file dir "Cargo.toml")))
+    (list 'vc 'Git root)))
+
 (defun editutil-toggle-viper ()
   (interactive)
   (if (bound-and-true-p viper-mode)
@@ -1086,12 +753,7 @@
 
   (editutil--init-mode-line)
 
-  (global-unset-key (kbd "C-x c"))
   (global-unset-key (kbd "C-x z"))
-  (global-unset-key (kbd "C-x t"))
-  (global-unset-key (kbd "C-x w"))
-  (global-unset-key (kbd "C-x s"))
-  (global-unset-key (kbd "C-x a"))
 
   (global-set-key (kbd "RET") #'editutil-newline)
   (global-set-key (kbd "C-j") #'editutil-newline-and-maybe-indent)
@@ -1105,11 +767,6 @@
 
   (global-set-key (kbd "C-M-o") #'editutil-other-window)
   (global-set-key (kbd "C-M-u") #'editutil-backward-up)
-
-  (global-set-key (kbd "C-x f") #'editutil-forward-char)
-  (global-set-key (kbd "C-x a") #'editutil-backward-char)
-  (global-set-key (kbd "C-M-)") #'editutil-forward-char)
-  (global-set-key (kbd "C-M-(") #'editutil-backward-char)
 
   (global-set-key (kbd "C-k") #'editutil-kill-line)
   (global-set-key (kbd "C-M-n") #'editutil-forward-list)
@@ -1143,50 +800,20 @@
   (global-set-key [remap backward-kill-word] #'editutil-backward-delete-word)
   (global-set-key (kbd "C-M-c") #'editutil-duplicate-thing)
 
-  (global-set-key (kbd "C-x C-d") #'editutil-kill-whole-line)
-
-  (global-set-key (kbd "M-I") #'editutil-indent-same-as-previous-line)
   (global-set-key (kbd "M-(") #'editutil-insert-parentheses)
 
   (global-set-key (kbd "C-x l") #'editutil-mark-line)
-
-  (global-set-key (kbd "C-x m") #'editutil-mark-inside-paired)
-  (global-set-key (kbd "C-x M") #'editutil-mark-around-paired)
   (global-set-key (kbd "C-M-w") #'editutil-mark-sexp)
 
-  (global-set-key (kbd "C-c w") #'editutil-dictionary-search)
-  (global-set-key (kbd "C-c W") #'editutil-browse-weblio-sentence)
-
   (global-set-key (kbd "C-x y") #'editutil-copy-line)
-  (global-set-key (kbd "C-x J") #'editutil-join-line)
   (global-set-key (kbd "C-x \\") #'editutil-ansi-term)
-
-  (global-set-key (kbd "C-x ;") #'editutil-comment-line)
-
-  (global-set-key (kbd "C-x <") #'editutil-delete-indent)
 
   ;; 'C-x r' prefix
   (global-set-key (kbd "C-x r N") #'editutil-number-rectangle)
 
-  ;; 'C-x t' prefix
-  (global-set-key (kbd "C-x t n") #'editutil-move-line-down)
-  (global-set-key (kbd "C-x t p") #'editutil-move-line-up)
-
-  ;; 'C-x s' prefix
-  (global-set-key (kbd "C-x s s") #'editutil-unwrap-at-point)
-  (global-set-key (kbd "C-x s r") #'editutil-replace-wrapped-string)
-  (global-set-key (kbd "M-s s") #'editutil-unwrap-at-point)
-  (global-set-key (kbd "M-s r") #'editutil-replace-wrapped-string)
-
-  ;; 'C-x w' prefix
-  (global-set-key (kbd "C-x w w") #'editutil-browse-github)
-  (global-set-key (kbd "C-x w f") #'editutil-browse-github-file)
-  (global-set-key (kbd "C-x w c") #'editutil-browse-github-commit)
-
   ;; 'M-g' prefix
   (global-set-key (kbd "M-g [") #'editutil-cycle-next-buffer)
   (global-set-key (kbd "M-g ]") #'editutil-cycle-previous-buffer)
-  (global-set-key (kbd "M-g c") #'editutil-compile)
   (global-set-key (kbd "M-g e") #'editutil-toggle-viper)
 
   (define-key global-map (kbd "C-q") editutil-ctrl-q-map)
@@ -1222,12 +849,20 @@
     (define-key paredit-mode-map (kbd "C-c j") #'editutil-newline-after-sexp)
     (define-key paredit-mode-map (kbd "DEL") #'editutil-paredit-backward-delete))
 
-  (with-eval-after-load 'term-mode
+  (with-eval-after-load 'term
+    (advice-add 'term-sentinel :after #'editutil-ansi-term-kill-buffer)
+
+    (define-key term-mode-map (kbd "C-x") nil)
+    (define-key term-raw-map (kbd "C-x") nil)
+
     (define-key term-mode-map (kbd "C-x \\") #'editutil-restore-ansi-term)
     (define-key term-raw-map (kbd "C-x \\") #'editutil-restore-ansi-term))
 
   (with-eval-after-load 'dired-mode
     (define-key dired-mode-map (kbd "o") #'editutil-dired-find-file-other-window))
+
+  (with-eval-after-load 'project
+    (add-to-list 'project-find-functions #'editutil-find-rust-project-root))
 
   ;; pop-to-mark-command
   (advice-add 'pop-to-mark-command :around #'editutil-pop-to-mark-advice)
