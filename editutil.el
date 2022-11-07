@@ -29,17 +29,15 @@
 (eval-when-compile
   (defvar paredit-mode-map)
   (defvar helm-map)
-  (defvar ibuffer-mode-map)
   (defvar term-mode-map)
-  (defvar term-raw-map)
-  (defvar project-find-functions))
+  (defvar term-raw-map))
 
 (require 'cl-lib)
 (require 'subr-x)
 (require 'thingatpt)
 (require 'which-func)
 (require 'dired)
-(require 'vc-git)
+(require 'project)
 
 (declare-function subword-forward "subword")
 (declare-function subword-backward "subword")
@@ -626,22 +624,6 @@
       (skip-syntax-backward "\\s-")
       (skip-syntax-backward "^\\s-"))))
 
-(defun editutil-ibuffer-mark-delete-by-filename (regexp)
-  "Mark delete all buffers whose filename matches REGEXP."
-  (interactive
-   (list (read-string "Mark by file name (regexp): ")))
-  (ibuffer-mark-on-buffer
-   (lambda (buf)
-     (with-current-buffer buf
-       (let ((filename (buffer-file-name buf))
-             (case-fold-search nil))
-         (string-match-p
-          regexp
-          (cond (filename filename)
-                ((eq major-mode 'dired-mode) dired-directory)
-                (t default-directory))))))
-   ?D))
-
 (defun editutil--cycle-buffer-common ()
   (set-transient-map
    (let ((m (make-sparse-keymap)))
@@ -724,6 +706,9 @@
 (defun editutil-find-rust-project-root (dir)
   (when-let ((root (locate-dominating-file dir "Cargo.toml")))
     (list 'vc 'Git root)))
+
+(defun editutil-rust-mode-hook ()
+  (setq-local project-find-functions (list #'editutil-find-rust-project-root)))
 
 (defun editutil-toggle-viper ()
   (interactive)
@@ -841,9 +826,6 @@
   (advice-add 'scroll-up :around 'editutil-scroll-move-around)
   (advice-add 'scroll-down :around 'editutil-scroll-move-around)
 
-  (with-eval-after-load 'ibuffer
-    (define-key ibuffer-mode-map (kbd "C-c C-d") #'editutil-ibuffer-mark-delete-by-filename))
-
   (with-eval-after-load 'paredit
     (define-key paredit-mode-map (kbd "C-c l") #'editutil-toggle-let)
     (define-key paredit-mode-map (kbd "C-c j") #'editutil-newline-after-sexp)
@@ -861,8 +843,7 @@
   (with-eval-after-load 'dired-mode
     (define-key dired-mode-map (kbd "o") #'editutil-dired-find-file-other-window))
 
-  (with-eval-after-load 'project
-    (add-to-list 'project-find-functions #'editutil-find-rust-project-root))
+  (add-hook 'rust-mode-hook #'editutil-rust-mode-hook)
 
   ;; pop-to-mark-command
   (advice-add 'pop-to-mark-command :around #'editutil-pop-to-mark-advice)
