@@ -410,7 +410,7 @@
 
 (defvar editutil-cleanup-space-mode-line
   '(:eval (if (or (memq 'delete-trailing-whitespace before-save-hook)
-                  (bound-and-true-p eglot-mode))
+                  (bound-and-true-p eglot--managed-mode))
               ""
             (propertize "[DT-]" 'face 'editutil-clean-space))))
 (put 'editutil-cleanup-space-mode-line 'risky-local-variable t)
