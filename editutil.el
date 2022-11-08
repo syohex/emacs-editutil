@@ -713,7 +713,9 @@
 (defun editutil-toggle-viper ()
   (interactive)
   (if (bound-and-true-p viper-mode)
-      (viper-go-away)
+      (progn
+        (viper-go-away)
+        (force-mode-line-update))
     (viper-mode)))
 
 (define-minor-mode editutil-global-minor-mode
