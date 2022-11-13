@@ -304,6 +304,10 @@
   (unless (>= (prefix-numeric-value current-prefix-arg) 16)
     (other-window arg)))
 
+(defun editutil-other-window-backward ()
+  (interactive)
+  (other-window -1))
+
 (defun editutil-toggle-let ()
   (interactive)
   (save-excursion
@@ -698,17 +702,20 @@
     (apply orig-fn args)
     (move-to-window-line orig-line)))
 
-(defun editutil-dired-find-file-other-window ()
-  (interactive)
-  (save-selected-window
-    (call-interactively #'dired-find-file-other-window)))
-
 (defun editutil-find-rust-project-root (dir)
   (when-let ((root (locate-dominating-file dir "Cargo.toml")))
     (list 'vc 'Git root)))
 
 (defun editutil-rust-mode-hook ()
   (setq-local project-find-functions (list #'editutil-find-rust-project-root)))
+
+(defun editutil-fsharp-format ()
+  (interactive)
+  (when (buffer-modified-p)
+    (save-buffer))
+  (unless (process-file "fantomas" nil nil nil "--pageWidth=120" (buffer-file-name))
+    (error "failed to format file"))
+  (revert-buffer t t))
 
 (defun editutil-toggle-viper ()
   (interactive)
@@ -717,6 +724,12 @@
         (viper-go-away)
         (force-mode-line-update))
     (viper-mode)))
+
+(defun editutil-input-method-active-hook ()
+  (set-cursor-color "color-208"))
+
+(defun editutil-input-method-inactivate-hook ()
+  (set-cursor-color "white"))
 
 (define-minor-mode editutil-global-minor-mode
   "Most superior minir mode"
@@ -729,10 +742,6 @@
 
 (defvar editutil-ctrl-q-map (make-sparse-keymap)
   "keymap binded to C-q")
-
-;;
-;; Setup
-;;
 
 ;;;###autoload
 (defun editutil-default-setup ()
@@ -753,6 +762,7 @@
   (global-set-key (kbd "M-q") #'editutil-zap-to-char)
 
   (global-set-key (kbd "C-M-o") #'editutil-other-window)
+  (global-set-key (kbd "C-M-l") #'editutil-other-window-backward)
   (global-set-key (kbd "C-M-u") #'editutil-backward-up)
 
   (global-set-key (kbd "C-k") #'editutil-kill-line)
@@ -842,10 +852,13 @@
     (define-key term-mode-map (kbd "C-x \\") #'editutil-restore-ansi-term)
     (define-key term-raw-map (kbd "C-x \\") #'editutil-restore-ansi-term))
 
-  (with-eval-after-load 'dired-mode
-    (define-key dired-mode-map (kbd "o") #'editutil-dired-find-file-other-window))
+  (add-hook 'input-method-activate-hook #'editutil-input-method-active-hook)
+  (add-hook 'input-method-deactivate-hook #'editutil-input-method-inactivate-hook)
 
   (add-hook 'rust-mode-hook #'editutil-rust-mode-hook)
+
+  (with-eval-after-load 'fsharp-mode
+    (define-key fsharp-mode-map (kbd "C-c C-f") #'editutil-fsharp-format))
 
   ;; pop-to-mark-command
   (advice-add 'pop-to-mark-command :around #'editutil-pop-to-mark-advice)
