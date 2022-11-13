@@ -726,12 +726,6 @@
         (force-mode-line-update))
     (viper-mode)))
 
-(defun editutil-input-method-active-hook ()
-  (set-cursor-color "color-208"))
-
-(defun editutil-input-method-inactivate-hook ()
-  (set-cursor-color "white"))
-
 (define-minor-mode editutil-global-minor-mode
   "Most superior minir mode"
   :global t
@@ -852,9 +846,6 @@
 
     (define-key term-mode-map (kbd "C-x \\") #'editutil-restore-ansi-term)
     (define-key term-raw-map (kbd "C-x \\") #'editutil-restore-ansi-term))
-
-  (add-hook 'input-method-activate-hook #'editutil-input-method-active-hook)
-  (add-hook 'input-method-deactivate-hook #'editutil-input-method-inactivate-hook)
 
   (add-hook 'rust-mode-hook #'editutil-rust-mode-hook)
 
