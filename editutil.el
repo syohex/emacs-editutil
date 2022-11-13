@@ -29,6 +29,7 @@
 (eval-when-compile
   (defvar paredit-mode-map)
   (defvar helm-map)
+  (defvar fsharp-mode-map)
   (defvar term-mode-map)
   (defvar term-raw-map))
 
