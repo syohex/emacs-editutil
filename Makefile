@@ -21,3 +21,7 @@ elpa: $(ELPA_DIR)
 $(ELPA_DIR): Cask
 	$(CASK) install
 	touch $@
+
+.PHONY: clean
+clean:
+	-rm -f *.elc

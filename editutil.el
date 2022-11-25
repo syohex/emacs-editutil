@@ -45,7 +45,6 @@
 (declare-function elscreen-editutil-current-directory "elscreen-editutil")
 (declare-function recentf-save-list "recentf")
 (declare-function ibuffer-mark-on-buffer "ibuffer")
-(declare-function viper-go-away "viper")
 
 (defgroup editutil nil
   "My own editing utilities"
@@ -108,26 +107,22 @@
       (newline)
       (move-to-column col t))))
 
-(defun editutil--zap-to-char-common (arg char more)
-  (with-no-warnings
-    (when (char-table-p translation-table-for-input)
-      (setq char (or (aref translation-table-for-input char) char))))
-  (delete-region (point)
-                 (let ((case-fold-search nil))
-                   (when (>= arg 0)
-                     (forward-char (1+ more)))
-                   (search-forward (char-to-string char) nil nil arg)
-                   (if (>= arg 0)
-                       (when (= more 0)
-                         (backward-char 1))
-                     (forward-char 1))
-                   (point))))
-
 (defun editutil-zap-to-char (arg char)
   (interactive
    (list (prefix-numeric-value current-prefix-arg)
          (read-char nil t)))
-  (editutil--zap-to-char-common arg char 0))
+  (let* ((bound (if (>= arg 0) (line-end-position) (line-beginning-position)))
+         (step (if (>= arg 0) -1 1))
+         (start (point))
+         end-pos)
+    (let ((case-fold-search nil))
+      (when (>= arg 0)
+        (forward-char 1))
+      (when (search-forward (char-to-string char) bound t arg)
+        (forward-char step)
+        (setq end-pos (point))))
+    (when end-pos
+      (delete-region start end-pos))))
 
 (defun editutil-delete-following-spaces (arg)
   (interactive "p")
@@ -718,14 +713,6 @@
     (error "failed to format file"))
   (revert-buffer t t))
 
-(defun editutil-toggle-viper ()
-  (interactive)
-  (if (bound-and-true-p viper-mode)
-      (progn
-        (viper-go-away)
-        (force-mode-line-update))
-    (viper-mode)))
-
 (define-minor-mode editutil-global-minor-mode
   "Most superior minir mode"
   :global t
@@ -806,7 +793,6 @@
   ;; 'M-g' prefix
   (global-set-key (kbd "M-g [") #'editutil-cycle-next-buffer)
   (global-set-key (kbd "M-g ]") #'editutil-cycle-previous-buffer)
-  (global-set-key (kbd "M-g e") #'editutil-toggle-viper)
 
   (define-key global-map (kbd "C-q") editutil-ctrl-q-map)
   (define-key editutil-ctrl-q-map (kbd "C-q") 'quoted-insert)
