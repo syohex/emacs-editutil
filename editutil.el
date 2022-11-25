@@ -234,24 +234,6 @@
       (delete-region (region-beginning) (region-end))
     (call-interactively 'paredit-backward-delete)))
 
-(defun editutil-duplicate-thing (n)
-  (interactive "p")
-  (let ((orig-column (current-column)))
-    (save-excursion
-      (let ((orig-line (line-number-at-pos))
-            (str (if (use-region-p)
-                     (buffer-substring (region-beginning) (region-end))
-                   (buffer-substring (line-beginning-position)
-                                     (line-end-position)))))
-        (when (or (not (use-region-p)) (not (bolp)))
-          (forward-line 1)
-          ;; maybe lastline
-          (when (= orig-line (line-number-at-pos))
-            (insert "\n")))
-        (dotimes (_ (or n 1))
-          (insert str "\n"))))
-    (move-to-column orig-column)))
-
 (defun editutil-copy-line (arg)
   (interactive "p")
   (let ((start (line-beginning-position)))
@@ -777,7 +759,6 @@
   (global-set-key (kbd "M-\\") #'editutil-delete-horizontal-space)
 
   (global-set-key [remap backward-kill-word] #'editutil-backward-delete-word)
-  (global-set-key (kbd "C-M-c") #'editutil-duplicate-thing)
 
   (global-set-key (kbd "M-(") #'editutil-insert-parentheses)
 
