@@ -42,7 +42,6 @@
 
 (declare-function subword-forward "subword")
 (declare-function subword-backward "subword")
-(declare-function elscreen-editutil-current-directory "elscreen-editutil")
 (declare-function recentf-save-list "recentf")
 (declare-function ibuffer-mark-on-buffer "ibuffer")
 
@@ -328,21 +327,16 @@
 (defvar editutil--previous-buffer nil)
 
 ;; for `cde' command
-(defun editutil-current-buffer-directory (&optional in-emacs)
-  (if in-emacs
-      (with-current-buffer editutil--previous-buffer
-        default-directory)
-    (if (featurep 'elscreen)
-        (elscreen-editutil-current-directory)
-      (let* ((bufsinfo (cadr (cadr (current-frame-configuration))))
-             (bufname-list (assoc-default 'buffer-list bufsinfo)))
-        (cl-loop for buf in bufname-list
-                 for file = (or (buffer-file-name buf)
-                                (with-current-buffer buf
-                                  (when (eq major-mode 'dired-mode)
-                                    dired-directory)))
-                 when file
-                 return (file-name-directory it))))))
+(defun editutil-current-buffer-directory ()
+  (let* ((bufsinfo (cadr (cadr (current-frame-configuration))))
+         (bufname-list (assoc-default 'buffer-list bufsinfo)))
+    (cl-loop for buf in bufname-list
+             for file = (or (buffer-file-name buf)
+                            (with-current-buffer buf
+                              (when (eq major-mode 'dired-mode)
+                                dired-directory)))
+             when file
+             return (file-name-directory it))))
 
 (defun editutil--kill-command-common (arg func thing)
   (if (not arg)
