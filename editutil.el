@@ -123,15 +123,6 @@
     (when end-pos
       (delete-region start end-pos))))
 
-(defun editutil-delete-following-spaces (arg)
-  (interactive "p")
-  (let ((orig-point (point)))
-    (save-excursion
-      (if (<= arg 0)
-          (forward-whitespace -1)
-        (forward-whitespace +1))
-      (delete-region orig-point (point)))))
-
 (defun editutil-yank (arg)
   (interactive "P")
   (setq yank-window-start (window-start))
@@ -732,8 +723,6 @@
   (global-set-key (kbd "C-x k") #'editutil-kill-this-buffer)
   (global-set-key (kbd "C-x K") #'editutil-restore-last-killed-buffer)
 
-  (global-set-key (kbd "M-k") #'editutil-delete-following-spaces)
-
   (global-set-key (kbd "C-y") #'editutil-yank)
   (global-set-key (kbd "M-Y") #'editutil-yank-pop-next)
 
@@ -750,7 +739,7 @@
   (global-set-key (kbd "M-l") #'editutil-downcase)
   (global-set-key (kbd "M-c") #'editutil-capitalize)
 
-  (global-set-key (kbd "M-\\") #'editutil-delete-horizontal-space)
+  (global-set-key (kbd "M-\\") #'editutil-delete-following-spaces)
 
   (global-set-key [remap backward-kill-word] #'editutil-backward-delete-word)
 
