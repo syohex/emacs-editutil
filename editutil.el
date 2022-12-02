@@ -121,7 +121,15 @@
         (forward-char step)
         (setq end-pos (point))))
     (when end-pos
-      (delete-region start end-pos))))
+      (kill-region start end-pos))))
+
+(defun editutil-move-to-char (arg char)
+  (interactive
+   (list
+    (prefix-numeric-value current-prefix-arg)
+    (read-char nil t)))
+  (when (search-forward (char-to-string char) (line-end-position) t arg)
+    (backward-char 1)))
 
 (defun editutil-yank (arg)
   (interactive "P")
@@ -469,15 +477,6 @@
                               (file-writable-p buffile))
                      (save-buffer))))))))
 
-(defun editutil-join-line (arg)
-  (interactive "p")
-  (save-excursion
-    (when (< arg 0)
-      (setq arg (1- (abs arg)))
-      (forward-line (- arg)))
-    (dotimes (_i (abs arg))
-      (delete-indentation -1))))
-
 (defun editutil-hippie-expand ()
   (interactive)
   (let ((case-fold-search nil))
@@ -501,12 +500,6 @@
 (defun editutil-newline-and-maybe-indent ()
   (interactive)
   (editutil-newline-common #'newline-and-indent))
-
-(defun editutil-delete-line (arg)
-  (interactive "p")
-  (dotimes (_i arg)
-    (delete-region (line-beginning-position)
-                   (min (1+ (line-end-position)) (point-max)))))
 
 ;;;###autoload
 (defun editutil-recentf-save-list ()
@@ -556,40 +549,9 @@
   (forward-word arg)
   (backward-char +1))
 
-(defun editutil-forward-WORD-end (arg)
-  (interactive "p")
-  (if (looking-at-p "[[:space:]\r\n]")
-      (progn
-        (skip-syntax-forward "-")
-        (skip-syntax-forward "^-")
-        (backward-char 1))
-    (forward-char +1)
-    (if (looking-at-p "[[:space:]\r\n]")
-        (cl-incf arg)
-      (backward-char +1))
-    (editutil-forward-WORD arg)
-    (let ((eob-p (eobp)))
-      (backward-char +1)
-      (unless eob-p
-        (skip-chars-backward "\r\n\t ")
-        (backward-char +1)))))
-
-(defun editutil-forward-WORD (arg)
-  (interactive "p")
-  (dotimes (_i arg)
-    (skip-syntax-forward "^-")
-    (skip-syntax-forward "-")))
-
-(defun editutil-backward-WORD (arg)
-  (interactive "p")
-  (let ((pos (point)))
-    (skip-syntax-backward "^\\s-")
-    (unless (= pos (point))
-      (cl-decf arg))
-    (dotimes (_i arg)
-      (backward-char 1)
-      (skip-syntax-backward "\\s-")
-      (skip-syntax-backward "^\\s-"))))
+;;
+;; Buffer utilities
+;;
 
 (defun editutil--cycle-buffer-common ()
   (set-transient-map
@@ -616,6 +578,10 @@
   (cl-loop for win in (window-list)
            for winbuf = (window-buffer win)
            thereis (string= bufname (buffer-name winbuf))))
+
+;;
+;; shell utilities
+;;
 
 (defun editutil-ansi-term ()
   (interactive)
@@ -645,25 +611,19 @@
     (error "This buffer is not ansi-term buffer"))
   (jump-to-register :editutil-ansiterm))
 
-(defvar editutil--last-killed-buffer nil)
-
 (defun editutil-kill-this-buffer ()
   (interactive)
-  (when-let (file (buffer-file-name))
-    (setq editutil--last-killed-buffer file))
   (call-interactively #'kill-this-buffer))
-
-(defun editutil-restore-last-killed-buffer ()
-  (interactive)
-  (unless editutil--last-killed-buffer
-    (user-error "No killed buffer"))
-  (find-file editutil--last-killed-buffer))
 
 ;; fixed line position after scrollup, scrolldown
 (defun editutil-scroll-move-around (orig-fn &rest args)
   (let ((orig-line (count-lines (window-start) (point))))
     (apply orig-fn args)
     (move-to-window-line orig-line)))
+
+;;
+;; Programming utilities
+;;
 
 (defun editutil-find-rust-project-root (dir)
   (when-let ((root (locate-dominating-file dir "Cargo.toml")))
@@ -721,19 +681,13 @@
   (global-set-key (kbd "M-O") #'editutil-edit-previous-line)
 
   (global-set-key (kbd "C-x k") #'editutil-kill-this-buffer)
-  (global-set-key (kbd "C-x K") #'editutil-restore-last-killed-buffer)
 
   (global-set-key (kbd "C-y") #'editutil-yank)
   (global-set-key (kbd "M-Y") #'editutil-yank-pop-next)
 
+  (global-set-key (kbd "M-a") #'editutil-move-to-char)
   (global-set-key (kbd "M-e") #'editutil-forward-word-end)
-  (global-set-key (kbd "M-E") #'editutil-forward-WORD-end)
-
-  (global-set-key (kbd "M-F") #'editutil-forward-WORD)
-  (global-set-key (kbd "M-B") #'editutil-backward-WORD)
-
   (global-set-key (kbd "M-d") #'editutil-delete-word)
-  (global-set-key (kbd "M-D") #'editutil-delete-line)
 
   (global-set-key (kbd "M-u") #'editutil-upcase)
   (global-set-key (kbd "M-l") #'editutil-downcase)
@@ -784,6 +738,7 @@
   (advice-add 'scroll-down :around 'editutil-scroll-move-around)
 
   (with-eval-after-load 'paredit
+    (define-key paredit-mode-map (kbd "M-q") #'editutil-zap-to-char)
     (define-key paredit-mode-map (kbd "C-c l") #'editutil-toggle-let)
     (define-key paredit-mode-map (kbd "C-c j") #'editutil-newline-after-sexp)
     (define-key paredit-mode-map (kbd "DEL") #'editutil-paredit-backward-delete))

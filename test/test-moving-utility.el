@@ -40,38 +40,6 @@
     (should (= (char-after) ?b))
     (should (string= (thing-at-point 'word) "bar"))))
 
-(ert-deftest forward-WORD ()
-  "forward word like vim's 'W'"
-  (with-editutil-temp-buffer 'fundamental-mode
-    "foo!!!!bar baz"
-    (call-interactively #'editutil-forward-WORD)
-    (should (looking-at-p "baz")))
-
-  (with-editutil-temp-buffer 'fundamental-mode
-    "apple!!orange''''#banana melon@@@grape egg"
-    (editutil-forward-WORD 2)
-    (should (looking-at-p "egg"))))
-
-(ert-deftest backward-WORD ()
-  "forward word like vim's 'B'"
-  (with-editutil-temp-buffer 'fundamental-mode
-    "foo!!!!bar baz"
-    (goto-char (point-max))
-    (call-interactively #'editutil-backward-WORD)
-    (looking-at-p "baz")
-    (call-interactively #'editutil-backward-WORD)
-    (looking-at-p "foo"))
-
-  (with-editutil-temp-buffer 'fundamental-mode
-    "apple!!orange''''#banana melon@@@grape egg"
-    (goto-char (point-max))
-    (editutil-backward-WORD 2)
-    (should (looking-at-p "melon"))
-
-    (goto-char (point-max))
-    (editutil-backward-WORD 3)
-    (should (looking-at-p "apple"))))
-
 (ert-deftest forward-word-end ()
   "forward word like vim's 'e'"
   (with-editutil-temp-buffer 'fundamental-mode
@@ -91,19 +59,11 @@
     (editutil-forward-word-end 2)
     (should (looking-back "-ba"))))
 
-(ert-deftest forward-WORD-end ()
-  "forward word like vim's 'E'"
+(ert-deftest move-to-char ()
+  "forward like vim's 'f'"
   (with-editutil-temp-buffer 'fundamental-mode
     "foo-bar baz"
-    (call-interactively #'editutil-forward-WORD-end)
-    (should (looking-back "-ba"))
-
-    (call-interactively #'editutil-forward-WORD-end)
-    (should (looking-back " ba")))
-
-  (with-editutil-temp-buffer 'fundamental-mode
-    "foo-bar   baz    boo"
-    (editutil-forward-WORD-end 2)
-    (should (looking-back "ba"))))
+    (editutil-move-to-char 1 ?b)
+    (should (looking-at-p "bar"))))
 
 ;;; test-moving-utility.el ends here

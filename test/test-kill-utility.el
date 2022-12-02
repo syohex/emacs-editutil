@@ -69,15 +69,6 @@
     (editutil-zap-to-char 1 ?c)
     (should (string= (buffer-string) "a b\nc"))))
 
-(ert-deftest delete-line ()
-  "delete-current-line."
-  (with-editutil-temp-buffer 'text-mode
-    "foo
-bar
-baz"
-    (editutil-delete-line 3)
-    (should (string-empty-p (buffer-string)))))
-
 (ert-deftest delete-horizontal-space ()
   "delete spaces around cursor."
   (with-editutil-temp-buffer 'text-mode
