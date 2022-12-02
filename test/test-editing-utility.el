@@ -78,19 +78,4 @@
     (call-interactively 'editutil-downcase)
     (should (string= (buffer-string) "foo bar"))))
 
-(ert-deftest edit-capitalize ()
-  "Capitalize both word and region"
-  (with-editutil-temp-buffer 'fundamental-mode
-    "foo bar"
-    (call-interactively 'capitalize-word)
-    (should (string= (buffer-string) "Foo bar")))
-
-  (with-editutil-temp-buffer 'fundamental-mode
-    "foo bar"
-    (transient-mark-mode +1)
-    (set-mark (point))
-    (goto-char (point-max))
-    (call-interactively 'editutil-capitalize)
-    (should (string= (buffer-string) "Foo Bar"))))
-
 ;;; test-editing-utility.el ends here

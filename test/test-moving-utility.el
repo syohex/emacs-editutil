@@ -59,11 +59,17 @@
     (editutil-forward-word-end 2)
     (should (looking-back "-ba"))))
 
-(ert-deftest move-to-char ()
+(ert-deftest forward-to-char ()
   "forward like vim's 'f'"
   (with-editutil-temp-buffer 'fundamental-mode
     "foo-bar baz"
-    (editutil-move-to-char 1 ?b)
+    (editutil-forward-to-char 1 ?b)
+    (should (looking-at-p "bar"))
+
+    (editutil-forward-to-char 1 ?b)
+    (should (looking-at-p "baz"))
+
+    (editutil-backward-to-char 1 ?b)
     (should (looking-at-p "bar"))))
 
 ;;; test-moving-utility.el ends here

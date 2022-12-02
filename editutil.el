@@ -123,13 +123,21 @@
     (when end-pos
       (kill-region start end-pos))))
 
-(defun editutil-move-to-char (arg char)
+(defun editutil-forward-to-char (arg char)
   (interactive
    (list
     (prefix-numeric-value current-prefix-arg)
     (read-char nil t)))
+  (forward-char 1)
   (when (search-forward (char-to-string char) (line-end-position) t arg)
     (backward-char 1)))
+
+(defun editutil-backward-to-char (arg char)
+  (interactive
+   (list
+    (prefix-numeric-value current-prefix-arg)
+    (read-char nil t)))
+  (search-backward (char-to-string char) (line-beginning-position) t arg))
 
 (defun editutil-yank (arg)
   (interactive "P")
@@ -528,18 +536,14 @@
   (interactive "p")
   (editutil-case-func-common #'downcase-word #'downcase-region arg))
 
-(defun editutil-capitalize (arg)
+(defun editutil-delete-following-spaces (arg)
   (interactive "p")
-  (editutil-case-func-common #'capitalize-word #'capitalize-region arg))
-
-(defun editutil-delete-horizontal-space ()
-  (interactive)
-  (let ((has-spaces
-         (save-match-data
-           (or (looking-back "\\s-+" nil) (looking-at-p "\\s-+")))))
-    (if has-spaces
-        (call-interactively #'delete-horizontal-space)
-      (insert " "))))
+  (let ((orig-point (point)))
+    (save-excursion
+      (if (<= arg 0)
+          (forward-whitespace -1)
+        (forward-whitespace +1))
+      (delete-region orig-point (point)))))
 
 (defun editutil-forward-word-end (arg)
   (interactive "p")
@@ -685,15 +689,15 @@
   (global-set-key (kbd "C-y") #'editutil-yank)
   (global-set-key (kbd "M-Y") #'editutil-yank-pop-next)
 
-  (global-set-key (kbd "M-a") #'editutil-move-to-char)
+  (global-set-key (kbd "M-a") #'editutil-forward-to-char)
+  (global-set-key (kbd "M-c") #'editutil-backward-to-char)
   (global-set-key (kbd "M-e") #'editutil-forward-word-end)
   (global-set-key (kbd "M-d") #'editutil-delete-word)
 
   (global-set-key (kbd "M-u") #'editutil-upcase)
   (global-set-key (kbd "M-l") #'editutil-downcase)
-  (global-set-key (kbd "M-c") #'editutil-capitalize)
 
-  (global-set-key (kbd "M-\\") #'editutil-delete-following-spaces)
+  (global-set-key (kbd "M-\\") #'editutil-delete-horizontal-space)
 
   (global-set-key [remap backward-kill-word] #'editutil-backward-delete-word)
 
