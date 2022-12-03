@@ -554,12 +554,13 @@
 
 (defun editutil-delete-following-spaces (arg)
   (interactive "p")
-  (let ((orig-point (point)))
-    (save-excursion
-      (if (<= arg 0)
-          (forward-whitespace -1)
-        (forward-whitespace +1))
-      (delete-region orig-point (point)))))
+  (when (member (char-after) '(?  ?\t))
+    (let ((orig-point (point)))
+      (save-excursion
+        (if (<= arg 0)
+            (forward-whitespace -1)
+          (forward-whitespace +1))
+        (delete-region orig-point (point))))))
 
 (defun editutil-forward-word-end (arg)
   (interactive "p")
