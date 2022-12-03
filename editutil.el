@@ -697,7 +697,7 @@
   (global-set-key (kbd "M-u") #'editutil-upcase)
   (global-set-key (kbd "M-l") #'editutil-downcase)
 
-  (global-set-key (kbd "M-\\") #'editutil-delete-horizontal-space)
+  (global-set-key (kbd "M-\\") #'editutil-delete-following-spaces)
 
   (global-set-key [remap backward-kill-word] #'editutil-backward-delete-word)
 
