@@ -689,8 +689,8 @@
   (global-set-key (kbd "C-y") #'editutil-yank)
   (global-set-key (kbd "M-Y") #'editutil-yank-pop-next)
 
-  (global-set-key (kbd "M-a") #'editutil-forward-to-char)
-  (global-set-key (kbd "M-c") #'editutil-backward-to-char)
+  (global-set-key (kbd "M-c") #'editutil-forward-to-char)
+  (global-set-key (kbd "M-a") #'editutil-backward-to-char)
   (global-set-key (kbd "M-e") #'editutil-forward-word-end)
   (global-set-key (kbd "M-d") #'editutil-delete-word)
 
