@@ -123,11 +123,14 @@
     (when end-pos
       (kill-region start end-pos))))
 
+(defvar editutil--last-search-char nil)
+
 (defun editutil-forward-to-char (arg char)
   (interactive
    (list
     (prefix-numeric-value current-prefix-arg)
     (read-char nil t)))
+  (setq editutil--last-search-char char)
   (forward-char 1)
   (when (search-forward (char-to-string char) (line-end-position) t arg)
     (backward-char 1)))
@@ -137,7 +140,20 @@
    (list
     (prefix-numeric-value current-prefix-arg)
     (read-char nil t)))
+  (setq editutil--last-search-char char)
   (search-backward (char-to-string char) (line-beginning-position) t arg))
+
+(defun editutil-forward-last-char ()
+  (interactive)
+  (if editutil--last-search-char
+      (editutil-forward-to-char 1 editutil--last-search-char)
+    (call-interactively #'editutil-forward-to-char)))
+
+(defun editutil-backward-last-char ()
+  (interactive)
+  (if editutil--last-search-char
+      (editutil-backward-to-char 1 editutil--last-search-char)
+    (call-interactively #'editutil-backward-to-char)))
 
 (defun editutil-yank (arg)
   (interactive "P")
@@ -640,7 +656,7 @@
   (interactive)
   (when (buffer-modified-p)
     (save-buffer))
-  (unless (process-file "fantomas" nil nil nil "--pageWidth=120" (buffer-file-name))
+  (unless (process-file "fantomas" nil nil nil (buffer-file-name))
     (error "failed to format file"))
   (revert-buffer t t))
 
@@ -691,6 +707,9 @@
 
   (global-set-key (kbd "M-c") #'editutil-forward-to-char)
   (global-set-key (kbd "M-a") #'editutil-backward-to-char)
+  (global-set-key (kbd "C-t") #'editutil-forward-last-char)
+  (global-set-key (kbd "M-t") #'editutil-backward-last-char)
+
   (global-set-key (kbd "M-e") #'editutil-forward-word-end)
   (global-set-key (kbd "M-d") #'editutil-delete-word)
 
