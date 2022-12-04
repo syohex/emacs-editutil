@@ -570,6 +570,17 @@
   (forward-word arg)
   (backward-char +1))
 
+(defun editutil-point-to-register (register)
+  (interactive
+   (list (register-read-with-preview "")))
+  (set-register register (point-marker)))
+
+(defun editutil-jump-to-register (register)
+  (interactive
+   (list (register-read-with-preview "")))
+  (let ((val (get-register register)))
+    (register-val-jump-to val nil)))
+
 ;;
 ;; Buffer utilities
 ;;
@@ -710,6 +721,9 @@
   (global-set-key (kbd "M-a") #'editutil-backward-to-char)
   (global-set-key (kbd "C-t") #'editutil-forward-last-char)
   (global-set-key (kbd "M-t") #'editutil-backward-last-char)
+
+  (global-set-key (kbd "M-SPC") #'editutil-point-to-register)
+  (global-set-key (kbd "M-j") #'editutil-jump-to-register)
 
   (global-set-key (kbd "M-e") #'editutil-forward-word-end)
   (global-set-key (kbd "M-d") #'editutil-delete-word)
