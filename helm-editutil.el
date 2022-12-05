@@ -83,16 +83,6 @@
            (sources (helm-editutil--git-ls-files-source topdir)))
       (helm :sources sources :buffer "*Helm Git Project*"))))
 
-;;;###autoload
-(defun helm-editutil-select-2nd-action ()
-  (interactive)
-  (helm-select-nth-action 1))
-
-;;;###autoload
-(defun helm-editutil-select-3rd-action ()
-  (interactive)
-  (helm-select-nth-action 2))
-
 (defun helm-editutil--recentf-transform (candidates _source)
   (cl-loop for i in candidates
            if helm-ff-transformer-show-only-basename

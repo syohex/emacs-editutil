@@ -764,10 +764,6 @@
   (global-set-key (kbd "C-x b") 'helm-editutil-switch-buffer)
   (global-set-key (kbd "C-M-r") 'helm-editutil-search-buffer)
 
-  (with-eval-after-load 'helm
-    (define-key helm-map (kbd "C-e") 'helm-editutil-select-2nd-action)
-    (define-key helm-map (kbd "C-j") 'helm-editutil-select-3rd-action))
-
   (setq xref-show-xrefs-function 'helm-editutil-show-xrefs)
   (setq xref-show-definitions-function 'helm-editutil-xref-show-defs)
 
