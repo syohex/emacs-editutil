@@ -30,6 +30,7 @@
 (require 'helm-mode)
 (require 'subr-x)
 (require 'recentf)
+(require 'xref)
 
 (defun helm-editutil--open-dired (file)
   (dired (file-name-directory file)))
@@ -201,6 +202,81 @@
                                        "Insert buffer" #'insert-buffer
                                        "Kill buffer" #'kill-buffer)))
           :buffer "*Helm Switch Buffer*")))
+
+;;
+;; xref
+;;
+
+(defun helm-editutil--project-root ()
+  (locate-dominating-file default-directory ".git/"))
+
+(defun helm-editutil--xref-format-candidate (file line summary)
+  (concat
+   (propertize file 'face 'helm-grep-file)
+   (and (integerp line) (concat ":" (propertize (int-to-string line) 'font-lock-face 'helm-grep-lineno)))
+   ":" summary))
+
+(defun helm-editutil--xref-candidates (fetcher alist)
+  (let ((xrefs (or (assoc-default 'fetched-xrefs alist)
+                   (funcall fetcher)))
+        (project-root (helm-editutil--project-root)))
+    (cl-loop for xref in xrefs
+             for summary = (xref-item-summary xref)
+             for location = (xref-item-location xref)
+             for line = (xref-location-line location)
+             for file = (file-relative-name (xref-location-group location) project-root)
+             collect
+             (cons (helm-editutil--xref-format-candidate file line summary) xref))))
+
+(defun helm-editutil--xref-highlight-line (xref)
+  (let* ((location (xref-item-location xref))
+         (marker (xref-location-marker location))
+         (buf (marker-buffer marker))
+         (offset (marker-position marker)))
+    (switch-to-buffer buf)
+    (goto-char offset)
+    (helm-highlight-current-line)))
+
+(defun helm-editutil--find-file-common (xref func)
+  (let* ((location (xref-item-location xref))
+         (marker (xref-location-marker location))
+         (buf (marker-buffer marker))
+         (offset (marker-position marker)))
+    (funcall func buf)
+    (goto-char offset)))
+
+(defun helm-editutil--xref-find-file (xref)
+  (helm-editutil--find-file-common xref #'switch-to-buffer))
+
+(defun helm-editutil--xref-find-file-other-window (xref)
+  (helm-editutil--find-file-common xref #'switch-to-buffer-other-window))
+
+(defun helm-editutil-source-xref (fetcher alist)
+  (helm-build-sync-source "Xref"
+    :candidates (helm-editutil--xref-candidates fetcher alist)
+    :persistent-action #'helm-editutil--xref-highlight-line
+    :action (helm-make-actions
+             "Open file" #'helm-editutil--xref-find-file
+             "Open file other window" #'helm-editutil--xref-find-file-other-window)
+    :candidate-number-limit 9999))
+
+;;;###autoload
+(defun helm-editutil-show-xrefs (fetcher alist)
+  (helm :sources (helm-editutil-source-xref fetcher alist)
+        :truncate-lines t
+        :buffer "*Helm Xrefs*"))
+
+;;;###autoload
+(defun helm-editutil-xref-show-defs (fetcher alist)
+  (let ((xrefs (funcall fetcher)))
+    (cond
+     ((not (cdr xrefs))
+      (xref-pop-to-location (car xrefs)
+                            (assoc-default 'display-action alist)))
+     (t
+      (helm-editutil-show-xrefs fetcher
+                                (cons (cons 'fetched-xrefs xrefs)
+                                      alist))))))
 
 (provide 'helm-editutil)
 
