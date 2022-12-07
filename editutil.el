@@ -662,6 +662,13 @@
 ;; Programming utilities
 ;;
 
+(defun editutil-comment-line ()
+  (interactive)
+  (save-excursion
+    (if (use-region-p)
+        (comment-or-uncomment-region (region-beginning) (line-end-position))
+      (call-interactively #'comment-line))))
+
 (defun editutil-find-rust-project-root (dir)
   (when-let ((root (locate-dominating-file dir "Cargo.toml")))
     (list 'vc 'Git root)))
@@ -967,6 +974,7 @@
   (global-set-key (kbd "M-u") #'editutil-upcase)
   (global-set-key (kbd "M-l") #'editutil-downcase)
 
+  (global-set-key (kbd "M-;") #'editutil-comment-line)
   (global-set-key (kbd "M-\\") #'editutil-delete-following-spaces)
 
   (global-set-key [remap backward-kill-word] #'editutil-backward-delete-word)
