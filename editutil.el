@@ -727,7 +727,7 @@
 
 (defun helm-editutil-git-ls-files ()
   (interactive)
-  (let ((topdir (locate-dominating-file default-directory ".git/")))
+  (let ((topdir (locate-dominating-file default-directory ".git")))
     (unless topdir
       (error "Here is not Git Repository!!"))
     (let* ((default-directory (if current-prefix-arg
@@ -849,7 +849,7 @@
 ;;
 
 (defun helm-editutil--project-root ()
-  (cl-loop for path in '("Cargo.toml" "go.mod" ".git/")
+  (cl-loop for path in '("Cargo.toml" "go.mod" ".git")
            when (locate-dominating-file default-directory path)
            return it))
 
