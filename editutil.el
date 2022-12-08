@@ -137,7 +137,8 @@
     (read-char nil t)))
   (setq editutil--last-search-char char)
   (forward-char 1)
-  (search-forward (char-to-string char) (line-end-position) t arg)
+  (let ((case-fold-search nil))
+    (search-forward (char-to-string char) (line-end-position) t arg))
   (backward-char 1))
 
 (defun editutil-backward-to-char (arg char)
@@ -146,7 +147,8 @@
     (prefix-numeric-value current-prefix-arg)
     (read-char nil t)))
   (setq editutil--last-search-char char)
-  (search-backward (char-to-string char) (line-beginning-position) t arg))
+  (let ((case-fold-search nil))
+    (search-backward (char-to-string char) (line-beginning-position) t arg)))
 
 (defun editutil-forward-last-char ()
   (interactive)

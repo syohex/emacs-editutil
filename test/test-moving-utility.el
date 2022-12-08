@@ -62,7 +62,7 @@
 (ert-deftest forward-to-char ()
   "forward like vim's `f'"
   (with-editutil-temp-buffer 'fundamental-mode
-    "foo-bar baz"
+    "foo-bar baz Fruit Apple"
     (editutil-forward-to-char 1 ?b)
     (should (looking-at-p "bar"))
 
@@ -70,7 +70,13 @@
     (should (looking-at-p "baz"))
 
     (editutil-backward-to-char 1 ?b)
-    (should (looking-at-p "bar"))))
+    (should (looking-at-p "bar"))
+
+    (editutil-forward-to-char 1 ?A)
+    (should (looking-at-p "Apple"))
+
+    (editutil-backward-to-char 1 ?f)
+    (should (looking-at-p "foo"))))
 
 (ert-deftest forward-to-last-char ()
   "forward like vim's `;'"
