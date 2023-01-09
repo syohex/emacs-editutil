@@ -111,10 +111,7 @@
       (newline)
       (move-to-column col t))))
 
-(defun editutil-zap-to-char (arg char)
-  (interactive
-   (list (prefix-numeric-value current-prefix-arg)
-         (read-char nil t)))
+(defun editutil--do-to-char (arg char func)
   (let* ((bound (if (>= arg 0) (line-end-position) (line-beginning-position)))
          (step (if (>= arg 0) -1 1))
          (start (point))
@@ -126,7 +123,20 @@
         (forward-char step)
         (setq end-pos (point))))
     (when end-pos
-      (kill-region start end-pos))))
+      (funcall func start end-pos))))
+
+(defun editutil-zap-to-char (arg char)
+  (interactive
+   (list (prefix-numeric-value current-prefix-arg)
+         (read-char nil t)))
+  (editutil--do-to-char arg char #'kill-region))
+
+(defun editutil-copy-to-char (arg char)
+  (interactive
+   (list (prefix-numeric-value current-prefix-arg)
+         (read-char nil t)))
+  (save-excursion
+    (editutil--do-to-char arg char #'kill-ring-save)))
 
 (defvar editutil--last-search-char nil)
 
@@ -954,6 +964,7 @@
   (global-set-key (kbd "M-w") #'editutil-kill-ring-save)
 
   (global-set-key (kbd "M-q") #'editutil-zap-to-char)
+  (global-set-key (kbd "M-z") #'editutil-copy-to-char)
 
   (global-set-key (kbd "C-M-o") #'editutil-other-window)
   (global-set-key (kbd "C-M-l") #'editutil-other-window-backward)
