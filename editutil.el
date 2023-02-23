@@ -981,10 +981,10 @@
   (global-set-key (kbd "C-y") #'editutil-yank)
   (global-set-key (kbd "M-Y") #'editutil-yank-pop-next)
 
-  (global-set-key (kbd "C-t") #'editutil-forward-to-char)
-  (global-set-key (kbd "M-t") #'editutil-backward-to-char)
-  (global-set-key (kbd "M-c") #'editutil-forward-last-char)
-  (global-set-key (kbd "M-a") #'editutil-backward-last-char)
+  (global-set-key (kbd "C-x [") #'editutil-backward-to-char)
+  (global-set-key (kbd "C-x ]") #'editutil-forward-to-char)
+  (global-set-key (kbd "C-x ;") #'editutil-forward-last-char)
+  (global-set-key (kbd "C-x ,") #'editutil-backward-last-char)
 
   (global-set-key (kbd "M-SPC") #'editutil-point-to-register)
   (global-set-key (kbd "M-j") #'editutil-jump-to-register)
