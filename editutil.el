@@ -979,7 +979,7 @@
   (global-set-key (kbd "C-x k") #'editutil-kill-this-buffer)
 
   (global-set-key (kbd "C-y") #'editutil-yank)
-  (global-set-key (kbd "M-Y") #'editutil-yank-pop-next)
+  (global-set-key (kbd "C-x y") #'editutil-yank-pop-next)
 
   (global-set-key (kbd "C-x [") #'editutil-backward-to-char)
   (global-set-key (kbd "C-x ]") #'editutil-forward-to-char)
@@ -1005,7 +1005,7 @@
   (global-set-key (kbd "C-x l") #'editutil-mark-line)
   (global-set-key (kbd "C-M-w") #'editutil-mark-sexp)
 
-  (global-set-key (kbd "C-x y") #'editutil-copy-line)
+  (global-set-key (kbd "C-x L") #'editutil-copy-line)
   (global-set-key (kbd "C-x \\") #'editutil-ansi-term)
 
   ;; 'C-x r' prefix
