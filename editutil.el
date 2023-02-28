@@ -744,17 +744,24 @@
              :action helm-editutil--git-ls-actions
              :keymap helm-find-files-map)))
 
-(defun helm-editutil-git-ls-files ()
-  (interactive)
+(defun helm-editutil--git-ls-files-common (project-search)
   (let ((topdir (locate-dominating-file default-directory ".git")))
     (unless topdir
       (error "Here is not Git Repository!!"))
-    (let* ((default-directory (if current-prefix-arg
-                                  default-directory
-                                topdir))
+    (let* ((default-directory (if project-search
+                                  topdir
+                                default-directory))
            (current-prefix-arg nil)
            (sources (helm-editutil--git-ls-files-source topdir)))
       (helm :sources sources :buffer "*Helm Git Project*"))))
+
+(defun helm-editutil-git-ls-files-project ()
+  (interactive)
+  (helm-editutil--git-ls-files-common t))
+
+(defun helm-editutil-git-ls-files ()
+  (interactive)
+  (helm-editutil--git-ls-files-common nil))
 
 (defun helm-editutil--recentf-transform (candidates _source)
   (cl-loop for i in candidates
@@ -1023,6 +1030,7 @@
 
   ;; helm-editutil
   (global-set-key (kbd "C-x C-p") 'helm-editutil-git-ls-files)
+  (global-set-key (kbd "C-x C-a") 'helm-editutil-git-ls-files-project)
   (global-set-key (kbd "C-x C-r") 'helm-editutil-recentf-and-bookmark)
   (global-set-key (kbd "C-x C-x") 'helm-editutil-find-files)
   (global-set-key (kbd "C-x b") 'helm-editutil-switch-buffer)
