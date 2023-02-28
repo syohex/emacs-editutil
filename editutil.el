@@ -988,11 +988,6 @@
   (global-set-key (kbd "C-y") #'editutil-yank)
   (global-set-key (kbd "C-x y") #'editutil-yank-pop-next)
 
-  (global-set-key (kbd "C-x [") #'editutil-backward-to-char)
-  (global-set-key (kbd "C-x ]") #'editutil-forward-to-char)
-  (global-set-key (kbd "C-x ;") #'editutil-forward-last-char)
-  (global-set-key (kbd "C-x ,") #'editutil-backward-last-char)
-
   (global-set-key (kbd "M-SPC") #'editutil-point-to-register)
   (global-set-key (kbd "M-j") #'editutil-jump-to-register)
 
@@ -1025,6 +1020,10 @@
   (define-key global-map (kbd "C-q") editutil-ctrl-q-map)
   (define-key editutil-ctrl-q-map (kbd "C-q") 'quoted-insert)
   (define-key editutil-ctrl-q-map (kbd "C-t") 'editutil-toggle-cleanup-spaces)
+  (define-key editutil-ctrl-q-map (kbd "f") #'editutil-forward-to-char)
+  (define-key editutil-ctrl-q-map (kbd "b") #'editutil-backward-to-char)
+  (global-set-key (kbd "M->") #'editutil-forward-last-char)
+  (global-set-key (kbd "M-<") #'editutil-backward-last-char)
 
   (add-hook 'after-change-major-mode-hook #'editutil-clear-mode-line)
 
