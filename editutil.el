@@ -183,9 +183,12 @@
   (when (eq this-command t)
     (setq this-command 'yank)))
 
-(defun editutil-yank-pop-next (arg)
-  (interactive "p")
-  (yank-pop (- arg)))
+(defun editutil-yank-next-line ()
+  (interactive)
+  (goto-char (line-end-position))
+  (open-line 1)
+  (forward-line 1)
+  (editutil-yank 1))
 
 (defsubst editutil--enable-subword-mode-p ()
   (and (boundp 'subword-mode) subword-mode))
@@ -986,7 +989,7 @@
   (global-set-key (kbd "C-x k") #'editutil-kill-this-buffer)
 
   (global-set-key (kbd "C-y") #'editutil-yank)
-  (global-set-key (kbd "C-x y") #'editutil-yank-pop-next)
+  (global-set-key (kbd "C-x y") #'editutil-yank-next-line)
 
   (global-set-key (kbd "M-SPC") #'editutil-point-to-register)
   (global-set-key (kbd "M-j") #'editutil-jump-to-register)
@@ -995,7 +998,6 @@
   (global-set-key (kbd "M-d") #'editutil-delete-word)
 
   (global-set-key (kbd "M-u") #'editutil-upcase)
-  (global-set-key (kbd "M-l") #'editutil-downcase)
 
   (global-set-key (kbd "M-;") #'editutil-comment-line)
   (global-set-key (kbd "M-\\") #'editutil-delete-following-spaces)
@@ -1010,6 +1012,11 @@
   (global-set-key (kbd "C-x L") #'editutil-copy-line)
   (global-set-key (kbd "C-x \\") #'editutil-ansi-term)
 
+  (global-set-key (kbd "M-l") #'editutil-forward-to-char)
+  (global-set-key (kbd "M-h") #'editutil-backward-to-char)
+  (global-set-key (kbd "M-'") #'editutil-forward-last-char)
+  (global-set-key (kbd "M--") #'editutil-backward-last-char)
+
   ;; 'C-x r' prefix
   (global-set-key (kbd "C-x r N") #'editutil-number-rectangle)
 
@@ -1020,10 +1027,6 @@
   (define-key global-map (kbd "C-q") editutil-ctrl-q-map)
   (define-key editutil-ctrl-q-map (kbd "C-q") 'quoted-insert)
   (define-key editutil-ctrl-q-map (kbd "C-t") 'editutil-toggle-cleanup-spaces)
-  (define-key editutil-ctrl-q-map (kbd "f") #'editutil-forward-to-char)
-  (define-key editutil-ctrl-q-map (kbd "b") #'editutil-backward-to-char)
-  (global-set-key (kbd "M->") #'editutil-forward-last-char)
-  (global-set-key (kbd "M-<") #'editutil-backward-last-char)
 
   (add-hook 'after-change-major-mode-hook #'editutil-clear-mode-line)
 
