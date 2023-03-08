@@ -1012,10 +1012,10 @@
   (global-set-key (kbd "C-x L") #'editutil-copy-line)
   (global-set-key (kbd "C-x \\") #'editutil-ansi-term)
 
-  (global-set-key (kbd "M-l") #'editutil-forward-to-char)
-  (global-set-key (kbd "M-h") #'editutil-backward-to-char)
-  (global-set-key (kbd "M-'") #'editutil-forward-last-char)
-  (global-set-key (kbd "M--") #'editutil-backward-last-char)
+  (global-set-key (kbd "C-t") #'editutil-forward-to-char)
+  (global-set-key (kbd "M-t") #'editutil-backward-to-char)
+  (global-set-key (kbd "M-l") #'editutil-forward-last-char)
+  (global-set-key (kbd "M-h") #'editutil-backward-last-char)
 
   ;; 'C-x r' prefix
   (global-set-key (kbd "C-x r N") #'editutil-number-rectangle)
