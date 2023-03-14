@@ -63,6 +63,22 @@
       (setq regexp-search-ring
             (cons (substring-no-properties symbol) regexp-search-ring)))))
 
+(defun editutil-forward-current-symbol (arg)
+  (interactive "p")
+  (let ((symbol (thing-at-point 'symbol))
+        (case-fold-search nil))
+    (when symbol
+      (when (re-search-forward symbol nil t arg)
+        (goto-char (match-beginning 0))))))
+
+(defun editutil-backward-current-symbol (arg)
+  (interactive "p")
+  (let ((symbol (thing-at-point 'symbol))
+        (case-fold-search nil))
+    (when symbol
+      (when (re-search-backward symbol nil t arg)
+        (goto-char (match-beginning 0))))))
+
 (defsubst editutil--in-string-p ()
   (nth 3 (syntax-ppss)))
 
@@ -969,6 +985,9 @@
   (global-set-key (kbd "C-j") #'editutil-newline-and-maybe-indent)
 
   (global-set-key (kbd "C-M-s") #'editutil-forward-symbol-at-point)
+  (global-set-key (kbd "C-x *") #'editutil-forward-current-symbol)
+  (global-set-key (kbd "C-x #") #'editutil-backward-current-symbol)
+  (global-set-key (kbd "C-x $") #'server-edit)
 
   (global-set-key (kbd "C-w") #'editutil-kill-region)
   (global-set-key (kbd "M-w") #'editutil-kill-ring-save)
