@@ -29,6 +29,8 @@
 (eval-when-compile
   (defvar paredit-mode-map)
   (defvar helm-map)
+  (defvar js-mode-map)
+  (defvar typescript-ts-mode-map)
   (defvar fsharp-mode-map)
   (defvar term-mode-map)
   (defvar term-raw-map))
@@ -715,6 +717,14 @@
     (error "failed to format file"))
   (revert-buffer t t))
 
+(defun editutil-deno-format ()
+  (interactive)
+  (when (buffer-modified-p)
+    (save-buffer))
+  (unless (process-file "deno" nil nil nil "fmt")
+    (error "failed 'deno fmt'"))
+  (revert-buffer t t))
+
 (define-minor-mode editutil-global-minor-mode
   "Most superior minir mode"
   :global t
@@ -987,7 +997,7 @@
   (global-set-key (kbd "C-M-s") #'editutil-forward-symbol-at-point)
   (global-set-key (kbd "C-x *") #'editutil-forward-current-symbol)
   (global-set-key (kbd "C-x #") #'editutil-backward-current-symbol)
-  (global-set-key (kbd "C-x $") #'server-edit)
+  (global-set-key (kbd "C-x $") 'server-edit)
 
   (global-set-key (kbd "C-w") #'editutil-kill-region)
   (global-set-key (kbd "M-w") #'editutil-kill-ring-save)
@@ -1091,6 +1101,12 @@
 
   (with-eval-after-load 'fsharp-mode
     (define-key fsharp-mode-map (kbd "C-c C-f") #'editutil-fsharp-format))
+
+  (with-eval-after-load 'js-mode
+    (define-key js-mode-map (kbd "C-c C-f") #'editutil-deno-format))
+
+  (with-eval-after-load 'typescript-ts-mode
+    (define-key typescript-ts-mode-map (kbd "C-c C-f") #'editutil-deno-format))
 
   ;; pop-to-mark-command
   (advice-add 'pop-to-mark-command :around #'editutil-pop-to-mark-advice)
