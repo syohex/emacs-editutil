@@ -1102,7 +1102,7 @@
   (with-eval-after-load 'fsharp-mode
     (define-key fsharp-mode-map (kbd "C-c C-f") #'editutil-fsharp-format))
 
-  (with-eval-after-load 'js-mode
+  (with-eval-after-load 'js
     (define-key js-mode-map (kbd "C-c C-f") #'editutil-deno-format))
 
   (with-eval-after-load 'typescript-ts-mode
