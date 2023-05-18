@@ -1041,8 +1041,8 @@
   (global-set-key (kbd "C-x L") #'editutil-copy-line)
   (global-set-key (kbd "C-x \\") #'editutil-ansi-term)
 
-  (global-set-key (kbd "C-t") #'editutil-forward-to-char)
-  (global-set-key (kbd "M-t") #'editutil-backward-to-char)
+  (global-set-key (kbd "C-x f") #'editutil-forward-to-char)
+  (global-set-key (kbd "C-x a") #'editutil-backward-to-char)
   (global-set-key (kbd "M-l") #'editutil-forward-last-char)
   (global-set-key (kbd "M-h") #'editutil-backward-last-char)
 
