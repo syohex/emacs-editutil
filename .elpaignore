@@ -1,0 +1,8 @@
+.elpaignore
+.cask
+.git
+.github
+.gitignore
+test
+Cask
+Makefile
