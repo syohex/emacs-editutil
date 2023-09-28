@@ -590,15 +590,18 @@
   (interactive "p")
   (editutil-case-func-common #'downcase-word #'downcase-region arg))
 
-(defun editutil-delete-following-spaces (arg)
-  (interactive "p")
-  (when (member (char-after) '(?  ?\t))
-    (let ((orig-point (point)))
-      (save-excursion
-        (if (<= arg 0)
-            (forward-whitespace -1)
-          (forward-whitespace +1))
-        (delete-region orig-point (point))))))
+(defun editutil-delete-following-spaces ()
+  (interactive)
+  (if current-prefix-arg
+      (let ((current-prefix-arg nil))
+        (delete-horizontal-space))
+    (when (member (char-after) '(?  ?\t))
+      (let ((orig-point (point)))
+        (save-excursion
+          (if (<= arg 0)
+              (forward-whitespace -1)
+            (forward-whitespace +1))
+          (delete-region orig-point (point)))))))
 
 (defun editutil-forward-word-end (arg)
   (interactive "p")
