@@ -716,7 +716,7 @@
   (interactive)
   (when (buffer-modified-p)
     (save-buffer))
-  (unless (process-file "fantomas" nil nil nil (buffer-file-name))
+  (unless (zerop (process-file "fantomas" nil nil nil (buffer-file-name)))
     (error "failed to format file"))
   (revert-buffer t t))
 
@@ -724,9 +724,20 @@
   (interactive)
   (when (buffer-modified-p)
     (save-buffer))
-  (unless (process-file "deno" nil nil nil "fmt")
+  (unless (zerop (process-file "deno" nil nil nil "fmt"))
     (error "failed 'deno fmt'"))
   (revert-buffer t t))
+
+(defun editutil-clipboard-copy ()
+  (interactive)
+  (unless (executable-find "xsel")
+    (user-error "'xsel' is not installed"))
+  (unless (use-region-p)
+    (user-error "region is not specified"))
+  (unless (zerop (call-process-region (region-beginning) (region-end)
+                                      "xsel" nil nil nil "--input" "--clipboard"))
+    (error "failed to execute xsel"))
+  (deactivate-mark))
 
 (define-minor-mode editutil-global-minor-mode
   "Most superior minir mode"
@@ -1048,6 +1059,8 @@
   (global-set-key (kbd "C-x a") #'editutil-backward-to-char)
   (global-set-key (kbd "M-l") #'editutil-forward-last-char)
   (global-set-key (kbd "M-h") #'editutil-backward-last-char)
+
+  (global-set-key (kbd "M-g M-w") #'editutil-clipboard-copy)
 
   ;; 'C-x r' prefix
   (global-set-key (kbd "C-x r N") #'editutil-number-rectangle)
