@@ -684,7 +684,7 @@
 
 (defun editutil-kill-this-buffer ()
   (interactive)
-  (call-interactively #'kill-this-buffer))
+  (kill-this-buffer))
 
 ;; fixed line position after scrollup, scrolldown
 (defun editutil-scroll-move-around (orig-fn &rest args)
