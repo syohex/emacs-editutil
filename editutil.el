@@ -32,6 +32,7 @@
   (defvar js-mode-map)
   (defvar typescript-ts-mode-map)
   (defvar fsharp-mode-map)
+  (defvar haskell-mode-map)
   (defvar term-mode-map)
   (defvar term-raw-map))
 
