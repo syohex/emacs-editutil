@@ -718,6 +718,14 @@
     (error "failed to format file"))
   (revert-buffer t t))
 
+(defun editutil-haskell-format ()
+  (interactive)
+  (when (buffer-modified-p)
+    (save-buffer))
+  (unless (zerop (process-file "fourmolu" nil nil nil "-i" (buffer-file-name)))
+    (error "failed to 'fourmolu -i %s'" (buffer-file-name)))
+  (revert-buffer t t))
+
 (defun editutil-deno-format ()
   (interactive)
   (when (buffer-modified-p)
@@ -1115,6 +1123,9 @@
 
   (with-eval-after-load 'fsharp-mode
     (define-key fsharp-mode-map (kbd "C-c C-f") #'editutil-fsharp-format))
+
+  (with-eval-after-load 'haskell-mode
+    (define-key haskell-mode-map (kbd "C-c C-f") #'editutil-haskell-format))
 
   (with-eval-after-load 'js
     (define-key js-mode-map (kbd "C-c C-f") #'editutil-deno-format))
