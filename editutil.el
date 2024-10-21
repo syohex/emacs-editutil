@@ -32,6 +32,7 @@
   (defvar js-mode-map)
   (defvar typescript-ts-mode-map)
   (defvar fsharp-mode-map)
+  (defvar tuareg-mode-map)
   (defvar haskell-mode-map)
   (defvar term-mode-map)
   (defvar term-raw-map))
@@ -717,7 +718,7 @@
   (unless (zerop (apply #'process-file cmd nil nil nil args))
     (error "failed to format file(%s %s)" cmd args))
   (revert-buffer t t)
-  (message "format: %s"))
+  (message "format: %s" cmd))
 
 (defun editutil-fsharp-format ()
   (interactive)
