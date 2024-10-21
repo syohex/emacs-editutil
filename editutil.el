@@ -711,29 +711,30 @@
 (defun editutil-rust-mode-hook ()
   (setq-local project-find-functions (list #'editutil-find-rust-project-root)))
 
-(defun editutil-fsharp-format ()
-  (interactive)
+(defun editutil--format-buffer (cmd &rest args)
   (when (buffer-modified-p)
     (save-buffer))
-  (unless (zerop (process-file "fantomas" nil nil nil (buffer-file-name)))
-    (error "failed to format file"))
-  (revert-buffer t t))
+  (unless (zerop (apply #'process-file cmd nil nil nil args))
+    (error "failed to format file(%s %s)" cmd args))
+  (revert-buffer t t)
+  (message "format: %s"))
+
+(defun editutil-fsharp-format ()
+  (interactive)
+  (editutil--format-buffer "fantomas" (buffer-file-name)))
 
 (defun editutil-haskell-format ()
   (interactive)
-  (when (buffer-modified-p)
-    (save-buffer))
-  (unless (zerop (process-file "fourmolu" nil nil nil "-i" (buffer-file-name)))
-    (error "failed to 'fourmolu -i %s'" (buffer-file-name)))
-  (revert-buffer t t))
+  (editutil--format-buffer "fourmolu" "-i" (buffer-file-name)))
+
+(defun editutil-ocaml-format ()
+  (interactive)
+  (editutil--format-buffer
+   "ocamlformat" "-i" "--enable-outside-detected-project" (buffer-file-name)))
 
 (defun editutil-deno-format ()
   (interactive)
-  (when (buffer-modified-p)
-    (save-buffer))
-  (unless (zerop (process-file "deno" nil nil nil "fmt"))
-    (error "failed 'deno fmt'"))
-  (revert-buffer t t))
+  (editutil--format-buffer "deno" "fmt"))
 
 (defun editutil-clipboard-copy ()
   (interactive)
@@ -1127,6 +1128,9 @@
 
   (with-eval-after-load 'haskell-mode
     (define-key haskell-mode-map (kbd "C-c C-f") #'editutil-haskell-format))
+
+  (with-eval-after-load 'tuareg
+    (define-key tuareg-mode-map (kbd "C-c C-f") #'editutil-ocaml-format))
 
   (with-eval-after-load 'js
     (define-key js-mode-map (kbd "C-c C-f") #'editutil-deno-format))
