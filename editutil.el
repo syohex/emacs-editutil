@@ -433,25 +433,6 @@
   (interactive "P")
   (editutil--kill-command-common arg 'kill-region 'symbol))
 
-(defun editutil-toggle-cleanup-spaces ()
-  (interactive)
-  (cond ((memq 'delete-trailing-whitespace before-save-hook)
-         (remove-hook 'before-save-hook 'delete-trailing-whitespace))
-        (t
-         (add-hook 'before-save-hook 'delete-trailing-whitespace)))
-  (force-mode-line-update))
-
-(defface editutil-clean-space
-  '((t (:inherit font-lock-keyword-face :weight bold)))
-  "Clean spaces statement in mode-line.")
-
-(defvar editutil-cleanup-space-mode-line
-  '(:eval (if (or (memq 'delete-trailing-whitespace before-save-hook)
-                  (bound-and-true-p eglot--managed-mode))
-              ""
-            (propertize "[DT-]" 'face 'editutil-clean-space))))
-(put 'editutil-cleanup-space-mode-line 'risky-local-variable t)
-
 (defface editutil-vc-branch
   '((t (:inherit font-lock-constant-face :weight bold)))
   "Branch information in mode-line")
@@ -481,7 +462,6 @@
   (setq mode-line-misc-info (list (car mode-line-misc-info)))
   (setq-default mode-line-format
                 `("%e"
-                  editutil-cleanup-space-mode-line
                   ((global-mode-string ("" global-mode-string " ")))
                   mode-line-front-space
                   mode-line-mule-info
@@ -720,22 +700,17 @@
   (revert-buffer t t)
   (message "format: %s" cmd))
 
-(defun editutil-fsharp-format ()
+(defun editutil-format-buffer ()
   (interactive)
-  (editutil--format-buffer "fantomas" (buffer-file-name)))
-
-(defun editutil-haskell-format ()
-  (interactive)
-  (editutil--format-buffer "fourmolu" "-i" (buffer-file-name)))
-
-(defun editutil-ocaml-format ()
-  (interactive)
-  (editutil--format-buffer
-   "ocamlformat" "-i" "--enable-outside-detected-project" (buffer-file-name)))
-
-(defun editutil-deno-format ()
-  (interactive)
-  (editutil--format-buffer "deno" "fmt"))
+  (cl-case major-mode
+    (haskell-mode
+     (editutil--format-buffer "fourmolu" "-i" (buffer-file-name)))
+    (tuareg-mode
+     (editutil--format-buffer "ocamlformat" "-i" "--enable-outside-detected-project" (buffer-file-name)))
+    ((js-mode js-ts-mode typescript-ts-mode)
+     (editutil--format-buffer "deno" "fmt"))
+    (fsharp-mode
+     (editutil--format-buffer "fantomas" (buffer-file-name)))))
 
 (defun editutil-clipboard-copy ()
   (interactive)
@@ -1080,7 +1055,6 @@
 
   (define-key global-map (kbd "C-q") editutil-ctrl-q-map)
   (define-key editutil-ctrl-q-map (kbd "C-q") 'quoted-insert)
-  (define-key editutil-ctrl-q-map (kbd "C-t") 'editutil-toggle-cleanup-spaces)
 
   (add-hook 'after-change-major-mode-hook #'editutil-clear-mode-line)
 
@@ -1125,19 +1099,19 @@
   (add-hook 'rust-mode-hook #'editutil-rust-mode-hook)
 
   (with-eval-after-load 'fsharp-mode
-    (define-key fsharp-mode-map (kbd "C-c C-f") #'editutil-fsharp-format))
+    (define-key fsharp-mode-map (kbd "C-c C-f") #'editutil-format-buffer))
 
   (with-eval-after-load 'haskell-mode
-    (define-key haskell-mode-map (kbd "C-c C-f") #'editutil-haskell-format))
+    (define-key haskell-mode-map (kbd "C-c C-f") #'editutil-format-buffer))
 
   (with-eval-after-load 'tuareg
-    (define-key tuareg-mode-map (kbd "C-c C-f") #'editutil-ocaml-format))
+    (define-key tuareg-mode-map (kbd "C-c C-f") #'editutil-format-buffer))
 
   (with-eval-after-load 'js
-    (define-key js-mode-map (kbd "C-c C-f") #'editutil-deno-format))
+    (define-key js-mode-map (kbd "C-c C-f") #'editutil-format-buffer))
 
   (with-eval-after-load 'typescript-ts-mode
-    (define-key typescript-ts-mode-map (kbd "C-c C-f") #'editutil-deno-format))
+    (define-key typescript-ts-mode-map (kbd "C-c C-f") #'editutil-format-buffer))
 
   ;; pop-to-mark-command
   (advice-add 'pop-to-mark-command :around #'editutil-pop-to-mark-advice)
