@@ -455,58 +455,47 @@
                           "")))
              (concat "(" branch state ")")))
     face editutil-vc-branch)
-  "Mode line format for VC Mode.")
+  "Mode line format for `vc-mode'.")
 (put 'editutil-vc-mode-line 'risky-local-variable t)
+
+(defface editutil-evil-mode
+  '((t (:inherit font-lock-builtin-face :weight bold)))
+  "Status of `evil-mode' in mode-line")
+
+(defvar editutil-evil-mode-line
+  '(:propertize
+    (:eval (if (bound-and-true-p evil-state)
+               (concat "[" (upcase (symbol-name evil-state)) "] ")
+             ""))
+    face editutil-evil-mode)
+  "Mode line format for `evil-mode'.")
+(put 'editutil-evil-mode-line 'risky-local-variable t)
 
 (defun editutil--init-mode-line ()
   (setq mode-line-misc-info (list (car mode-line-misc-info)))
+  ;; only show major-mode
+  (setq mode-line-modes (list "(" `(:propertize ("" mode-name)) '("" mode-line-process) ")" " "))
+  (setq mode-line-position
+        `(" (%l,%C) "
+          (:propertize ("" mode-line-percent-position))))
   (setq-default mode-line-format
                 `("%e"
                   ((global-mode-string ("" global-mode-string " ")))
+                  editutil-evil-mode-line
                   mode-line-front-space
                   mode-line-mule-info
                   mode-line-client
                   mode-line-modified
-                  mode-line-remote
-                  mode-line-frame-identification
-                  mode-line-buffer-identification " " mode-line-position
+		  " "
+                  mode-line-buffer-identification
                   (vc-mode editutil-vc-mode-line)
                   " "
-                  mode-line-modes mode-line-misc-info mode-line-end-spaces)))
+                  mode-line-modes
+                  mode-line-misc-info
+                  mode-line-position)))
 
-(defvar editutil-mode-line-cleaner-alist
-  '(;; For minor-mode, first char is 'space'
-    (yas-minor-mode . " Ys")
-    (paredit-mode . " Pe")
-    (company-mode . " Co")
-    (eldoc-mode . "")
-    (abbrev-mode . "")
-    (undo-tree-mode . "")
-    (elisp-slime-nav-mode . "")
-    (helm-gtags2-mode . " HG")
-    (flymake-mode . " Fm")
-    (git-gutter2-mode . " GG")
-    (isearch-describe-mode . "")
-    (flyspell-mode . " FS")
-    ;; Major modes
-    (lisp-interaction-mode . "Li")
-    (git-commit-mode . " Commit")
-    (python-mode . "Py")
-    (ruby-mode   . "Rb")
-    (emacs-lisp-mode . "El")
-    (js-mode . "JS")
-    (markdown-mode . "Md")))
-
-(defun editutil-clear-mode-line ()
-  (interactive)
-  (cl-loop for (mode . mode-str) in editutil-mode-line-cleaner-alist
-           do
-           (let ((old-mode-str (cdr (assq mode minor-mode-alist))))
-             (when old-mode-str
-               (setcar old-mode-str mode-str))
-             ;; major mode
-             (when (eq mode major-mode)
-               (setq mode-name mode-str)))))
+;; modify encoding
+;; https://github.com/seagle0128/doom-modeline/blob/master/doom-modeline-segments.el
 
 (defun editutil-auto-save-buffers ()
   (save-window-excursion
@@ -691,6 +680,9 @@
 
 (defun editutil-rust-mode-hook ()
   (setq-local project-find-functions (list #'editutil-find-rust-project-root)))
+
+(defun editutil-emacs-lisp-mode-hook ()
+  (setq-local mode-name "Emacs-Lisp"))
 
 (defun editutil--format-buffer (cmd &rest args)
   (when (buffer-modified-p)
@@ -1056,8 +1048,6 @@
   (define-key global-map (kbd "C-q") editutil-ctrl-q-map)
   (define-key editutil-ctrl-q-map (kbd "C-q") 'quoted-insert)
 
-  (add-hook 'after-change-major-mode-hook #'editutil-clear-mode-line)
-
   ;; helm-editutil
   (global-set-key (kbd "C-x C-p") 'helm-editutil-git-ls-files-project)
   (global-set-key (kbd "C-x C-a") 'helm-editutil-git-ls-files)
@@ -1097,6 +1087,7 @@
     (define-key term-raw-map (kbd "C-x \\") #'editutil-restore-ansi-term))
 
   (add-hook 'rust-mode-hook #'editutil-rust-mode-hook)
+  (add-hook 'emacs-lisp-mode-hook #'editutil-emacs-lisp-mode-hook)
 
   (with-eval-after-load 'fsharp-mode
     (define-key fsharp-mode-map (kbd "C-c C-f") #'editutil-format-buffer))
