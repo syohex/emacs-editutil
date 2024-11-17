@@ -698,7 +698,9 @@
     (haskell-mode
      (editutil--format-buffer "fourmolu" "-i" (buffer-file-name)))
     (tuareg-mode
-     (editutil--format-buffer "ocamlformat" "-i" "--enable-outside-detected-project" (buffer-file-name)))
+     (if (locate-dominating-file default-directory "dune")
+         (editutil--format-buffer "ocamlformat" "-i" (buffer-file-name))
+       (editutil--format-buffer "ocamlformat" "-i" "--enable-outside-detected-project" (buffer-file-name))))
     ((js-mode js-ts-mode typescript-ts-mode)
      (editutil--format-buffer "deno" "fmt"))
     (fsharp-mode
