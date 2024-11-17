@@ -433,6 +433,16 @@
   (interactive "P")
   (editutil--kill-command-common arg 'kill-region 'symbol))
 
+(defun editutil-copy-region-to-clipboard ()
+  (interactive)
+  (unless (use-region-p)
+    (user-error "not specified region"))
+  ;; only support linux GUI
+  (unless (zerop (call-process-region (region-beginning) (region-end)
+                                      "xsel" nil nil nil "--input" "--clipboard"))
+    (error "failed to copy region to clipboard"))
+  (deactivate-mark))
+
 (defface editutil-vc-branch
   '((t (:inherit font-lock-constant-face :weight bold)))
   "Branch information in mode-line")
@@ -993,6 +1003,7 @@
 
   (global-set-key (kbd "C-w") #'editutil-kill-region)
   (global-set-key (kbd "M-w") #'editutil-kill-ring-save)
+  (global-set-key (kbd "C-x M-w") #'editutil-copy-region-to-clipboard)
 
   (global-set-key (kbd "M-q") #'editutil-zap-to-char)
   (global-set-key (kbd "M-z") #'editutil-copy-to-char)
