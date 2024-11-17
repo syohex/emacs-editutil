@@ -471,7 +471,7 @@
 (defun editutil--evil-mode-line-color (state)
   (cl-case state
     (normal "color-40")
-    (insert "red")
+    (insert "color-198")
     ((visual emacs) "color-202")
     (otherwise "cyan")))
 
@@ -507,7 +507,7 @@
    mode-line-buffer-identification (propertized-buffer-identification "%12b")
    mode-line-mule-info  `("" (current-input-method (:propertize ("" current-input-method-title))))
    ;; only show major-mode
-   mode-line-modes '((:propertize (""  mode-name) face (:foreground "color-75"))
+   mode-line-modes '((:propertize (""  mode-name) face (:foreground "color-81"))
                      ("" mode-line-process))
    mode-line-position `("(%l,%C) "
                         (:propertize ("" mode-line-percent-position))))
@@ -527,11 +527,12 @@
 		  " "
                   mode-line-buffer-identification
                   " "
+                  editutil-encoding-mode-line
+                  " "
                   (vc-mode editutil-vc-mode-line)
                   " "
                   mode-line-modes
                   " "
-                  editutil-encoding-mode-line
                   (flymake-mode flymake-mode-line-format)
                   " "
                   ;; mode-line-misc-info
