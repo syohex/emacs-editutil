@@ -468,41 +468,80 @@
   "Mode line format for `vc-mode'.")
 (put 'editutil-vc-mode-line 'risky-local-variable t)
 
-(defface editutil-evil-mode
-  '((t (:inherit font-lock-builtin-face :weight bold)))
-  "Status of `evil-mode' in mode-line")
+(defun editutil--evil-mode-line-color (state)
+  (cl-case state
+    (normal "color-40")
+    (insert "red")
+    ((visual emacs) "color-202")
+    (otherwise "cyan")))
 
 (defvar editutil-evil-mode-line
   '(:propertize
-    (:eval (if (bound-and-true-p evil-state)
-               (concat "[" (upcase (symbol-name evil-state)) "] ")
-             ""))
-    face editutil-evil-mode)
+    (:eval
+     (if-let ((state (bound-and-true-p evil-state)))
+         (let ((foreground (editutil--evil-mode-line-color state)))
+           (propertize (concat "[" (upcase (symbol-name state)) "] ")
+                       'face `(:foreground ,foreground :weight bold)))
+       "")))
   "Mode line format for `evil-mode'.")
 (put 'editutil-evil-mode-line 'risky-local-variable t)
 
+(defvar editutil-encoding-mode-line
+  '(:propertize
+    (:eval (let* ((end-line (cl-case (coding-system-eol-type buffer-file-coding-system)
+                              (0 "LF")
+                              (1 "CRLF")
+                              (2 "CR")))
+                  (coding-plist (coding-system-plist buffer-file-coding-system))
+                  (encoding (if (memq (plist-get coding-plist :category)
+                                      '(coding-category-undecided coding-category-utf8))
+                                'utf-8
+                              (plist-get coding-plist :name)))
+                  (encoding-str (upcase (symbol-name encoding))))
+             (concat encoding-str " " end-line)))))
+(put 'editutil-encoding-mode-line 'risky-local-variable t)
+
 (defun editutil--init-mode-line ()
-  (setq mode-line-misc-info (list (car mode-line-misc-info)))
-  ;; only show major-mode
-  (setq mode-line-modes (list "(" `(:propertize ("" mode-name)) '("" mode-line-process) ")" " "))
-  (setq mode-line-position
-        `(" (%l,%C) "
-          (:propertize ("" mode-line-percent-position))))
+  (setq-default
+   mode-line-misc-info (list (car mode-line-misc-info))
+   mode-line-buffer-identification (propertized-buffer-identification "%12b")
+   mode-line-mule-info  `("" (current-input-method (:propertize ("" current-input-method-title))))
+   ;; only show major-mode
+   mode-line-modes '((:propertize (""  mode-name) face (:foreground "color-75"))
+                     ("" mode-line-process))
+   mode-line-position `("(%l,%C) "
+                        (:propertize ("" mode-line-percent-position))))
+
+  (setq-default flymake-mode-line-format
+                '(" "
+                  (:eval
+                   '("[err:" flymake-mode-line-error-counter " warn:" flymake-mode-line-warning-counter "]"))))
+
   (setq-default mode-line-format
                 `("%e"
                   ((global-mode-string ("" global-mode-string " ")))
                   editutil-evil-mode-line
-                  mode-line-front-space
                   mode-line-mule-info
-                  mode-line-client
+                  " "
                   mode-line-modified
 		  " "
                   mode-line-buffer-identification
+                  " "
                   (vc-mode editutil-vc-mode-line)
                   " "
                   mode-line-modes
-                  mode-line-misc-info
-                  mode-line-position)))
+                  " "
+                  editutil-encoding-mode-line
+                  (flymake-mode flymake-mode-line-format)
+                  " "
+                  ;; mode-line-misc-info
+                  mode-line-format-right-align
+                  (which-function-mode
+                   (which-func-mode
+                    (which-func--use-mode-line ("" which-func-format " "))))
+                  " "
+                  mode-line-position
+                  " ")))
 
 ;; modify encoding
 ;; https://github.com/seagle0128/doom-modeline/blob/master/doom-modeline-segments.el
