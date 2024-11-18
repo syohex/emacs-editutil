@@ -725,7 +725,7 @@
       (call-interactively #'comment-line))))
 
 (defun editutil-find-rust-project-root (dir)
-  (when-let ((root (locate-dominating-file dir "Cargo.toml")))
+  (when-let* ((root (locate-dominating-file dir "Cargo.toml")))
     (list 'vc 'Git root)))
 
 (defun editutil-rust-mode-hook ()
