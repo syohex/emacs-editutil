@@ -437,11 +437,14 @@
   (interactive)
   (unless (use-region-p)
     (user-error "not specified region"))
-  ;; only support linux GUI
-  (unless (zerop (call-process-region (region-beginning) (region-end)
-                                      "xsel" nil nil nil "--input" "--clipboard"))
-    (error "failed to copy region to clipboard"))
-  (deactivate-mark))
+  ;; only support linux GUI and WSL
+  (let* ((is-wsl (getenv "WSLENV"))
+         (args (if is-wsl
+                   (list "/mnt/c/Windows/System32/clip.exe" nil nil nil)
+                 (list "xsel" nil nil nil "--input" "--clipboard"))))
+    (unless (zerop (apply #'call-process-region (region-beginning) (region-end) args))
+      (error "failed to copy region to clipboard"))
+    (deactivate-mark)))
 
 (defface editutil-vc-branch
   '((t (:inherit font-lock-constant-face :weight bold)))
@@ -480,7 +483,7 @@
     (:eval
      (if-let ((state (bound-and-true-p evil-state)))
          (let ((foreground (editutil--evil-mode-line-color state)))
-           (propertize (concat "[" (upcase (symbol-name state)) "] ")
+           (propertize (concat "[" (upcase (symbol-name state)) "]")
                        'face `(:foreground ,foreground :weight bold)))
        "")))
   "Mode line format for `evil-mode'.")
