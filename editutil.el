@@ -29,21 +29,16 @@
 (eval-when-compile
   (defvar paredit-mode-map)
   (defvar helm-map)
-  (defvar js-mode-map)
-  (defvar typescript-ts-mode-map)
-  (defvar fsharp-mode-map)
-  (defvar tuareg-mode-map)
-  (defvar haskell-mode-map)
   (defvar term-mode-map)
   (defvar term-raw-map)
   (defvar utop-command))
 
 (require 'cl-lib)
 (require 'subr-x)
+(require 'pcase)
 (require 'thingatpt)
-(require 'which-func)
-(require 'dired)
 (require 'flymake)
+(require 'dired)
 
 (require 'xref)
 (require 'recentf)
@@ -51,10 +46,6 @@
 (require 'helm-bookmark)
 (require 'helm-files)
 (require 'helm-mode)
-
-(declare-function subword-forward "subword")
-(declare-function subword-backward "subword")
-(declare-function recentf-save-list "recentf")
 
 (defgroup editutil nil
   "My own editing utilities"
@@ -140,9 +131,6 @@
   (when (eq this-command t)
     (setq this-command 'yank)))
 
-(defsubst editutil--enable-subword-mode-p ()
-  (and (boundp 'subword-mode) subword-mode))
-
 (defun editutil--forward-next-space ()
   (save-excursion
     (forward-whitespace +1)
@@ -154,9 +142,7 @@
   (let ((next-not-space (editutil--forward-next-space)))
     (save-excursion
       (delete-region (point) (progn
-                               (if (editutil--enable-subword-mode-p)
-                                   (subword-forward arg)
-                                 (forward-word arg))
+                               (forward-word arg)
                                (min next-not-space (point)))))))
 
 (defun editutil-backward-delete-word (arg)
@@ -167,9 +153,7 @@
     (when (looking-back "\\s-+" nil)
       (forward-whitespace -1))
     (let ((start (save-excursion
-                   (if (editutil--enable-subword-mode-p)
-                       (subword-backward arg)
-                     (forward-word (- arg)))
+                   (forward-word (- arg))
                    (point)))
           (non-space (save-excursion
                        (skip-chars-backward "^ \t")
@@ -285,6 +269,13 @@
      nil '(("\\(?:^\\|\\s-\\)\\(FIXME\\|TODO\\|XXX\\)\\(?:\\s-\\|$\\)"
             1 '((:foreground "pink") (:weight bold)) t)))))
 
+(defun editutil--prog-mode-hook ()
+  (local-set-key (kbd "C-c C-f") #'editutil-format-buffer)
+
+  (cl-case major-mode
+    (emacs-lisp-mode (setq-local mode-name "Emacs-Lisp"))
+    (tuareg-mode (setq-local mode-name "Ocaml"))))
+
 (defvar editutil--previous-buffer nil)
 
 ;; for `cde' command
@@ -344,10 +335,6 @@
       (error "failed to copy region to clipboard"))
     (deactivate-mark)))
 
-(defface editutil-vc-branch
-  '((t (:inherit font-lock-constant-face :weight bold)))
-  "Branch information in mode-line")
-
 (defun editutil--vc-branch ()
   (let ((backend (symbol-name (vc-backend (buffer-file-name)))))
     (substring-no-properties vc-mode (+ (length backend) 2))))
@@ -365,7 +352,7 @@
                               (otherwise ""))
                           "")))
              (concat "(" branch state ")")))
-    face editutil-vc-branch)
+    face `(:foreground "color-202" :weight bold))
   "Mode line format for `vc-mode'.")
 (put 'editutil-vc-mode-line 'risky-local-variable t)
 
@@ -373,7 +360,7 @@
   (cl-case state
     (normal "color-40")
     (insert "color-198")
-    ((visual emacs) "color-202")
+    ((visual emacs) "color-216")
     (otherwise "cyan")))
 
 (defvar editutil-evil-mode-line
@@ -459,9 +446,6 @@
                   mode-line-position
                   " ")))
 
-;; modify encoding
-;; https://github.com/seagle0128/doom-modeline/blob/master/doom-modeline-segments.el
-
 (defun editutil-auto-save-buffers ()
   (save-window-excursion
     (save-excursion
@@ -504,13 +488,6 @@
   (interactive)
   (recentf-save-list)
   (message nil))
-
-(cl-defun editutil-pop-to-mark-advice (orig-fun &rest args)
-  (let ((orig (point)))
-    (dotimes (_i 10)
-      (apply orig-fun args)
-      (unless (= orig (point))
-        (cl-return-from editutil-pop-to-mark-advice)))))
 
 (defun editutil-case-func-common (word-fn region-fn arg)
   (interactive)
@@ -625,9 +602,6 @@
 (defun editutil-rust-mode-hook ()
   (setq-local project-find-functions (list #'editutil-find-rust-project-root)))
 
-(defun editutil-emacs-lisp-mode-hook ()
-  (setq-local mode-name "Emacs-Lisp"))
-
 (defsubst editutil--dune-project-p ()
   (cl-loop for file in '("dune" "dune-project")
            thereis (locate-dominating-file default-directory file)))
@@ -635,11 +609,13 @@
 (defun editutil-utop-minor-hook ()
   (if (editutil--dune-project-p)
       (setq-local utop-command "opam exec -- dune utop . -- -emacs")
-    (setq utop-command "utop -emacs")))
+    (setq-local utop-command "utop -emacs")))
 
 (defun editutil--format-buffer (cmd &rest args)
   (when (buffer-modified-p)
     (save-buffer))
+  (unless (executable-find cmd)
+    (user-error "%s is not installed" cmd))
   (unless (zerop (apply #'process-file cmd nil nil nil args))
     (error "failed to format file(%s %s)" cmd args))
   (revert-buffer t t)
@@ -647,17 +623,22 @@
 
 (defun editutil-format-buffer ()
   (interactive)
-  (cl-case major-mode
-    (haskell-mode
-     (editutil--format-buffer "fourmolu" "-i" (buffer-file-name)))
-    (tuareg-mode
-     (if (editutil--dune-project-p)
-         (editutil--format-buffer "ocamlformat" "-i" (buffer-file-name))
-       (editutil--format-buffer "ocamlformat" "-i" "--enable-outside-detected-project" (buffer-file-name))))
-    ((js-mode js-ts-mode typescript-ts-mode)
-     (editutil--format-buffer "deno" "fmt"))
-    (fsharp-mode
-     (editutil--format-buffer "fantomas" (buffer-file-name)))))
+  (let ((args (cl-case major-mode
+                ((c-mode c++-mode) '("clang-format" "-i"))
+                (python-mode '("ruff" "format"))
+                ((rust-mode rust-ts-mode) '("rustfmt"))
+                (haskell-mode '("fourmolu" "-i"))
+                (tuareg-mode (if (editutil--dune-project-p)
+                                 '("ocamlformat" "-i")
+                               '("ocamlformat" "-i" "--enable-outside-detected-project")))
+                ((js-mode js-ts-mode typescript-ts-mode) '("deno" "fmt"))
+                (fsharp-mode '("fantomas"))
+                (otherwise (user-error "unsupport formatting for %s" major-mode)))))
+    (pcase args
+      (`(,cmd . ,options)
+       (let ((options (append options (buffer-file-name))))
+         (apply #'editutil--format-buffer cmd options)))
+      (_ (error "please check arguments: %s"args)))))
 
 (define-minor-mode editutil-global-minor-mode
   "Most superior minir mode"
@@ -983,8 +964,9 @@
 
   (dolist (hook '(prog-mode-hook text-mode-hook markdown-mode-hook))
     (add-hook hook #'editutil--add-watchwords))
+  (add-hook 'prog-mode-hook #'editutil--prog-mode-hook)
 
-  (run-with-idle-timer 10 t #'editutil-auto-save-buffers)
+  (run-with-idle-timer 20 t #'editutil-auto-save-buffers)
 
   (with-eval-after-load 'paredit
     (define-key paredit-mode-map (kbd "M-q") #'editutil-zap-to-char)
@@ -1000,29 +982,10 @@
     (define-key term-mode-map (kbd "C-x \\") #'editutil-restore-ansi-term)
     (define-key term-raw-map (kbd "C-x \\") #'editutil-restore-ansi-term))
 
-  (add-hook 'rust-mode-hook #'editutil-rust-mode-hook)
-  (add-hook 'emacs-lisp-mode-hook #'editutil-emacs-lisp-mode-hook)
+  (add-hook 'rust-ts-mode-hook #'editutil-rust-mode-hook)
   (add-hook 'utop-minor-mode-hook #'editutil-utop-minor-hook)
 
-  (with-eval-after-load 'fsharp-mode
-    (define-key fsharp-mode-map (kbd "C-c C-f") #'editutil-format-buffer))
-
-  (with-eval-after-load 'haskell-mode
-    (define-key haskell-mode-map (kbd "C-c C-f") #'editutil-format-buffer))
-
-  (with-eval-after-load 'tuareg
-    (define-key tuareg-mode-map (kbd "C-c C-f") #'editutil-format-buffer))
-
-  (with-eval-after-load 'js
-    (define-key js-mode-map (kbd "C-c C-f") #'editutil-format-buffer))
-
-  (with-eval-after-load 'typescript-ts-mode
-    (define-key typescript-ts-mode-map (kbd "C-c C-f") #'editutil-format-buffer))
-
-  ;; pop-to-mark-command
-  (advice-add 'pop-to-mark-command :around #'editutil-pop-to-mark-advice)
-  (custom-set-variables
-   '(set-mark-command-repeat-pop t))
+  (run-at-time t 600 #'editutil-recentf-save-list)
 
   ;;(makunbound 'editutil-global-minor-mode-map)
   (editutil-global-minor-mode +1)
