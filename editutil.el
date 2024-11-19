@@ -596,8 +596,12 @@
 ;;
 
 (defun editutil-find-rust-project-root (dir)
-  (when-let* ((root (locate-dominating-file dir "Cargo.toml")))
-    (list 'vc 'Git root)))
+  (let ((git-root (locate-dominating-file dir ".git")))
+    ;; check using cargo workspace first
+    (if (and git-root (file-exists-p (file-name-concat git-root "Cargo.toml")))
+        (list 'vc 'Git git-root)
+      (when-let* ((root (locate-dominating-file dir "Cargo.toml")))
+        (list 'vc 'Git root)))))
 
 (defun editutil-rust-mode-hook ()
   (setq-local project-find-functions (list #'editutil-find-rust-project-root)))
