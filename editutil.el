@@ -35,7 +35,8 @@
   (defvar tuareg-mode-map)
   (defvar haskell-mode-map)
   (defvar term-mode-map)
-  (defvar term-raw-map))
+  (defvar term-raw-map)
+  (defvar utop-command))
 
 (require 'cl-lib)
 (require 'subr-x)
@@ -68,22 +69,6 @@
       (setq regexp-search-ring
             (cons (substring-no-properties symbol) regexp-search-ring)))))
 
-(defun editutil-forward-current-symbol (arg)
-  (interactive "p")
-  (let ((symbol (thing-at-point 'symbol))
-        (case-fold-search nil))
-    (when symbol
-      (when (re-search-forward symbol nil t arg)
-        (goto-char (match-beginning 0))))))
-
-(defun editutil-backward-current-symbol (arg)
-  (interactive "p")
-  (let ((symbol (thing-at-point 'symbol))
-        (case-fold-search nil))
-    (when symbol
-      (when (re-search-backward symbol nil t arg)
-        (goto-char (match-beginning 0))))))
-
 (defsubst editutil--in-string-p ()
   (nth 3 (syntax-ppss)))
 
@@ -99,14 +84,6 @@
         (forward-line -1)
         (end-of-line)
         (newline-and-indent)))))
-
-(defun editutil-mark-line (arg)
-  (interactive "p")
-  (set-mark (line-beginning-position))
-  (goto-char (line-end-position))
-  (when (> arg 1)
-    (forward-line (1- arg))
-    (goto-char (line-end-position))))
 
 (defun editutil-edit-next-line (arg)
   (interactive "p")
@@ -152,47 +129,6 @@
          (read-char nil t)))
   (editutil--do-to-char arg char #'kill-region))
 
-(defun editutil-copy-to-char (arg char)
-  (interactive
-   (list (prefix-numeric-value current-prefix-arg)
-         (read-char nil t)))
-  (save-excursion
-    (editutil--do-to-char arg char #'kill-ring-save)))
-
-(defvar editutil--last-search-char nil)
-
-(defun editutil-forward-to-char (arg char)
-  (interactive
-   (list
-    (prefix-numeric-value current-prefix-arg)
-    (read-char nil t)))
-  (setq editutil--last-search-char char)
-  (forward-char 1)
-  (let ((case-fold-search nil))
-    (search-forward (char-to-string char) (line-end-position) t arg))
-  (backward-char 1))
-
-(defun editutil-backward-to-char (arg char)
-  (interactive
-   (list
-    (prefix-numeric-value current-prefix-arg)
-    (read-char nil t)))
-  (setq editutil--last-search-char char)
-  (let ((case-fold-search nil))
-    (search-backward (char-to-string char) (line-beginning-position) t arg)))
-
-(defun editutil-forward-last-char ()
-  (interactive)
-  (if editutil--last-search-char
-      (editutil-forward-to-char 1 editutil--last-search-char)
-    (call-interactively #'editutil-forward-to-char)))
-
-(defun editutil-backward-last-char ()
-  (interactive)
-  (if editutil--last-search-char
-      (editutil-backward-to-char 1 editutil--last-search-char)
-    (call-interactively #'editutil-backward-to-char)))
-
 (defun editutil-yank (arg)
   (interactive "P")
   (setq yank-window-start (window-start))
@@ -203,13 +139,6 @@
       (insert-for-yank str)))
   (when (eq this-command t)
     (setq this-command 'yank)))
-
-(defun editutil-yank-next-line ()
-  (interactive)
-  (goto-char (line-end-position))
-  (open-line 1)
-  (forward-line 1)
-  (editutil-yank 1))
 
 (defsubst editutil--enable-subword-mode-p ()
   (and (boundp 'subword-mode) subword-mode))
@@ -282,27 +211,11 @@
              (forward-line 1)))
   (goto-char start))
 
-(defun editutil-mark-sexp ()
-  (interactive)
-  (let ((bounds (bounds-of-thing-at-point 'sexp)))
-    (when bounds
-      (goto-char (car bounds))
-      (set-mark (point))
-      (goto-char (cdr bounds))
-      (exchange-point-and-mark))))
-
 (defun editutil-paredit-backward-delete ()
   (interactive)
   (if (use-region-p)
       (delete-region (region-beginning) (region-end))
     (call-interactively 'paredit-backward-delete)))
-
-(defun editutil-copy-line (arg)
-  (interactive "p")
-  (let ((start (line-beginning-position)))
-    (save-excursion
-      (forward-line (1- arg))
-      (kill-ring-save start (line-end-position)))))
 
 (defun editutil-backward-up (arg)
   (interactive "p")
@@ -332,10 +245,6 @@
     (editutil-backward-up arg)
     (forward-sexp arg)))
 
-(defun editutil-insert-parentheses (arg)
-  (interactive "P")
-  (insert-parentheses (or arg 1)))
-
 (defun editutil-other-window (arg)
   (interactive "p")
   (when (one-window-p)
@@ -344,10 +253,6 @@
       (split-window-below)))
   (unless (>= (prefix-numeric-value current-prefix-arg) 16)
     (other-window arg)))
-
-(defun editutil-other-window-backward ()
-  (interactive)
-  (other-window -1))
 
 (defun editutil-toggle-let ()
   (interactive)
@@ -366,14 +271,6 @@
   (when (looking-at-p "^")
     (back-to-indentation)))
 
-(defun editutil-newline-after-sexp (arg)
-  (interactive "p")
-  (when (< arg 0)
-    (setq arg (- arg))
-    (editutil-backward-up arg))
-  (forward-sexp arg)
-  (newline-and-indent))
-
 (defun editutil-kill-line (arg)
   (interactive "P")
   (let ((num (prefix-numeric-value arg)))
@@ -385,7 +282,7 @@
 (defun editutil--add-watchwords ()
   (unless (memq major-mode '(org-mode))
     (font-lock-add-keywords
-     nil '(("\\(?:^\\|\\s-\\)\\(FIXME\\|TODO\\|XXX\\|@@@\\)\\(?:\\s-\\|$\\)"
+     nil '(("\\(?:^\\|\\s-\\)\\(FIXME\\|TODO\\|XXX\\)\\(?:\\s-\\|$\\)"
             1 '((:foreground "pink") (:weight bold)) t)))))
 
 (defvar editutil--previous-buffer nil)
@@ -507,17 +404,17 @@
 
 (defun editutil-show-current-line-diagnostic ()
   (interactive)
-  (let* ((diag (cl-loop for diag in (flymake-diagnostics)
-                        for beg = (flymake--diag-beg diag)
-                        for end = (flymake--diag-end diag)
-                        when (<= beg (point) end)
-                        return diag))
-         (text (flymake--diag-text diag))
-         (type (flymake--diag-type diag))
-         (face (if (memq type '(eglot-error error))
-                   'flymake-error-echo
-                 'flymake-warning-echo)))
-    (message "%s" (propertize text 'face face))))
+  (let ((line (line-number-at-pos)))
+    (when-let* ((diag (cl-loop for diag in (flymake-diagnostics)
+                               for beg = (flymake--diag-beg diag)
+                               when (= line (line-number-at-pos beg))
+                               return diag)))
+      (let* ((text (flymake--diag-text diag))
+             (type (flymake--diag-type diag))
+             (face (if (memq type '(eglot-error error))
+                       'flymake-error-echo
+                     'flymake-warning-echo)))
+        (message "%s" (propertize text 'face face))))))
 
 (defun editutil--init-mode-line ()
   (setq-default
@@ -640,14 +537,6 @@
           (forward-whitespace +1)
           (delete-region orig-point (point)))))))
 
-(defun editutil-forward-word-end (arg)
-  (interactive "p")
-  (forward-char +1)
-  (unless (looking-at-p "\\>")
-    (backward-char +1))
-  (forward-word arg)
-  (backward-char +1))
-
 (defun editutil-point-to-register (register)
   (interactive
    (list (register-read-with-preview "")))
@@ -725,22 +614,9 @@
   (interactive)
   (kill-this-buffer))
 
-;; fixed line position after scrollup, scrolldown
-(defun editutil-scroll-move-around (orig-fn &rest args)
-  (let ((orig-line (count-lines (window-start) (point))))
-    (apply orig-fn args)
-    (move-to-window-line orig-line)))
-
 ;;
 ;; Programming utilities
 ;;
-
-(defun editutil-comment-line ()
-  (interactive)
-  (save-excursion
-    (if (use-region-p)
-        (comment-or-uncomment-region (region-beginning) (line-end-position))
-      (call-interactively #'comment-line))))
 
 (defun editutil-find-rust-project-root (dir)
   (when-let* ((root (locate-dominating-file dir "Cargo.toml")))
@@ -751,6 +627,15 @@
 
 (defun editutil-emacs-lisp-mode-hook ()
   (setq-local mode-name "Emacs-Lisp"))
+
+(defsubst editutil--dune-project-p ()
+  (cl-loop for file in '("dune" "dune-project")
+           thereis (locate-dominating-file default-directory file)))
+
+(defun editutil-utop-minor-hook ()
+  (if (editutil--dune-project-p)
+      (setq-local utop-command "opam exec -- dune utop . -- -emacs")
+    (setq utop-command "utop -emacs")))
 
 (defun editutil--format-buffer (cmd &rest args)
   (when (buffer-modified-p)
@@ -766,24 +651,13 @@
     (haskell-mode
      (editutil--format-buffer "fourmolu" "-i" (buffer-file-name)))
     (tuareg-mode
-     (if (locate-dominating-file default-directory "dune")
+     (if (editutil--dune-project-p)
          (editutil--format-buffer "ocamlformat" "-i" (buffer-file-name))
        (editutil--format-buffer "ocamlformat" "-i" "--enable-outside-detected-project" (buffer-file-name))))
     ((js-mode js-ts-mode typescript-ts-mode)
      (editutil--format-buffer "deno" "fmt"))
     (fsharp-mode
      (editutil--format-buffer "fantomas" (buffer-file-name)))))
-
-(defun editutil-clipboard-copy ()
-  (interactive)
-  (unless (executable-find "xsel")
-    (user-error "'xsel' is not installed"))
-  (unless (use-region-p)
-    (user-error "region is not specified"))
-  (unless (zerop (call-process-region (region-beginning) (region-end)
-                                      "xsel" nil nil nil "--input" "--clipboard"))
-    (error "failed to execute xsel"))
-  (deactivate-mark))
 
 (define-minor-mode editutil-global-minor-mode
   "Most superior minir mode"
@@ -1051,71 +925,43 @@
 
   (global-unset-key (kbd "C-x z"))
 
+  (global-set-key [remap backward-kill-word] #'editutil-backward-delete-word)
   (global-set-key (kbd "RET") #'editutil-newline)
+
   (global-set-key (kbd "C-j") #'editutil-newline-and-maybe-indent)
-
-  (global-set-key (kbd "C-M-s") #'editutil-forward-symbol-at-point)
-  (global-set-key (kbd "C-x *") #'editutil-forward-current-symbol)
-  (global-set-key (kbd "C-x #") #'editutil-backward-current-symbol)
-  (global-set-key (kbd "C-x $") 'server-edit)
-
-  (global-set-key (kbd "C-w") #'editutil-kill-region)
-  (global-set-key (kbd "M-w") #'editutil-kill-ring-save)
-  (global-set-key (kbd "C-x M-w") #'editutil-copy-region-to-clipboard)
-
-  (global-set-key (kbd "M-q") #'editutil-zap-to-char)
-  (global-set-key (kbd "M-z") #'editutil-copy-to-char)
-
-  (global-set-key (kbd "C-M-o") #'editutil-other-window)
-  (global-set-key (kbd "C-M-l") #'editutil-other-window-backward)
-  (global-set-key (kbd "C-M-u") #'editutil-backward-up)
-
   (global-set-key (kbd "C-k") #'editutil-kill-line)
-  (global-set-key (kbd "C-M-n") #'editutil-forward-list)
-  (global-set-key (kbd "C-M-d") #'editutil-down-list)
+  (global-set-key (kbd "C-y") #'editutil-yank)
+  (global-set-key (kbd "C-w") #'editutil-kill-region)
+
   (global-set-key (kbd "M-o") #'editutil-edit-next-line)
   (global-set-key (kbd "M-O") #'editutil-edit-previous-line)
-
-  (global-set-key (kbd "C-x k") #'editutil-kill-this-buffer)
-
-  (global-set-key (kbd "C-y") #'editutil-yank)
-  (global-set-key (kbd "C-x y") #'editutil-yank-next-line)
-
+  (global-set-key (kbd "M-w") #'editutil-kill-ring-save)
+  (global-set-key (kbd "M-q") #'editutil-zap-to-char)
+  (global-set-key (kbd "M-d") #'editutil-delete-word)
+  (global-set-key (kbd "M-u") #'editutil-upcase)
   (global-set-key (kbd "M-SPC") #'editutil-point-to-register)
   (global-set-key (kbd "M-j") #'editutil-jump-to-register)
-
-  (global-set-key (kbd "M-e") #'editutil-forward-word-end)
-  (global-set-key (kbd "M-d") #'editutil-delete-word)
-
-  (global-set-key (kbd "M-u") #'editutil-upcase)
-
-  (global-set-key (kbd "M-;") #'editutil-comment-line)
   (global-set-key (kbd "M-\\") #'editutil-delete-following-spaces)
 
-  (global-set-key [remap backward-kill-word] #'editutil-backward-delete-word)
+  (global-set-key (kbd "C-M-o") #'editutil-other-window)
+  (global-set-key (kbd "C-M-u") #'editutil-backward-up)
+  (global-set-key (kbd "C-M-n") #'editutil-forward-list)
+  (global-set-key (kbd "C-M-d") #'editutil-down-list)
+  (global-set-key (kbd "C-M-s") #'editutil-forward-symbol-at-point)
 
-  (global-set-key (kbd "M-(") #'editutil-insert-parentheses)
-
-  (global-set-key (kbd "C-x l") #'editutil-mark-line)
-  (global-set-key (kbd "C-M-w") #'editutil-mark-sexp)
-
-  (global-set-key (kbd "C-x L") #'editutil-copy-line)
+  (global-set-key (kbd "C-x $") 'server-edit)
+  (global-set-key (kbd "C-x M-w") #'editutil-copy-region-to-clipboard)
+  (global-set-key (kbd "C-x k") #'editutil-kill-this-buffer)
   (global-set-key (kbd "C-x \\") #'editutil-ansi-term)
 
-  (global-set-key (kbd "C-x f") #'editutil-forward-to-char)
-  (global-set-key (kbd "C-x a") #'editutil-backward-to-char)
-  (global-set-key (kbd "M-l") #'editutil-forward-last-char)
-  (global-set-key (kbd "M-h") #'editutil-backward-last-char)
-
-  (global-set-key (kbd "M-g M-w") #'editutil-clipboard-copy)
-
-  ;; 'C-x r' prefix
   (global-set-key (kbd "C-x r N") #'editutil-number-rectangle)
 
-  ;; 'M-g' prefix
   (global-set-key (kbd "M-g [") #'editutil-cycle-next-buffer)
   (global-set-key (kbd "M-g ]") #'editutil-cycle-previous-buffer)
-  (global-set-key (kbd "M-g e") #'editutil-show-current-line-diagnostic)
+
+  ;; flymake
+  (global-set-key (kbd "M-g l") #'flymake-show-buffer-diagnostics)
+  (global-set-key (kbd "C-x e") #'editutil-show-current-line-diagnostic)
 
   (define-key global-map (kbd "C-q") editutil-ctrl-q-map)
   (define-key editutil-ctrl-q-map (kbd "C-q") 'quoted-insert)
@@ -1140,13 +986,9 @@
 
   (run-with-idle-timer 10 t #'editutil-auto-save-buffers)
 
-  (advice-add 'scroll-up :around 'editutil-scroll-move-around)
-  (advice-add 'scroll-down :around 'editutil-scroll-move-around)
-
   (with-eval-after-load 'paredit
     (define-key paredit-mode-map (kbd "M-q") #'editutil-zap-to-char)
     (define-key paredit-mode-map (kbd "C-c l") #'editutil-toggle-let)
-    (define-key paredit-mode-map (kbd "C-c j") #'editutil-newline-after-sexp)
     (define-key paredit-mode-map (kbd "DEL") #'editutil-paredit-backward-delete))
 
   (with-eval-after-load 'term
@@ -1160,6 +1002,7 @@
 
   (add-hook 'rust-mode-hook #'editutil-rust-mode-hook)
   (add-hook 'emacs-lisp-mode-hook #'editutil-emacs-lisp-mode-hook)
+  (add-hook 'utop-minor-mode-hook #'editutil-utop-minor-hook)
 
   (with-eval-after-load 'fsharp-mode
     (define-key fsharp-mode-map (kbd "C-c C-f") #'editutil-format-buffer))
