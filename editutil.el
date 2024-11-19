@@ -518,7 +518,7 @@
   (setq-default flymake-mode-line-format
                 '(" "
                   (:eval
-                   '("[err:" flymake-mode-line-error-counter " warn:" flymake-mode-line-warning-counter "]"))))
+                   '("[err: " flymake-mode-line-error-counter " warn:" flymake-mode-line-warning-counter "]"))))
 
   (setq-default mode-line-format
                 `("%e"
