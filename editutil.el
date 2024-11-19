@@ -42,6 +42,7 @@
 (require 'thingatpt)
 (require 'which-func)
 (require 'dired)
+(require 'flymake)
 
 (require 'xref)
 (require 'recentf)
@@ -504,6 +505,20 @@
              (concat encoding-str " " end-line)))))
 (put 'editutil-encoding-mode-line 'risky-local-variable t)
 
+(defun editutil-show-current-line-diagnostic ()
+  (interactive)
+  (let* ((diag (cl-loop for diag in (flymake-diagnostics)
+                        for beg = (flymake--diag-beg diag)
+                        for end = (flymake--diag-end diag)
+                        when (<= beg (point) end)
+                        return diag))
+         (text (flymake--diag-text diag))
+         (type (flymake--diag-type diag))
+         (face (if (memq type '(eglot-error error))
+                   'flymake-error-echo
+                 'flymake-warning-echo)))
+    (message "%s" (propertize text 'face face))))
+
 (defun editutil--init-mode-line ()
   (setq-default
    mode-line-misc-info (list (car mode-line-misc-info))
@@ -518,7 +533,7 @@
   (setq-default flymake-mode-line-format
                 '(" "
                   (:eval
-                   '("[err: " flymake-mode-line-error-counter " warn:" flymake-mode-line-warning-counter "]"))))
+                   '("err: " flymake-mode-line-error-counter " warn:" flymake-mode-line-warning-counter ""))))
 
   (setq-default mode-line-format
                 `("%e"
@@ -1100,6 +1115,7 @@
   ;; 'M-g' prefix
   (global-set-key (kbd "M-g [") #'editutil-cycle-next-buffer)
   (global-set-key (kbd "M-g ]") #'editutil-cycle-previous-buffer)
+  (global-set-key (kbd "M-g e") #'editutil-show-current-line-diagnostic)
 
   (define-key global-map (kbd "C-q") editutil-ctrl-q-map)
   (define-key editutil-ctrl-q-map (kbd "C-q") 'quoted-insert)
