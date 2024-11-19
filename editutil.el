@@ -405,12 +405,10 @@
 
 (defun editutil--init-mode-line ()
   (setq-default
-   mode-line-misc-info (list (car mode-line-misc-info))
    mode-line-buffer-identification (propertized-buffer-identification "%12b")
    mode-line-mule-info  `("" (current-input-method (:propertize ("" current-input-method-title))))
    ;; only show major-mode
-   mode-line-modes '((:propertize (""  mode-name) face (:foreground "color-81"))
-                     ("" mode-line-process))
+   mode-line-modes '((:propertize (""  mode-name) face (:foreground "color-81")))
    mode-line-position `("(%l,%C) "
                         (:propertize ("" mode-line-percent-position))))
 
@@ -437,8 +435,9 @@
                   " "
                   (flymake-mode flymake-mode-line-format)
                   " "
-                  ;; mode-line-misc-info
                   mode-line-format-right-align
+                  ("" mode-line-process)
+                  " "
                   (which-function-mode
                    (which-func-mode
                     (which-func--use-mode-line ("" which-func-format " "))))
@@ -595,7 +594,7 @@
 ;; Programming utilities
 ;;
 
-(defun editutil-find-rust-project-root (dir)
+(defun editutil--rust-project-root (dir)
   (let ((git-root (locate-dominating-file dir ".git")))
     ;; check using cargo workspace first
     (if (and git-root (file-exists-p (file-name-concat git-root "Cargo.toml")))
@@ -603,8 +602,14 @@
       (when-let* ((root (locate-dominating-file dir "Cargo.toml")))
         (list 'vc 'Git root)))))
 
+(defun editutil--project-root ()
+  (cl-case major-mode
+    ((rust-mode rust-ts-mode) (editutil--rust-project-root default-directory))
+    (otherwise (or (locate-dominating-file default-directory ".git")
+                   default-directory))))
+
 (defun editutil-rust-mode-hook ()
-  (setq-local project-find-functions (list #'editutil-find-rust-project-root)))
+  (setq-local project-find-functions (list #'editutil--rust-project-root)))
 
 (defsubst editutil--dune-project-p ()
   (cl-loop for file in '("dune" "dune-project")
@@ -830,11 +835,6 @@
 ;; xref
 ;;
 
-(defun helm-editutil--project-root ()
-  (cl-loop for path in '("Cargo.toml" "go.mod" ".git")
-           when (locate-dominating-file default-directory path)
-           return it))
-
 (defun helm-editutil--xref-format-candidate (file line summary)
   (concat
    (propertize file 'face 'helm-grep-file)
@@ -845,7 +845,7 @@
 (defun helm-editutil--xref-candidates (fetcher alist)
   (let ((xrefs (or (assoc-default 'fetched-xrefs alist)
                    (funcall fetcher)))
-        (project-root (helm-editutil--project-root)))
+        (project-root (editutil--project-root)))
     (cl-loop for xref in xrefs
              for summary = (xref-item-summary xref)
              for location = (xref-item-location xref)
