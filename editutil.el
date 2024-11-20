@@ -645,7 +645,7 @@
                 (otherwise (user-error "unsupport formatting for %s" major-mode)))))
     (pcase args
       (`(,cmd . ,options)
-       (let ((options (append options (buffer-file-name))))
+       (let ((options (append options (list (buffer-file-name)))))
          (apply #'editutil--format-buffer cmd options)))
       (_ (error "please check arguments: %s"args)))))
 
