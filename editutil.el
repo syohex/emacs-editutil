@@ -335,6 +335,18 @@
       (error "failed to copy region to clipboard"))
     (deactivate-mark)))
 
+(defun editutil-next-error ()
+  (interactive)
+  (if flymake-mode
+      (call-interactively #'flymake-goto-next-error)
+    (call-interactively #'next-error)))
+
+(defun editutil-previous-error ()
+  (interactive)
+  (if flymake-mode
+      (call-interactively #'flymake-goto-prev-error)
+    (call-interactively #'previous-error)))
+
 (defun editutil--vc-branch ()
   (let ((backend (symbol-name (vc-backend (buffer-file-name)))))
     (substring-no-properties vc-mode (+ (length backend) 2))))
@@ -945,6 +957,8 @@
   (global-set-key (kbd "M-g ]") #'editutil-cycle-previous-buffer)
 
   ;; flymake
+  (global-set-key (kbd "M-g M-n") #'editutil-next-error)
+  (global-set-key (kbd "M-g M-p") #'editutil-previous-error)
   (global-set-key (kbd "M-g l") #'flymake-show-buffer-diagnostics)
   (global-set-key (kbd "C-x e") #'editutil-show-current-line-diagnostic)
 
