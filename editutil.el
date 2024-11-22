@@ -661,6 +661,13 @@
          (apply #'editutil--format-buffer cmd options)))
       (_ (error "please check arguments: %s"args)))))
 
+(defun editutil-comment-dwim ()
+  (interactive)
+  (if (use-region-p)
+      (call-interactively #'comment-dwim)
+    (save-excursion
+      (call-interactively #'comment-line))))
+
 (define-minor-mode editutil-global-minor-mode
   "Most superior minir mode"
   :global t
@@ -939,6 +946,7 @@
   (global-set-key (kbd "M-SPC") #'editutil-point-to-register)
   (global-set-key (kbd "M-j") #'editutil-jump-to-register)
   (global-set-key (kbd "M-\\") #'editutil-delete-following-spaces)
+  (global-set-key (kbd "M-/") #'editutil-comment-dwim)
 
   (global-set-key (kbd "C-M-o") #'editutil-other-window)
   (global-set-key (kbd "C-M-u") #'editutil-backward-up)
