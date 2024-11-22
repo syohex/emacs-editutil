@@ -372,8 +372,8 @@
   (cl-case state
     (normal "color-40")
     (insert "color-198")
-    ((visual emacs) "color-216")
-    (otherwise "cyan")))
+    (visual "color-141")
+    (otherwise "color-227")))
 
 (defvar editutil-evil-mode-line
   '(:propertize
