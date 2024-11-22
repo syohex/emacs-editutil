@@ -415,6 +415,39 @@
                      'flymake-warning-echo)))
         (message "%s" (propertize text 'face face))))))
 
+;; copy from flymake
+(defun editutil--flymake-mode-line (type)
+  (let ((probe (alist-get type flymake--mode-line-counter-cache 'none)))
+    (if (eq probe 'none)
+        (setf (alist-get type flymake--mode-line-counter-cache)
+              (editutil--flymake-mode-line1 type))
+      probe)))
+
+(defun editutil--flymake-mode-line1 (type)
+  (let ((count 0)
+        (face (flymake--lookup-type-property type 'mode-line-face 'compilation-error)))
+    (dolist (d (flymake-diagnostics))
+      (when (= (flymake--severity type)
+               (flymake--severity (flymake-diagnostic-type d)))
+        (cl-incf count)))
+    (when (or (cl-plusp count)
+              (cond ((eq flymake-suppress-zero-counters t)
+                     nil)
+                    (flymake-suppress-zero-counters
+                     (>= (flymake--severity type)
+                         (warning-numeric-level
+                          flymake-suppress-zero-counters)))
+                    (t t)))
+      (propertize (format "%d" count) 'face face))))
+
+(defvar editutil-flymake-mode-line
+  '(:propertize
+    (:eval
+     (let ((errors (editutil--flymake-mode-line :error))
+           (warnings (editutil--flymake-mode-line :warning)))
+       (concat "err:" errors " warn:" warnings)))))
+(put 'editutil-flymake-mode-line 'risky-local-variable t)
+
 (defun editutil--init-mode-line ()
   (setq-default
    mode-line-buffer-identification (propertized-buffer-identification "%12b")
@@ -423,11 +456,6 @@
    mode-line-modes '((:propertize (""  mode-name) face (:foreground "color-81")))
    mode-line-position `("(%l,%C) "
                         (:propertize ("" mode-line-percent-position))))
-
-  (setq-default flymake-mode-line-format
-                '(" "
-                  (:eval
-                   '("err: " flymake-mode-line-error-counter " warn:" flymake-mode-line-warning-counter ""))))
 
   (setq-default mode-line-format
                 `("%e"
@@ -445,7 +473,7 @@
                   " "
                   mode-line-modes
                   " "
-                  (flymake-mode flymake-mode-line-format)
+                  (flymake-mode editutil-flymake-mode-line)
                   " "
                   mode-line-format-right-align
                   ("" mode-line-process)
