@@ -454,8 +454,8 @@
    mode-line-mule-info  `("" (current-input-method (:propertize ("" current-input-method-title))))
    ;; only show major-mode
    mode-line-modes '((:propertize (""  mode-name) face (:foreground "color-81")))
-   mode-line-position `("(%l,%C) "
-                        (:propertize ("" mode-line-percent-position))))
+   mode-line-position `((:propertize "%l:%C " display (min-width (8.0)))
+                        (:propertize "%p" display (min-width (3.0)))))
 
   (setq-default mode-line-format
                 `("%e"
@@ -464,7 +464,7 @@
                   mode-line-mule-info
                   " "
                   mode-line-modified
-		  " "
+                  " "
                   mode-line-buffer-identification
                   " "
                   editutil-encoding-mode-line
