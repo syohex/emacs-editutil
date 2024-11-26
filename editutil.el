@@ -996,7 +996,7 @@
   (global-set-key (kbd "M-g M-n") #'editutil-next-error)
   (global-set-key (kbd "M-g M-p") #'editutil-previous-error)
   (global-set-key (kbd "M-g l") #'flymake-show-buffer-diagnostics)
-  (global-set-key (kbd "C-x e") #'editutil-show-current-line-diagnostic)
+  (global-set-key (kbd "C-h h") #'editutil-show-current-line-diagnostic)
 
   (define-key global-map (kbd "C-q") editutil-ctrl-q-map)
   (define-key editutil-ctrl-q-map (kbd "C-q") 'quoted-insert)
