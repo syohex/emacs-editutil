@@ -675,6 +675,7 @@
   (let ((args (cl-case major-mode
                 ((c-mode c++-mode) '("clang-format" "-i"))
                 (python-mode '("ruff" "format"))
+                (go-ts-mode '("go" "fmt"))
                 ((rust-mode rust-ts-mode) '("rustfmt"))
                 (haskell-mode '("fourmolu" "-i"))
                 (tuareg-mode (if (editutil--dune-project-p)
