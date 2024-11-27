@@ -281,18 +281,6 @@
 
 (defvar editutil--previous-buffer nil)
 
-;; for `cde' command
-(defun editutil-current-buffer-directory ()
-  (let* ((bufsinfo (cadr (cadr (current-frame-configuration))))
-         (bufname-list (assoc-default 'buffer-list bufsinfo)))
-    (cl-loop for buf in bufname-list
-             for file = (or (buffer-file-name buf)
-                            (with-current-buffer buf
-                              (when (eq major-mode 'dired-mode)
-                                dired-directory)))
-             when file
-             return (file-name-directory it))))
-
 (defun editutil--kill-command-common (arg func thing)
   (if (not arg)
       (if (use-region-p)
@@ -556,17 +544,6 @@
           (forward-whitespace +1)
           (delete-region orig-point (point)))))))
 
-(defun editutil-point-to-register (register)
-  (interactive
-   (list (register-read-with-preview "")))
-  (set-register register (point-marker)))
-
-(defun editutil-jump-to-register (register)
-  (interactive
-   (list (register-read-with-preview "")))
-  (let ((val (get-register register)))
-    (register-val-jump-to val nil)))
-
 ;;
 ;; Buffer utilities
 ;;
@@ -587,47 +564,6 @@
   (interactive)
   (bs-cycle-previous)
   (editutil--cycle-buffer-common))
-
-(defun editutil--save-current-windows ()
-  (setq editutil--previous-buffer (current-buffer))
-  (window-configuration-to-register :editutil-ansiterm))
-
-(defun editutil--buffer-visible-p (bufname)
-  (cl-loop for win in (window-list)
-           for winbuf = (window-buffer win)
-           thereis (string= bufname (buffer-name winbuf))))
-
-;;
-;; shell utilities
-;;
-
-(defun editutil-ansi-term ()
-  (interactive)
-  (if (editutil--buffer-visible-p "*ansi-term*")
-      (other-window 1)
-    (editutil--save-current-windows)
-    (when (>= (length (window-list)) 3)
-      (delete-other-windows))
-    (when (one-window-p)
-      (if (> (window-width) 120)
-          (split-window-right)
-        (split-window-below)))
-    (other-window 1)
-    (let ((shell-buf (get-buffer "*ansi-term*")))
-      (if (buffer-live-p shell-buf)
-          (progn
-            (switch-to-buffer shell-buf)
-            (goto-char (point-max)))
-        (ansi-term shell-file-name)))))
-
-(defun editutil-ansi-term-kill-buffer (&optional process _msg)
-  (kill-buffer (process-buffer process)))
-
-(defun editutil-restore-ansi-term ()
-  (interactive)
-  (unless (string= (buffer-name) "*ansi-term*")
-    (error "This buffer is not ansi-term buffer"))
-  (jump-to-register :editutil-ansiterm))
 
 (defun editutil-kill-this-buffer ()
   (interactive)
@@ -670,8 +606,7 @@
     (user-error "%s is not installed" cmd))
   (unless (zerop (apply #'process-file cmd nil nil nil args))
     (error "failed to format file(%s %s)" cmd args))
-  (revert-buffer t t)
-  (message "format: %s" cmd))
+  (revert-buffer t t))
 
 (defun editutil-format-buffer ()
   (interactive)
@@ -975,8 +910,6 @@
   (global-set-key (kbd "M-q") #'editutil-zap-to-char)
   (global-set-key (kbd "M-d") #'editutil-delete-word)
   (global-set-key (kbd "M-u") #'editutil-upcase)
-  (global-set-key (kbd "M-SPC") #'editutil-point-to-register)
-  (global-set-key (kbd "M-j") #'editutil-jump-to-register)
   (global-set-key (kbd "M-\\") #'editutil-delete-following-spaces)
   (global-set-key (kbd "M-/") #'editutil-comment-dwim)
 
@@ -989,7 +922,6 @@
   (global-set-key (kbd "C-x $") 'server-edit)
   (global-set-key (kbd "C-x M-w") #'editutil-copy-region-to-clipboard)
   (global-set-key (kbd "C-x k") #'editutil-kill-this-buffer)
-  (global-set-key (kbd "C-x \\") #'editutil-ansi-term)
 
   (global-set-key (kbd "C-x r N") #'editutil-number-rectangle)
 
@@ -1030,15 +962,6 @@
     (define-key paredit-mode-map (kbd "M-q") #'editutil-zap-to-char)
     (define-key paredit-mode-map (kbd "C-c l") #'editutil-toggle-let)
     (define-key paredit-mode-map (kbd "DEL") #'editutil-paredit-backward-delete))
-
-  (with-eval-after-load 'term
-    (advice-add 'term-sentinel :after #'editutil-ansi-term-kill-buffer)
-
-    (define-key term-mode-map (kbd "C-x") nil)
-    (define-key term-raw-map (kbd "C-x") nil)
-
-    (define-key term-mode-map (kbd "C-x \\") #'editutil-restore-ansi-term)
-    (define-key term-raw-map (kbd "C-x \\") #'editutil-restore-ansi-term))
 
   (add-hook 'rust-ts-mode-hook #'editutil-rust-mode-hook)
   (add-hook 'utop-minor-mode-hook #'editutil-utop-minor-hook)
