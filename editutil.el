@@ -273,8 +273,11 @@
   (local-set-key (kbd "C-c C-f") #'editutil-format-buffer)
 
   (cl-case major-mode
+    ((rust-mode rust-ts-mode) (setq-local compile-command "cargo "))
+    ((go-mode go-ts-mode) (setq-local compile-command "go "))
     (emacs-lisp-mode (setq-local mode-name "Emacs-Lisp"))
-    (tuareg-mode (setq-local mode-name "Ocaml"))))
+    (tuareg-mode (setq-local mode-name "Ocaml"
+                             compile-command "dune "))))
 
 (defvar editutil--previous-buffer nil)
 
