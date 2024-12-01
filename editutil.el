@@ -948,6 +948,7 @@
 
   (define-key global-map (kbd "C-q") editutil-ctrl-q-map)
   (define-key editutil-ctrl-q-map (kbd "C-q") 'quoted-insert)
+  (define-key editutil-ctrl-q-map (kbd "C-s") 'suspend-frame)
 
   ;; helm-editutil
   (global-set-key (kbd "C-x C-p") 'helm-editutil-git-ls-files-project)
@@ -955,7 +956,6 @@
   (global-set-key (kbd "C-x C-r") 'helm-editutil-recentf-and-bookmark)
   (global-set-key (kbd "C-x C-x") 'helm-editutil-find-files)
   (global-set-key (kbd "C-x b") 'helm-editutil-switch-buffer)
-  (global-set-key (kbd "C-M-r") 'helm-editutil-search-buffer)
 
  (with-eval-after-load 'helm
    (define-key helm-map (kbd "C-e") 'helm-editutil-select-2nd-action)
@@ -980,7 +980,6 @@
 
   (run-at-time t 600 #'editutil-recentf-save-list)
 
-  ;;(makunbound 'editutil-global-minor-mode-map)
   (editutil-global-minor-mode +1)
 
   t)
