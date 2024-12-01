@@ -630,6 +630,8 @@
   (interactive)
   (let ((cmd (cl-case major-mode
                ((rust-mode rust-ts-mode) "cargo clippy")
+               ((c-mode c++-mode c-ts-mode c++-ts-mode)
+                (concat "clang-tidy " (buffer-file-name)))
                (python-mode (concat "ruff check " (buffer-file-name)))
                (go-ts-mode (concat "staticcheck " (buffer-file-name)))
                ((js-mode js-ts-mode typescript-ts-mode) (concat "deno lint " (buffer-file-name)))
