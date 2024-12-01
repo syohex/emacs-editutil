@@ -270,8 +270,6 @@
             1 '((:foreground "pink") (:weight bold)) t)))))
 
 (defun editutil--prog-mode-hook ()
-  (local-set-key (kbd "C-c C-f") #'editutil-format-buffer)
-
   (cl-case major-mode
     ((rust-mode rust-ts-mode) (setq-local compile-command "cargo "))
     ((go-mode go-ts-mode) (setq-local compile-command "go "))
@@ -628,6 +626,16 @@
          (apply #'editutil--format-buffer cmd options)))
       (_ (error "please check arguments: %s"args)))))
 
+(defun editutil-lint-buffer ()
+  (interactive)
+  (let ((cmd (cl-case major-mode
+               ((rust-mode rust-ts-mode) "cargo clippy")
+               (python-mode (concat "ruff check " (buffer-file-name)))
+               (go-ts-mode (concat "staticcheck " (buffer-file-name)))
+               ((js-mode js-ts-mode typescript-ts-mode) (concat "deno lint " (buffer-file-name)))
+               (otherwise (user-error "unsupport lint for %s" major-mode)))))
+    (compile cmd)))
+
 (defun editutil-comment-dwim ()
   (interactive)
   (if (use-region-p)
@@ -919,6 +927,8 @@
   (global-set-key (kbd "C-M-d") #'editutil-down-list)
   (global-set-key (kbd "C-M-s") #'editutil-forward-symbol-at-point)
 
+  (global-set-key (kbd "C-x f") #'editutil-format-buffer)
+  (global-set-key (kbd "C-x l") #'editutil-lint-buffer)
   (global-set-key (kbd "C-x $") 'server-edit)
   (global-set-key (kbd "C-x M-w") #'editutil-copy-region-to-clipboard)
   (global-set-key (kbd "C-x k") #'editutil-kill-this-buffer)
