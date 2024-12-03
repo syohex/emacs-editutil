@@ -708,10 +708,6 @@
   (interactive)
   (helm-editutil--git-ls-files-common t))
 
-(defun helm-editutil-git-ls-files ()
-  (interactive)
-  (helm-editutil--git-ls-files-common nil))
-
 (defun helm-editutil--recentf-transform (candidates _source)
   (cl-loop for i in candidates
            if helm-ff-transformer-show-only-basename
@@ -738,11 +734,11 @@
              "Open Files in dired" #'helm-editutil--file-in-dired
              "Insert File" #'insert-file)))
 
-(defun helm-editutil-recentf-and-bookmark ()
+(defun helm-editutil-recentf ()
   (interactive)
   (let ((helm-ff-transformer-show-only-basename nil))
-    (helm :sources '(helm-editutil-source-recentf helm-source-bookmarks)
-          :buffer "*helm recentf+bookmark*")))
+    (helm :sources '(helm-editutil-source-recentf)
+          :buffer "*helm recentf*")))
 
 (defun helm-editutil--find-files-init ()
   (with-current-buffer (helm-candidate-buffer 'global)
@@ -772,8 +768,10 @@
 
 (defun helm-editutil-find-files ()
   (interactive)
-  (helm :sources '(helm-editutil-source-find-files helm-editutil-source-find-directories)
-        :buffer "*Helm Find Files*"))
+  (if (locate-dominating-file default-directory ".git")
+      (helm-editutil--git-ls-files-common nil)
+    (helm :sources '(helm-editutil-source-find-files helm-editutil-source-find-directories)
+          :buffer "*Helm Find Files*")))
 
 (defun helm-editutil--buffer-display (bufname)
   (with-current-buffer bufname
@@ -952,8 +950,7 @@
 
   ;; helm-editutil
   (global-set-key (kbd "C-x C-p") 'helm-editutil-git-ls-files-project)
-  (global-set-key (kbd "C-x C-a") 'helm-editutil-git-ls-files)
-  (global-set-key (kbd "C-x C-r") 'helm-editutil-recentf-and-bookmark)
+  (global-set-key (kbd "C-x C-r") 'helm-editutil-recentf)
   (global-set-key (kbd "C-x C-x") 'helm-editutil-find-files)
   (global-set-key (kbd "C-x b") 'helm-editutil-switch-buffer)
 
