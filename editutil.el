@@ -961,7 +961,7 @@
 
   (define-key global-map (kbd "C-q") editutil-ctrl-q-map)
   (define-key editutil-ctrl-q-map (kbd "C-q") 'quoted-insert)
-  (define-key editutil-ctrl-q-map (kbd "C-s") 'suspend-frame)
+  (define-key editutil-ctrl-q-map (kbd "l") 'display-line-numbers-mode)
 
   ;; helm-editutil
   (global-set-key (kbd "C-x C-p") 'helm-editutil-git-ls-files-project)
@@ -973,8 +973,8 @@
    (define-key helm-map (kbd "C-e") 'helm-editutil-select-2nd-action)
    (define-key helm-map (kbd "C-j") 'helm-editutil-select-3rd-action))
 
-  (setq xref-show-xrefs-function 'helm-editutil-show-xrefs)
-  (setq xref-show-definitions-function 'helm-editutil-xref-show-defs)
+  (setq xref-show-xrefs-function 'helm-editutil-show-xrefs
+        xref-show-definitions-function 'helm-editutil-xref-show-defs)
 
   (dolist (hook '(prog-mode-hook text-mode-hook markdown-mode-hook))
     (add-hook hook #'editutil--add-watchwords))
