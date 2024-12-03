@@ -635,7 +635,16 @@
                (python-mode (concat "ruff check " (buffer-file-name)))
                (go-ts-mode (concat "staticcheck " (buffer-file-name)))
                ((js-mode js-ts-mode typescript-ts-mode) (concat "deno lint " (buffer-file-name)))
-               (otherwise (user-error "unsupport lint for %s" major-mode)))))
+               (otherwise (user-error "unsupport linting for %s" major-mode)))))
+    (compile cmd)))
+
+(defun editutil-run-test ()
+  (interactive)
+  (let ((cmd (cl-case major-mode
+               ((rust-mode rust-ts-mode) "cargo test")
+               (go-ts-mode "go test")
+               ((js-mode js-ts-mode typescript-ts-mode) "deno test")
+               (otherwise (user-error "unsupport testing for %s" major-mode)))))
     (compile cmd)))
 
 (defun editutil-comment-dwim ()
@@ -902,7 +911,12 @@
 
   (editutil--init-mode-line)
 
+  ;; disable keys
+  (global-unset-key (kbd "C-x w"))
+  (global-unset-key (kbd "C-x @"))
+  (global-unset-key (kbd "C-x a"))
   (global-unset-key (kbd "C-x z"))
+  (global-unset-key (kbd "C-x t"))
 
   (global-set-key [remap backward-kill-word] #'editutil-backward-delete-word)
   (global-set-key (kbd "RET") #'editutil-newline)
@@ -929,6 +943,7 @@
 
   (global-set-key (kbd "C-x f") #'editutil-format-buffer)
   (global-set-key (kbd "C-x l") #'editutil-lint-buffer)
+  (global-set-key (kbd "C-x t") #'editutil-run-test)
   (global-set-key (kbd "C-x $") 'server-edit)
   (global-set-key (kbd "C-x M-w") #'editutil-copy-region-to-clipboard)
   (global-set-key (kbd "C-x k") #'editutil-kill-this-buffer)
