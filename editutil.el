@@ -29,8 +29,6 @@
 (eval-when-compile
   (defvar paredit-mode-map)
   (defvar helm-map)
-  (defvar term-mode-map)
-  (defvar term-raw-map)
   (defvar utop-command))
 
 (require 'cl-lib)
@@ -602,9 +600,12 @@
     (save-buffer))
   (unless (executable-find cmd)
     (user-error "%s is not installed" cmd))
-  (unless (zerop (apply #'process-file cmd nil nil nil args))
-    (error "failed to format file(%s %s)" cmd args))
-  (revert-buffer t t))
+  (let ((display-line-mode-p (bound-and-true-p display-line-numbers-mode)))
+    (unless (zerop (apply #'process-file cmd nil nil nil args))
+      (error "failed to format file(%s %s)" cmd args))
+    (revert-buffer t t)
+    (when display-line-mode-p
+      (display-line-numbers-mode +1))))
 
 (defun editutil-format-buffer ()
   (interactive)
@@ -636,6 +637,8 @@
                (go-ts-mode (concat "staticcheck " (buffer-file-name)))
                ((js-mode js-ts-mode typescript-ts-mode) (concat "deno lint " (buffer-file-name)))
                (otherwise (user-error "unsupport linting for %s" major-mode)))))
+    (when (buffer-modified-p)
+      (save-buffer))
     (compile cmd)))
 
 (defun editutil-run-test ()
@@ -645,6 +648,8 @@
                (go-ts-mode "go test")
                ((js-mode js-ts-mode typescript-ts-mode) "deno test")
                (otherwise (user-error "unsupport testing for %s" major-mode)))))
+    (when (buffer-modified-p)
+      (save-buffer))
     (compile cmd)))
 
 (defun editutil-comment-dwim ()
