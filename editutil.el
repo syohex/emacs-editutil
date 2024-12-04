@@ -569,6 +569,9 @@
 ;; Programming utilities
 ;;
 
+(defvar editutil-prog-prefix (make-sparse-keymap)
+  "Keymap for editutil programming utility")
+
 (defun editutil--rust-project-root (dir)
   (let ((git-root (locate-dominating-file dir ".git")))
     ;; check using cargo workspace first
@@ -916,13 +919,6 @@
 
   (editutil--init-mode-line)
 
-  ;; disable keys
-  (global-unset-key (kbd "C-x w"))
-  (global-unset-key (kbd "C-x @"))
-  (global-unset-key (kbd "C-x a"))
-  (global-unset-key (kbd "C-x z"))
-  (global-unset-key (kbd "C-x t"))
-
   (global-set-key [remap backward-kill-word] #'editutil-backward-delete-word)
   (global-set-key (kbd "RET") #'editutil-newline)
 
@@ -946,9 +942,6 @@
   (global-set-key (kbd "C-M-d") #'editutil-down-list)
   (global-set-key (kbd "C-M-s") #'editutil-forward-symbol-at-point)
 
-  (global-set-key (kbd "C-x f") #'editutil-format-buffer)
-  (global-set-key (kbd "C-x l") #'editutil-lint-buffer)
-  (global-set-key (kbd "C-x t") #'editutil-run-test)
   (global-set-key (kbd "C-x $") 'server-edit)
   (global-set-key (kbd "C-x M-w") #'editutil-copy-region-to-clipboard)
   (global-set-key (kbd "C-x k") #'editutil-kill-this-buffer)
@@ -957,6 +950,12 @@
 
   (global-set-key (kbd "M-g [") #'editutil-cycle-next-buffer)
   (global-set-key (kbd "M-g ]") #'editutil-cycle-previous-buffer)
+
+  ;; programming utilities
+  (define-key ctl-x-map "f" editutil-prog-prefix)
+  (define-key editutil-prog-prefix "f" #'editutil-format-buffer)
+  (define-key editutil-prog-prefix "l" #'editutil-lint-buffer)
+  (define-key editutil-prog-prefix "t" #'editutil-run-test)
 
   ;; flymake
   (global-set-key (kbd "M-g M-n") #'editutil-next-error)
