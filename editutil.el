@@ -956,12 +956,14 @@
   (define-key editutil-prog-prefix "f" #'editutil-format-buffer)
   (define-key editutil-prog-prefix "l" #'editutil-lint-buffer)
   (define-key editutil-prog-prefix "t" #'editutil-run-test)
+  (define-key editutil-prog-prefix "c" #'compile)
+  (define-key editutil-prog-prefix "r" #'recompile)
+  (define-key editutil-prog-prefix "e" #'editutil-show-current-line-diagnostic)
 
   ;; flymake
   (global-set-key (kbd "M-g M-n") #'editutil-next-error)
   (global-set-key (kbd "M-g M-p") #'editutil-previous-error)
   (global-set-key (kbd "M-g l") #'flymake-show-buffer-diagnostics)
-  (global-set-key (kbd "C-h h") #'editutil-show-current-line-diagnostic)
 
   (define-key global-map (kbd "C-q") editutil-ctrl-q-map)
   (define-key editutil-ctrl-q-map (kbd "C-q") 'quoted-insert)
