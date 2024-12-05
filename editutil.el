@@ -31,6 +31,8 @@
   (defvar helm-map)
   (defvar utop-command))
 
+(declare-function vc-diff-internal "vc")
+
 (require 'cl-lib)
 (require 'subr-x)
 (require 'pcase)
@@ -662,6 +664,27 @@
     (save-excursion
       (call-interactively #'comment-line))))
 
+;;
+;; eshell
+;;
+
+(defun eshell/d (&rest args)
+  (let ((arg (car-safe args)))
+    (if (null arg)
+        (progn
+          (call-interactively 'vc-root-diff)
+          nil)
+      (let ((dir (cond ((string= arg ".") default-directory)
+                       ((file-name-absolute-p arg) arg)
+                       (t (concat default-directory arg)))))
+        (let ((default-directory dir))
+          (vc-diff-internal t (list 'Git (list dir)) nil nil)
+          nil)))))
+
+;;
+;; Ctrl-q
+;;
+
 (define-minor-mode editutil-global-minor-mode
   "Most superior minir mode"
   :global t
@@ -965,9 +988,11 @@
   (global-set-key (kbd "M-g M-p") #'editutil-previous-error)
   (global-set-key (kbd "M-g l") #'flymake-show-buffer-diagnostics)
 
+  ;; ctrl-q
   (define-key global-map (kbd "C-q") editutil-ctrl-q-map)
   (define-key editutil-ctrl-q-map (kbd "C-q") 'quoted-insert)
-  (define-key editutil-ctrl-q-map (kbd "l") 'display-line-numbers-mode)
+  (define-key editutil-ctrl-q-map "l" 'display-line-numbers-mode)
+  (define-key editutil-ctrl-q-map "s" 'scratch-buffer)
 
   ;; helm-editutil
   (global-set-key (kbd "C-x C-p") 'helm-editutil-git-ls-files-project)
@@ -975,9 +1000,9 @@
   (global-set-key (kbd "C-x C-x") 'helm-editutil-find-files)
   (global-set-key (kbd "C-x b") 'helm-editutil-switch-buffer)
 
- (with-eval-after-load 'helm
-   (define-key helm-map (kbd "C-e") 'helm-editutil-select-2nd-action)
-   (define-key helm-map (kbd "C-j") 'helm-editutil-select-3rd-action))
+  (with-eval-after-load 'helm
+    (define-key helm-map (kbd "C-e") 'helm-editutil-select-2nd-action)
+    (define-key helm-map (kbd "C-j") 'helm-editutil-select-3rd-action))
 
   (setq xref-show-xrefs-function 'helm-editutil-show-xrefs
         xref-show-definitions-function 'helm-editutil-xref-show-defs)
@@ -995,6 +1020,10 @@
 
   (add-hook 'rust-ts-mode-hook #'editutil-rust-mode-hook)
   (add-hook 'utop-minor-mode-hook #'editutil-utop-minor-hook)
+
+  ;; eshell
+  (setenv "GIT_EDITOR" "emacsclient")
+  (add-to-list 'auto-mode-alist '("COMMIT_EDITMSG" . diff-mode))
 
   (run-at-time t 600 #'editutil-recentf-save-list)
 
