@@ -31,14 +31,14 @@
   (defvar helm-map)
   (defvar utop-command))
 
-(declare-function vc-diff-internal "vc")
-
 (require 'cl-lib)
 (require 'subr-x)
 (require 'pcase)
 (require 'thingatpt)
 (require 'flymake)
 (require 'dired)
+(require 'vc)
+(require 'vc-git)
 
 (require 'xref)
 (require 'recentf)
@@ -341,16 +341,13 @@
     (:eval
      (when-let* ((branch (car (vc-git-branches))))
        (let ((change-hunks (if (bound-and-true-p git-gutter2-mode)
-                               (cl-case (vc-state (buffer-file-name))
-                                 (edited
-                                  (let ((hunks (git-gutter2-buffer-hunks)))
-                                    (if (zerop hunks)
-                                        ""
-                                      (format ":%d" hunks))))
-                                 (otherwise ""))
+                               (let ((hunks (git-gutter2-buffer-hunks)))
+                                 (if (zerop hunks)
+                                     ""
+                                   (format ":%d" hunks)))
                              "")))
          (concat "(" branch change-hunks ")"))))
-    face `(:foreground "color-202" :weight bold))
+    face (:foreground "color-202" :weight bold))
   "Mode line format for `vc-mode'.")
 (put 'editutil-vc-mode-line 'risky-local-variable t)
 
@@ -364,7 +361,7 @@
 (defvar editutil-evil-mode-line
   '(:propertize
     (:eval
-     (if-let ((state (bound-and-true-p evil-state)))
+     (if-let* ((state (bound-and-true-p evil-state)))
          (let ((foreground (editutil--evil-mode-line-color state)))
            (propertize (concat "[" (upcase (symbol-name state)) "]")
                        'face `(:foreground ,foreground :weight bold)))
@@ -667,16 +664,17 @@
 
 (defun eshell/d (&rest args)
   (let ((arg (car-safe args)))
-    (if (null arg)
-        (progn
-          (call-interactively 'vc-root-diff)
-          nil)
-      (let ((dir (cond ((string= arg ".") default-directory)
-                       ((file-name-absolute-p arg) arg)
-                       (t (concat default-directory arg)))))
-        (let ((default-directory dir))
-          (vc-diff-internal t (list 'Git (list dir)) nil nil)
-          nil)))))
+    (save-selected-window
+      (if (null arg)
+          (progn
+            (call-interactively 'vc-root-diff)
+            nil)
+        (let ((dir (cond ((string= arg ".") default-directory)
+                         ((file-name-absolute-p arg) arg)
+                         (t (concat default-directory arg)))))
+          (let ((default-directory dir))
+            (vc-diff-internal t (list 'Git (list dir)) nil nil)
+            nil))))))
 
 ;;
 ;; Ctrl-q
@@ -812,8 +810,8 @@
 
 (defun helm-editutil--buffer-display (bufname)
   (with-current-buffer bufname
-    (let ((path (helm-aif (buffer-file-name)
-                    (abbreviate-file-name it)
+    (let ((path (if-let* ((file (buffer-file-name)))
+                    (abbreviate-file-name file)
                   default-directory)))
       (format "%-25s %s" bufname path))))
 
@@ -1021,7 +1019,6 @@
   ;; eshell
   (setenv "GIT_EDITOR" "emacsclient")
   (add-to-list 'auto-mode-alist '("COMMIT_EDITMSG" . diff-mode))
-  (autoload 'vc-diff-internal "vc")
 
   (run-at-time t 600 #'editutil-recentf-save-list)
 
