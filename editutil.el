@@ -336,23 +336,20 @@
       (call-interactively #'flymake-goto-prev-error)
     (call-interactively #'previous-error)))
 
-(defun editutil--vc-branch ()
-  (let ((backend (symbol-name (vc-backend (buffer-file-name)))))
-    (substring-no-properties vc-mode (+ (length backend) 2))))
-
 (defvar editutil-vc-mode-line
   '(:propertize
-    (:eval (let ((branch (editutil--vc-branch))
-                 (state (if (bound-and-true-p git-gutter2-mode)
-                            (cl-case (vc-state (buffer-file-name))
-                              (edited
-                               (let ((hunks (git-gutter2-buffer-hunks)))
-                                 (if (zerop hunks)
-                                     ""
-                                   (format ":%d" hunks))))
-                              (otherwise ""))
-                          "")))
-             (concat "(" branch state ")")))
+    (:eval
+     (when-let* ((branch (car (vc-git-branches))))
+       (let ((change-hunks (if (bound-and-true-p git-gutter2-mode)
+                               (cl-case (vc-state (buffer-file-name))
+                                 (edited
+                                  (let ((hunks (git-gutter2-buffer-hunks)))
+                                    (if (zerop hunks)
+                                        ""
+                                      (format ":%d" hunks))))
+                                 (otherwise ""))
+                             "")))
+         (concat "(" branch change-hunks ")"))))
     face `(:foreground "color-202" :weight bold))
   "Mode line format for `vc-mode'.")
 (put 'editutil-vc-mode-line 'risky-local-variable t)
@@ -458,7 +455,7 @@
                   " "
                   editutil-encoding-mode-line
                   " "
-                  (vc-mode editutil-vc-mode-line)
+                  editutil-vc-mode-line
                   " "
                   mode-line-modes
                   " "
@@ -1024,6 +1021,7 @@
   ;; eshell
   (setenv "GIT_EDITOR" "emacsclient")
   (add-to-list 'auto-mode-alist '("COMMIT_EDITMSG" . diff-mode))
+  (autoload 'vc-diff-internal "vc")
 
   (run-at-time t 600 #'editutil-recentf-save-list)
 
