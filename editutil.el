@@ -578,7 +578,7 @@
 
 (defun editutil--project-root ()
   (cl-case major-mode
-    ((rust-mode rust-ts-mode) (last (editutil--rust-project-root default-directory)))
+    ((rust-mode rust-ts-mode) (nth 2 (editutil--rust-project-root default-directory)))
     (otherwise (or (locate-dominating-file default-directory ".git")
                    default-directory))))
 
