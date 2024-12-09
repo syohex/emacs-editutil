@@ -439,7 +439,7 @@
    ;; only show major-mode
    mode-line-modes '((:propertize (""  mode-name) face (:foreground "color-81")))
    mode-line-position `((:propertize "%l:%C " display (min-width (8.0)))
-                        (:propertize "%p" display (min-width (3.0)))))
+                        (:propertize ("" (-3 "%p")) display (min-width (4.0)))))
 
   (setq-default mode-line-format
                 `("%e"
