@@ -38,7 +38,6 @@
 (require 'flymake)
 (require 'dired)
 (require 'vc)
-(require 'vc-git)
 
 (require 'xref)
 (require 'recentf)
@@ -339,8 +338,7 @@
 (defvar editutil-vc-mode-line
   '(:propertize
     (:eval
-     (when-let* ((branch (or (and vc-mode (substring-no-properties vc-mode 5))
-                             (vc-git--current-branch))))
+     (when-let* ((branch (and vc-mode (substring-no-properties vc-mode 5))))
        (let ((change-hunks (if (bound-and-true-p git-gutter2-mode)
                                (let ((hunks (git-gutter2-buffer-hunks)))
                                  (if (zerop hunks)
