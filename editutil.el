@@ -975,7 +975,7 @@
   (global-set-key (kbd "M-g ]") #'editutil-cycle-previous-buffer)
 
   ;; programming utilities
-  (define-key ctl-x-map "f" editutil-prog-prefix)
+  (global-set-key (kbd "M-e") editutil-prog-prefix)
   (define-key editutil-prog-prefix "f" #'editutil-format-buffer)
   (define-key editutil-prog-prefix "l" #'editutil-lint-buffer)
   (define-key editutil-prog-prefix "t" #'editutil-run-test)
