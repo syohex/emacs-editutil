@@ -618,6 +618,7 @@
                                '("ocamlformat" "-i" "--enable-outside-detected-project")))
                 ((js-mode js-ts-mode typescript-ts-mode) '("deno" "fmt"))
                 (fsharp-mode '("fantomas"))
+                ((yaml-mode yaml-ts-mode) '("yamlfmt"))
                 (otherwise (user-error "unsupport formatting for %s" major-mode)))))
     (pcase args
       (`(,cmd . ,options)
