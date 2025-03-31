@@ -262,6 +262,21 @@
       (let ((current-prefix-arg nil))
         (call-interactively 'kill-line)))))
 
+(defun editutil--wrap-with (s)
+  (interactive)
+  (save-excursion
+    (let ((bol (line-beginning-position)))
+      (skip-chars-backward "^ \t")
+      (when (< (point) bol)
+        (goto-char bol)
+        (insert s)
+        (skip-chars-forward "^ \t\n")
+        (insert s)))))
+
+(defun editutil-wrap-double-quote ()
+  (interactive)
+  (editutil--wrap-with "\""))
+
 (defun editutil--add-watchwords ()
   (unless (memq major-mode '(org-mode))
     (font-lock-add-keywords
@@ -969,6 +984,7 @@
   (global-set-key (kbd "C-x $") 'server-edit)
   (global-set-key (kbd "C-x M-w") #'editutil-copy-region-to-clipboard)
   (global-set-key (kbd "C-x k") #'editutil-kill-this-buffer)
+  (global-set-key (kbd "C-x \"") #'editutil-wrap-double-quote)
 
   (global-set-key (kbd "C-x r N") #'editutil-number-rectangle)
 
