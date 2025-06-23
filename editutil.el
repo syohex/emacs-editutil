@@ -5,7 +5,7 @@
 ;; Author: Shohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-editutil
 ;; Version: 0.01
-;; Package-Requires: ((emacs "30") (helm "3.9.0"))
+;; Package-Requires: ((emacs "30"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -28,7 +28,6 @@
 
 (eval-when-compile
   (defvar paredit-mode-map)
-  (defvar helm-map)
   (defvar utop-command))
 
 (require 'cl-lib)
@@ -41,10 +40,6 @@
 
 (require 'xref)
 (require 'recentf)
-(require 'helm)
-(require 'helm-bookmark)
-(require 'helm-files)
-(require 'helm-mode)
 
 (defgroup editutil nil
   "My own editing utilities"
@@ -713,245 +708,6 @@
 (defvar editutil-ctrl-q-map (make-sparse-keymap)
   "keymap binded to C-q")
 
-;;
-;; helm
-;;
-
-(defun helm-editutil--open-dired (file)
-  (dired (file-name-directory file)))
-
-(defun helm-editutil--make-git-ls-function (options)
-  (lambda ()
-    (with-current-buffer (helm-candidate-buffer 'global)
-      (apply 'process-file "git" nil t nil "ls-files" options))))
-
-(defvar helm-editutil--git-ls-actions
-  (helm-make-actions
-   "Open File" #'find-file
-   "Open File other window" #'find-file-other-window
-   "Find File alternate" #'find-alternate-file
-   "Open Directory" #'helm-editutil--open-dired
-   "Insert buffer" #'insert-file))
-
-(defun helm-editutil--git-ls-files-source (pwd)
-  (cl-loop with is-first = t
-           for (description . options) in '(("Modified Files" . ("--modified"))
-                                            ("Untracked Files" . ("--others" "--exclude-standard"))
-                                            ("All Files" . ("--")))
-           for header = (if is-first
-                            (progn
-                              (setq is-first nil)
-                              (format "%s (%s)" description pwd))
-                          description)
-           collect
-           (helm-build-in-buffer-source header
-             :init (helm-editutil--make-git-ls-function options)
-             :action helm-editutil--git-ls-actions
-             :keymap helm-find-files-map)))
-
-(defun helm-editutil--git-ls-files-common (project-search)
-  (let ((topdir (locate-dominating-file default-directory ".git")))
-    (unless topdir
-      (error "Here is not Git Repository!!"))
-    (let* ((default-directory (if project-search
-                                  topdir
-                                default-directory))
-           (current-prefix-arg nil)
-           (sources (helm-editutil--git-ls-files-source topdir)))
-      (helm :sources sources :buffer "*Helm Git Project*"))))
-
-(defun helm-editutil-git-ls-files-project ()
-  (interactive)
-  (helm-editutil--git-ls-files-common t))
-
-(defun helm-editutil--recentf-transform (candidates _source)
-  (cl-loop for i in candidates
-           if helm-ff-transformer-show-only-basename
-           collect (cons (helm-basename i) i)
-           else collect i))
-
-(defun helm-editutil--file-in-dired (file)
-  (dired (file-name-directory file))
-  (dired-goto-file file))
-
-(defun helm-editutil--recentf-candidates ()
-  (mapcar #'abbreviate-file-name recentf-list))
-
-(defvar helm-editutil-source-recentf
-  (helm-build-sync-source "Recently open files"
-    :candidates #'helm-editutil--recentf-candidates
-    :filtered-candidate-transformer #'helm-editutil--recentf-transform
-    :candidate-number-limit 9999
-    :volatile t
-    :action (helm-make-actions
-             "Open File" #'find-file
-             "Open File other window" #'find-file-other-window
-             "Open File alternate" #'find-alternate-file
-             "Open Files in dired" #'helm-editutil--file-in-dired
-             "Insert File" #'insert-file)))
-
-(defun helm-editutil-recentf ()
-  (interactive)
-  (let ((helm-ff-transformer-show-only-basename nil))
-    (helm :sources '(helm-editutil-source-recentf)
-          :buffer "*helm recentf*")))
-
-(defun helm-editutil--find-files-init ()
-  (with-current-buffer (helm-candidate-buffer 'global)
-    (unless (zerop (process-file "perl" nil t nil "-E" "say for grep {-T $_} glob('* .*')"))
-      (error "Failed: collect files"))))
-
-(defvar helm-editutil-source-find-files
-  (helm-build-in-buffer-source "Find Files"
-    :init #'helm-editutil--find-files-init
-    :action (helm-make-actions
-             "Open File" #'find-file
-             "Open File other window" #'find-file-other-window
-             "Open File alternate" #'find-alternate-file
-             "Insert File" #'insert-file)))
-
-(defvar helm-editutil-source-find-directories
-  (helm-build-sync-source "Find directories"
-    :candidates (lambda ()
-                  (cl-loop for f in (directory-files default-directory)
-                           when (and (file-directory-p f)
-                                     (not (string-prefix-p "." f)))
-                           collect (file-name-as-directory f)))
-    :action (helm-make-actions
-             "Open File" #'find-file
-             "Open File other window" #'find-file-other-window
-             "Open File alternate" #'find-alternate-file)))
-
-(defun helm-editutil-find-files ()
-  (interactive)
-  (if (locate-dominating-file default-directory ".git")
-      (helm-editutil--git-ls-files-common nil)
-    (helm :sources '(helm-editutil-source-find-files helm-editutil-source-find-directories)
-          :buffer "*Helm Find Files*")))
-
-(defun helm-editutil--buffer-display (bufname)
-  (with-current-buffer bufname
-    (let ((path (if-let* ((file (buffer-file-name)))
-                    (abbreviate-file-name file)
-                  default-directory)))
-      (format "%-25s %s" bufname path))))
-
-(defun helm-editutil-switch-buffer ()
-  (interactive)
-  (let ((bufs (cl-loop with files = nil
-                       with directories = nil
-                       with others = nil
-
-                       for buf in (buffer-list)
-                       for name = (buffer-name buf)
-                       do
-                       (cond ((string-prefix-p "*" name)
-                              (unless (string-prefix-p "*helm" name t)
-                                (push name others)))
-                             ((not (string-prefix-p " " name))
-                              (if (buffer-file-name buf)
-                                  (push name files)
-                                (push name directories))))
-                       finally
-                       return (list :files (reverse files)
-                                    :directories (reverse directories)
-                                    :others (reverse others)))))
-    (helm :sources (cl-loop for (prop . name) in '((:files . "File Buffers")
-                                                   (:directories . "Directory Buffers")
-                                                   (:others . "Other Buffers"))
-                            for display-fn = (unless (eq prop :others)
-                                               #'helm-editutil--buffer-display)
-                            when (plist-get bufs prop)
-                            collect
-                            (helm-build-sync-source name
-                              :candidates it
-                              :real-to-display display-fn
-                              :action (helm-make-actions
-                                       "Switch buffer" #'switch-to-buffer
-                                       "Switch buffer other window" #'switch-to-buffer-other-window
-                                       "Insert buffer" #'insert-buffer
-                                       "Kill buffer" #'kill-buffer)))
-          :buffer "*Helm Switch Buffer*")))
-
-(defun helm-editutil-select-2nd-action ()
-  (interactive)
-  (helm-select-nth-action 1))
-
-(defun helm-editutil-select-3rd-action ()
-  (interactive)
-  (helm-select-nth-action 2))
-
-;;
-;; xref
-;;
-
-(defun helm-editutil--xref-format-candidate (file line summary)
-  (concat
-   (propertize file 'face 'helm-grep-file)
-   (and (integerp line)
-        (concat ":" (propertize (int-to-string line) 'font-lock-face 'helm-grep-lineno)))
-   ":" summary))
-
-(defun helm-editutil--xref-candidates (fetcher alist)
-  (let ((xrefs (or (assoc-default 'fetched-xrefs alist)
-                   (funcall fetcher)))
-        (project-root (editutil--project-root)))
-    (cl-loop for xref in xrefs
-             for summary = (xref-item-summary xref)
-             for location = (xref-item-location xref)
-             for line = (xref-location-line location)
-             for file = (file-relative-name (xref-location-group location) project-root)
-             collect
-             (cons (helm-editutil--xref-format-candidate file line summary) xref))))
-
-(defun helm-editutil--xref-highlight-line (xref)
-  (let* ((location (xref-item-location xref))
-         (marker (xref-location-marker location))
-         (buf (marker-buffer marker))
-         (offset (marker-position marker)))
-    (switch-to-buffer buf)
-    (goto-char offset)
-    (helm-highlight-current-line)))
-
-(defun helm-editutil--find-file-common (xref func)
-  (let* ((location (xref-item-location xref))
-         (marker (xref-location-marker location))
-         (buf (marker-buffer marker))
-         (offset (marker-position marker)))
-    (funcall func buf)
-    (goto-char offset)))
-
-(defun helm-editutil--xref-find-file (xref)
-  (helm-editutil--find-file-common xref #'switch-to-buffer))
-
-(defun helm-editutil--xref-find-file-other-window (xref)
-  (helm-editutil--find-file-common xref #'switch-to-buffer-other-window))
-
-(defun helm-editutil-source-xref (fetcher alist)
-  (helm-build-sync-source "Xref"
-    :candidates (helm-editutil--xref-candidates fetcher alist)
-    :persistent-action #'helm-editutil--xref-highlight-line
-    :action (helm-make-actions
-             "Open file" #'helm-editutil--xref-find-file
-             "Open file other window" #'helm-editutil--xref-find-file-other-window)
-    :candidate-number-limit 9999))
-
-(defun helm-editutil-show-xrefs (fetcher alist)
-  (helm :sources (helm-editutil-source-xref fetcher alist)
-        :truncate-lines t
-        :buffer "*Helm Xrefs*"))
-
-(defun helm-editutil-xref-show-defs (fetcher alist)
-  (let ((xrefs (funcall fetcher)))
-    (cond
-     ((not (cdr xrefs))
-      (xref-pop-to-location (car xrefs)
-                            (assoc-default 'display-action alist)))
-     (t
-      (helm-editutil-show-xrefs fetcher
-                                (cons (cons 'fetched-xrefs xrefs)
-                                      alist))))))
-
 ;;;###autoload
 (defun editutil-default-setup ()
   (interactive)
@@ -1010,19 +766,6 @@
   (define-key editutil-ctrl-q-map (kbd "C-q") 'quoted-insert)
   (define-key editutil-ctrl-q-map "l" 'display-line-numbers-mode)
   (define-key editutil-ctrl-q-map "s" 'scratch-buffer)
-
-  ;; helm-editutil
-  (global-set-key (kbd "C-x C-p") 'helm-editutil-git-ls-files-project)
-  (global-set-key (kbd "C-x C-r") 'helm-editutil-recentf)
-  (global-set-key (kbd "C-x C-x") 'helm-editutil-find-files)
-  (global-set-key (kbd "C-x b") 'helm-editutil-switch-buffer)
-
-  (with-eval-after-load 'helm
-    (define-key helm-map (kbd "C-e") 'helm-editutil-select-2nd-action)
-    (define-key helm-map (kbd "C-j") 'helm-editutil-select-3rd-action))
-
-  (setq xref-show-xrefs-function 'helm-editutil-show-xrefs
-        xref-show-definitions-function 'helm-editutil-xref-show-defs)
 
   (dolist (hook '(prog-mode-hook text-mode-hook markdown-mode-hook))
     (add-hook hook #'editutil--add-watchwords))
