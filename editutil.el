@@ -571,6 +571,25 @@
   (kill-this-buffer))
 
 ;;
+;; grep utilities
+;;
+
+(defun editutil-grep ()
+  (interactive)
+  (let ((pattern (read-string "Pattern: "))
+        (buf (get-buffer-create "*editutil-grep*")))
+    (with-current-buffer buf
+      (setq buffer-read-only nil)
+      (erase-buffer)
+      (unless (zerop (process-file "rg" nil t nil
+                                   "--vimgrep" "--color=always" pattern))
+        (user-error "failed to execute 'rg'"))
+      (ansi-color-apply-on-region (point-min) (point-max))
+      (goto-char (point-min))
+      (grep-mode)
+      (pop-to-buffer (current-buffer)))))
+
+;;
 ;; Programming utilities
 ;;
 
