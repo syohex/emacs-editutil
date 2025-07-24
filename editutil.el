@@ -400,12 +400,12 @@
                                for beg = (flymake--diag-beg diag)
                                when (= line (line-number-at-pos beg))
                                return diag)))
-      (let* ((text (flymake--diag-text diag))
+      (let* ((message (flymake--diag-message diag))
              (type (flymake--diag-type diag))
              (face (if (memq type '(eglot-error error))
                        'flymake-error-echo
                      'flymake-warning-echo)))
-        (message "%s" (propertize text 'face face))))))
+        (message "%s" (propertize message 'face face))))))
 
 ;; copy from flymake
 (defun editutil--flymake-mode-line (type)
