@@ -765,6 +765,7 @@
 
   (global-set-key (kbd "M-g [") #'editutil-cycle-next-buffer)
   (global-set-key (kbd "M-g ]") #'editutil-cycle-previous-buffer)
+  (global-set-key (kbd "M-g .") #'editutil-grep)
 
   ;; programming utilities
   (global-set-key (kbd "M-e") editutil-prog-prefix)
