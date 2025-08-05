@@ -576,13 +576,17 @@
 
 (defun editutil-grep ()
   (interactive)
-  (let ((pattern (read-string "Pattern: "))
-        (buf (get-buffer-create "*editutil-grep*")))
+  (let* ((initial (thing-at-point 'symbol))
+         (pattern (read-string "Pattern: " initial))
+         (buf (get-buffer-create "*editutil-grep*"))
+         (args (if (string-prefix-p "-" pattern)
+                   (split-string pattern " " t)
+                 (list pattern))))
     (with-current-buffer buf
       (setq buffer-read-only nil)
       (erase-buffer)
-      (unless (zerop (process-file "rg" nil t nil
-                                   "--vimgrep" "--color=always" pattern))
+      (unless (zerop (apply #'process-file "rg" nil t nil
+                            "--vimgrep" "--color=always" args))
         (user-error "failed to execute 'rg'"))
       (ansi-color-apply-on-region (point-min) (point-max))
       (goto-char (point-min))
