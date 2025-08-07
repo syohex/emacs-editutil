@@ -568,7 +568,7 @@
 
 (defun editutil-kill-this-buffer ()
   (interactive)
-  (kill-this-buffer))
+  (kill-current-buffer))
 
 ;;
 ;; grep utilities
