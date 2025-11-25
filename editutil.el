@@ -108,11 +108,31 @@
     (when end-pos
       (funcall func start end-pos))))
 
-(defun editutil-zap-to-char (arg char)
+(defun editutil-zap-to-char (char)
   (interactive
-   (list (prefix-numeric-value current-prefix-arg)
-         (read-char nil t)))
-  (editutil--do-to-char arg char #'kill-region))
+   (list (read-char nil t)))
+  (let* ((start (point))
+         end-pos)
+    (let ((case-fold-search nil))
+      (forward-char 1)
+      (when (search-forward (char-to-string char) (line-end-position) t)
+        (backward-char 1)
+        (setq end-pos (point))))
+    (when end-pos
+      (kill-region start end-pos))))
+
+(defun editutil-zap-to-char-back (char)
+  (interactive
+   (list (read-char nil t)))
+  (let* (start
+         (end-pos (point)))
+    (let ((case-fold-search nil))
+      (backward-char 1)
+      (when (search-backward (char-to-string char) (line-beginning-position) t)
+        (forward-char 1)
+        (setq start (point))))
+    (when start
+      (kill-region start end-pos))))
 
 (defun editutil-yank (arg)
   (interactive "P")
@@ -749,6 +769,7 @@
   (global-set-key (kbd "M-O") #'editutil-edit-previous-line)
   (global-set-key (kbd "M-w") #'editutil-kill-ring-save)
   (global-set-key (kbd "M-q") #'editutil-zap-to-char)
+  (global-set-key (kbd "M-Q") #'editutil-zap-to-char-back)
   (global-set-key (kbd "M-d") #'editutil-delete-word)
   (global-set-key (kbd "M-u") #'editutil-upcase)
   (global-set-key (kbd "M-\\") #'editutil-delete-following-spaces)

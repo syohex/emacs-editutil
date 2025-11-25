@@ -59,14 +59,14 @@
   "My own zap-to-char."
   (with-editutil-temp-buffer 'text-mode
     "foo bar"
-    (editutil-zap-to-char 1 ?b)
+    (editutil-zap-to-char ?b)
     (should (string= (buffer-string) "bar"))))
 
 (ert-deftest zap-to-char-only-this-line ()
   "zap-to-char deletes charcters within current line"
   (with-editutil-temp-buffer 'text-mode
     "a b\nc"
-    (editutil-zap-to-char 1 ?c)
+    (editutil-zap-to-char ?c)
     (should (string= (buffer-string) "a b\nc"))))
 
 ;;; test-kill-utility.el ends here
