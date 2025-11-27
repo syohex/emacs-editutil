@@ -70,6 +70,21 @@
         (end-of-line)
         (newline-and-indent)))))
 
+(defun editutil-forward-char (arg char)
+  (interactive
+   (list
+    (prefix-numeric-value current-prefix-arg)
+    (read-char)))
+  (when (search-forward (char-to-string char) (line-end-position) t arg)
+    (backward-char 1)))
+
+(defun editutil-backward-char (arg char)
+  (interactive
+   (list
+    (prefix-numeric-value current-prefix-arg)
+    (read-char)))
+  (search-backward (char-to-string char) (line-beginning-position) t arg))
+
 (defun editutil-edit-next-line (arg)
   (interactive "p")
   (if (>= arg 0)
@@ -77,36 +92,6 @@
         (end-of-line)
         (newline-and-indent))
     (editutil-edit-previous-line (- arg))))
-
-(defun editutil-edit-next-line-no-indent (arg)
-  (interactive "p")
-  (dotimes (_ arg)
-    (end-of-line)
-    (newline)))
-
-(defun editutil-edit-next-line-same-column (arg)
-  (interactive "p")
-  (let ((col (save-excursion
-               (back-to-indentation)
-               (current-column))))
-    (dotimes (_ arg)
-      (end-of-line)
-      (newline)
-      (move-to-column col t))))
-
-(defun editutil--do-to-char (arg char func)
-  (let* ((bound (if (>= arg 0) (line-end-position) (line-beginning-position)))
-         (step (if (>= arg 0) -1 1))
-         (start (point))
-         end-pos)
-    (let ((case-fold-search nil))
-      (when (>= arg 0)
-        (forward-char 1))
-      (when (search-forward (char-to-string char) bound t arg)
-        (forward-char step)
-        (setq end-pos (point))))
-    (when end-pos
-      (funcall func start end-pos))))
 
 (defun editutil-zap-to-char (char)
   (interactive
@@ -765,6 +750,8 @@
   (global-set-key (kbd "C-y") #'editutil-yank)
   (global-set-key (kbd "C-w") #'editutil-kill-region)
 
+  (global-set-key (kbd "M-a") #'editutil-forward-char)
+  (global-set-key (kbd "M-A") #'editutil-backward-char)
   (global-set-key (kbd "M-o") #'editutil-edit-next-line)
   (global-set-key (kbd "M-O") #'editutil-edit-previous-line)
   (global-set-key (kbd "M-w") #'editutil-kill-ring-save)
