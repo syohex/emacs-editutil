@@ -75,15 +75,19 @@
    (list
     (prefix-numeric-value current-prefix-arg)
     (read-char)))
-  (when (search-forward (char-to-string char) (line-end-position) t arg)
-    (backward-char 1)))
+  (let ((case-fold-search nil))
+    (forward-char +1)
+    (if (search-forward (char-to-string char) (line-end-position) t arg)
+        (backward-char 1)
+      (backward-char +1))))
 
 (defun editutil-backward-char (arg char)
   (interactive
    (list
     (prefix-numeric-value current-prefix-arg)
     (read-char)))
-  (search-backward (char-to-string char) (line-beginning-position) t arg))
+  (let ((case-fold-search nil))
+    (search-backward (char-to-string char) (line-beginning-position) t arg)))
 
 (defun editutil-edit-next-line (arg)
   (interactive "p")
