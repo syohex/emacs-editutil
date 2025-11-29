@@ -354,8 +354,23 @@
       (call-interactively #'flymake-goto-prev-error)
     (call-interactively #'previous-error)))
 
+(defvar editutil--colors
+  (if window-system
+      '((vc-mode-line . "DarkOrange")
+        (evil-normal-mode . "SeaGreen1")
+        (evil-insert-mode . "maroon1")
+        (evil-visual-mode . "MediumPurple1")
+        (evil-other-mode . "yellow2")
+        (mode-name . "turquoise1"))
+    '((vc-mode-line . "color-202")
+      (evil-normal-mode . "color-40")
+      (evil-insert-mode . "color-198")
+      (evil-visual-mode . "color-141")
+      (evil-other-mode . "color-227")
+      (mode-name . "color-81"))))
+
 (defvar editutil-vc-mode-line
-  '(:propertize
+  `(:propertize
     (:eval
      (when-let* ((branch (and vc-mode (substring-no-properties vc-mode 5))))
        (let ((change-hunks (if (bound-and-true-p git-gutter2-mode)
@@ -365,16 +380,15 @@
                                    (format ":%d" hunks)))
                              "")))
          (concat "(" branch change-hunks ")"))))
-    face (:foreground "color-202" :weight bold))
-  "Mode line format for `vc-mode'.")
+    face (:foreground ,(assoc-default 'vc-mode-line editutil--colors) :weight bold)))
 (put 'editutil-vc-mode-line 'risky-local-variable t)
 
 (defun editutil--evil-mode-line-color (state)
   (cl-case state
-    (normal "color-40")
-    (insert "color-198")
-    (visual "color-141")
-    (otherwise "color-227")))
+    (normal (assoc-default 'evil-normal-mode editutil--colors))
+    (insert (assoc-default 'evil-insert-mode editutil--colors))
+    (visual (assoc-default 'evil-visual-mode editutil--colors))
+    (otherwise (assoc-default 'evil-other-mode editutil--colors))))
 
 (defvar editutil-evil-mode-line
   '(:propertize
@@ -454,7 +468,7 @@
    mode-line-buffer-identification (propertized-buffer-identification "%12b")
    mode-line-mule-info  `("" (current-input-method (:propertize ("" current-input-method-title))))
    ;; only show major-mode
-   mode-line-modes '((:propertize (""  mode-name) face (:foreground "color-81")))
+   mode-line-modes `((:propertize (""  mode-name) face (:foreground ,(assoc-default 'mode-name editutil--colors))))
    mode-line-position `((:propertize "%l:%C " display (min-width (8.0)))
                         (:propertize ("" (-3 "%p")) display (min-width (4.0)))))
 
