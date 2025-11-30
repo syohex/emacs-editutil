@@ -41,6 +41,8 @@
 (require 'xref)
 (require 'recentf)
 
+(declare-function eshell/cd "em-dirs")
+
 (defgroup editutil nil
   "My own editing utilities"
   :group 'editing)
@@ -737,6 +739,12 @@
           (let ((default-directory dir))
             (vc-diff-internal t (list 'Git (list dir)) nil nil)
             nil))))))
+
+(defun eshell/cdp (&rest _args)
+  (let ((dir (vc-root-dir)))
+    (if dir
+        (eshell/cd dir)
+      (user-error "here is not in the repository"))))
 
 ;;
 ;; Ctrl-q
