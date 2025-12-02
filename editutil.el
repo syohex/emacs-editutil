@@ -336,10 +336,18 @@
   (unless (use-region-p)
     (user-error "not specified region"))
   ;; only support linux GUI and WSL
-  (let* ((is-wsl (getenv "WSLENV"))
-         (args (if is-wsl
-                   (list "/mnt/c/Windows/System32/clip.exe" nil nil nil)
-                 (list "xsel" nil nil nil "--input" "--clipboard"))))
+  (if (getenv "WSLENV")
+      ;; if the region contains multi-byte characters then it should be converted into UTF-16
+      (let ((input (buffer-substring-no-properties (region-beginning) (region-end)))
+            (cmd "/mnt/c/Windows/System32/clip.exe")
+            (windows-encoding 'utf-16-le))
+        (deactivate-mark)
+        (with-temp-buffer
+          (set-buffer-file-coding-system windows-encoding)
+          (insert input)
+          (let ((coding-system-for-write windows-encoding))
+            (unless (zerop (call-process-region (point-min) (point-max) cmd))
+              (error "failed to copy to Windows clipboard")))))
     (unless (zerop (apply #'call-process-region (region-beginning) (region-end) args))
       (error "failed to copy region to clipboard"))
     (deactivate-mark)))
