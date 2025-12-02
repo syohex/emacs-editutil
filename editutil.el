@@ -348,7 +348,7 @@
           (let ((coding-system-for-write windows-encoding))
             (unless (zerop (call-process-region (point-min) (point-max) cmd))
               (error "failed to copy to Windows clipboard")))))
-    (unless (zerop (apply #'call-process-region (region-beginning) (region-end) args))
+    (unless (zerop (call-process-region (region-beginning) (region-end) "xsel" nil nil nil "--input" "--clipboard"))
       (error "failed to copy region to clipboard"))
     (deactivate-mark)))
 
