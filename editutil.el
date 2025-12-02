@@ -813,6 +813,8 @@
   (define-key editutil-prog-prefix "c" #'compile)
   (define-key editutil-prog-prefix "r" #'recompile)
   (define-key editutil-prog-prefix "e" #'editutil-show-current-line-diagnostic)
+  (define-key editutil-prog-prefix "n" #'editutil-cycle-next-buffer)
+  (define-key editutil-prog-prefix "p" #'editutil-cycle-previous-buffer)
 
   ;; flymake
   (global-set-key (kbd "M-g M-n") #'editutil-next-error)
