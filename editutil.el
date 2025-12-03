@@ -746,6 +746,12 @@
     (save-excursion
       (call-interactively #'comment-line))))
 
+(defun editutil-vc-dir ()
+  (interactive)
+  (if current-prefix-arg
+      (call-interactively #'vc-dir)
+    (vc-dir default-directory)))
+
 ;;
 ;; eshell
 ;;
@@ -840,6 +846,9 @@
   (define-key editutil-prog-prefix "n" #'editutil-cycle-next-buffer)
   (define-key editutil-prog-prefix "p" #'editutil-cycle-previous-buffer)
 
+  ;; vc
+  (global-set-key (kbd "C-x v d") #'editutil-vc-dir)
+
   ;; flymake
   (global-set-key (kbd "M-g M-n") #'editutil-next-error)
   (global-set-key (kbd "M-g M-p") #'editutil-previous-error)
@@ -874,10 +883,6 @@
 
   (add-hook 'rust-ts-mode-hook #'editutil-rust-mode-hook)
   (add-hook 'utop-minor-mode-hook #'editutil-utop-minor-hook)
-
-  ;; eshell
-  (setenv "GIT_EDITOR" "emacsclient")
-  (add-to-list 'auto-mode-alist '("COMMIT_EDITMSG" . diff-mode))
 
   (run-at-time t 600 #'editutil-recentf-save-list)
 
