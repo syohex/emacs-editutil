@@ -604,6 +604,22 @@
   (kill-current-buffer))
 
 ;;
+;; help utilities
+;;
+
+(defun editutil-find-function ()
+  (interactive)
+  (if-let* ((symbol (thing-at-point 'symbol)))
+      (find-function-at-point)
+    (call-interactively #'find-function)))
+
+(defun editutil-find-variable ()
+  (interactive)
+  (if-let* ((symbol (thing-at-point 'symbol)))
+      (find-variable-at-point)
+    (call-interactively #'find-variable)))
+
+;;
 ;; grep utilities
 ;;
 
@@ -827,7 +843,17 @@
   ;; flymake
   (global-set-key (kbd "M-g M-n") #'editutil-next-error)
   (global-set-key (kbd "M-g M-p") #'editutil-previous-error)
-  (global-set-key (kbd "M-g l") #'flymake-show-buffer-diagnostics)
+  (global-set-key (kbd "C-h l") #'flymake-show-buffer-diagnostics)
+
+  ;; help
+  (global-set-key (kbd "C-h F") #'editutil-find-function)
+  (global-set-key (kbd "C-h V") #'editutil-find-variable)
+
+  ;; windmove
+  (global-set-key (kbd "M-g h") #'windmove-left)
+  (global-set-key (kbd "M-g j") #'windmove-down)
+  (global-set-key (kbd "M-g k") #'windmove-up)
+  (global-set-key (kbd "M-g l") #'windmove-right)
 
   ;; ctrl-q
   (define-key global-map (kbd "C-q") editutil-ctrl-q-map)
