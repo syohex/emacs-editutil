@@ -752,6 +752,11 @@
       (call-interactively #'vc-dir)
     (vc-dir default-directory)))
 
+(defun editutil--vc-check-in-hook ()
+  (when-let* ((buf (get-buffer "*vc-diff*"))
+              (window (get-buffer-window buf)))
+    (delete-window window)))
+
 ;;
 ;; eshell
 ;;
@@ -846,9 +851,6 @@
   (define-key editutil-prog-prefix "n" #'editutil-cycle-next-buffer)
   (define-key editutil-prog-prefix "p" #'editutil-cycle-previous-buffer)
 
-  ;; vc
-  (global-set-key (kbd "C-x v d") #'editutil-vc-dir)
-
   ;; flymake
   (global-set-key (kbd "M-g M-n") #'editutil-next-error)
   (global-set-key (kbd "M-g M-p") #'editutil-previous-error)
@@ -885,6 +887,11 @@
   (add-hook 'utop-minor-mode-hook #'editutil-utop-minor-hook)
 
   (run-at-time t 600 #'editutil-recentf-save-list)
+
+  ;; vc
+  (global-set-key (kbd "C-x v d") #'editutil-vc-dir)
+  (add-hook 'vc-before-checkin-hook #'vc-diff)
+  (add-hook 'vc-checkin-hook #'editutil--vc-check-in-hook)
 
   (editutil-global-minor-mode +1)
 
