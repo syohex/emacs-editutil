@@ -746,11 +746,21 @@
     (save-excursion
       (call-interactively #'comment-line))))
 
-(defun editutil-vc-dir ()
-  (interactive)
-  (if current-prefix-arg
-      (call-interactively #'vc-dir)
-    (vc-dir default-directory)))
+;;
+;; vc
+;;
+
+(defun editutil--find-vc-dir ()
+  ;; support only rust yet
+  (if-let* ((rust-dir (locate-dominating-file default-directory "Cargo.toml")))
+      rust-dir
+    default-directory))
+
+ (defun editutil-vc-dir ()
+   (interactive)
+   (if current-prefix-arg
+       (call-interactively #'vc-dir)
+    (vc-dir (editutil--find-vc-dir))))
 
 (defun editutil--vc-check-in-hook ()
   (when-let* ((buf (get-buffer "*vc-diff*"))
