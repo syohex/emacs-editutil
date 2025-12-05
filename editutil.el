@@ -234,6 +234,19 @@
     (editutil-backward-up arg)
     (forward-sexp arg)))
 
+(defun editutil-next-word ()
+  (interactive)
+  (skip-chars-forward "^ \t\n")
+  (skip-chars-forward " \t\n"))
+
+(defun editutil-previous-word ()
+  (interactive)
+  (let ((pos (point)))
+    (skip-chars-backward "^ \t\n")
+    (when (and (not (bobp)) (= (point) pos))
+      (skip-chars-backward " \t\n")
+      (skip-chars-backward "^ \t\n"))))
+
 (defun editutil-other-window (arg)
   (interactive "p")
   (when (one-window-p)
@@ -875,6 +888,10 @@
   (global-set-key (kbd "M-g j") #'windmove-down)
   (global-set-key (kbd "M-g k") #'windmove-up)
   (global-set-key (kbd "M-g l") #'windmove-right)
+
+  ;; search-map
+  (define-key search-map (kbd "l") #'editutil-next-word)
+  (define-key search-map (kbd "h") #'editutil-previous-word)
 
   ;; ctrl-q
   (define-key global-map (kbd "C-q") editutil-ctrl-q-map)
