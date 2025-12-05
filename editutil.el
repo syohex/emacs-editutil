@@ -617,22 +617,6 @@
   (kill-current-buffer))
 
 ;;
-;; help utilities
-;;
-
-(defun editutil-find-function ()
-  (interactive)
-  (if-let* ((symbol (thing-at-point 'symbol)))
-      (find-function-at-point)
-    (call-interactively #'find-function)))
-
-(defun editutil-find-variable ()
-  (interactive)
-  (if-let* ((symbol (thing-at-point 'symbol)))
-      (find-variable-at-point)
-    (call-interactively #'find-variable)))
-
-;;
 ;; grep utilities
 ;;
 
@@ -804,6 +788,12 @@
         (eshell/cd dir)
       (user-error "here is not in the repository"))))
 
+(defun eshell/cde (&rest _args)
+  (let ((next-to-window-dir (save-window-excursion
+                              (other-window 1)
+                              default-directory)))
+    (eshell/cd next-to-window-dir)))
+
 ;;
 ;; Ctrl-q
 ;;
@@ -880,8 +870,8 @@
   (global-set-key (kbd "C-h l") #'flymake-show-buffer-diagnostics)
 
   ;; help
-  (global-set-key (kbd "C-h F") #'editutil-find-function)
-  (global-set-key (kbd "C-h V") #'editutil-find-variable)
+  (global-set-key (kbd "C-h F") #'find-function)
+  (global-set-key (kbd "C-h V") #'find-variable)
 
   ;; windmove
   (global-set-key (kbd "M-g h") #'windmove-left)
