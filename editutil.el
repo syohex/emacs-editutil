@@ -879,6 +879,7 @@
   (define-key search-map (kbd "h") #'editutil-previous-word)
   (define-key search-map (kbd "SPC") #'register-to-point)
   (define-key search-map (kbd "j") #'jump-to-register)
+  (define-key search-map (kbd "i") #'insert-register)
   (define-key search-map (kbd "c") #'copy-to-register)
 
   ;; ctrl-q
