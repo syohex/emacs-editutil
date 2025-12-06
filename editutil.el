@@ -759,11 +759,6 @@
        (call-interactively #'vc-dir)
     (vc-dir (editutil--find-vc-dir))))
 
-(defun editutil--vc-check-in-hook ()
-  (when-let* ((buf (get-buffer "*vc-diff*"))
-              (window (get-buffer-window buf)))
-    (delete-window window)))
-
 ;;
 ;; eshell
 ;;
@@ -882,6 +877,10 @@
   ;; search-map
   (define-key search-map (kbd "l") #'editutil-next-word)
   (define-key search-map (kbd "h") #'editutil-previous-word)
+  (define-key search-map (kbd "SPC") #'register-to-point)
+  (define-key search-map (kbd "j") #'jump-to-register)
+  (define-key search-map (kbd "h") #'editutil-previous-word)
+  (define-key search-map (kbd "x") #'copy-to-register)
 
   ;; ctrl-q
   (define-key global-map (kbd "C-q") editutil-ctrl-q-map)
@@ -907,8 +906,6 @@
 
   ;; vc
   (global-set-key (kbd "C-x v d") #'editutil-vc-dir)
-  (add-hook 'vc-before-checkin-hook #'vc-diff)
-  (add-hook 'vc-checkin-hook #'editutil--vc-check-in-hook)
 
   (editutil-global-minor-mode +1)
 
