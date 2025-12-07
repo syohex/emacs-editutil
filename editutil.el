@@ -265,6 +265,12 @@
     (unless (search-backward (char-to-string ch) (line-beginning-position) t)
       (goto-char orig))))
 
+(defun editutil-swap-point ()
+  (interactive)
+  (let ((old-point (mark t)))
+    (when old-point
+      (goto-char old-point))))
+
 (defun editutil-other-window (arg)
   (interactive "p")
   (when (one-window-p)
@@ -901,6 +907,10 @@
   (define-key search-map (kbd "j") #'jump-to-register)
   (define-key search-map (kbd "i") #'insert-register)
   (define-key search-map (kbd "c") #'copy-to-register)
+  (define-key search-map (kbd "m") #'bookmark-set)
+  (define-key search-map (kbd "b") #'bookmark-jump)
+  (define-key search-map (kbd "B") #'bookmark-bmenu-list)
+  (define-key search-map (kbd "x") #'editutil-swap-point)
 
   ;; ctrl-q
   (define-key global-map (kbd "C-q") editutil-ctrl-q-map)
