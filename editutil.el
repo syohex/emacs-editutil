@@ -910,7 +910,7 @@
   (define-key search-map (kbd "m") #'bookmark-set)
   (define-key search-map (kbd "b") #'bookmark-jump)
   (define-key search-map (kbd "B") #'bookmark-bmenu-list)
-  (define-key search-map (kbd "x") #'editutil-swap-point)
+  (define-key search-map (kbd "M-s") #'editutil-swap-point)
 
   ;; ctrl-q
   (define-key global-map (kbd "C-q") editutil-ctrl-q-map)
