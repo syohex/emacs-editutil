@@ -667,9 +667,6 @@
 ;; Programming utilities
 ;;
 
-(defvar editutil-prog-prefix (make-sparse-keymap)
-  "Keymap for editutil programming utility")
-
 (defun editutil--rust-project-root (dir)
   (let ((git-root (locate-dominating-file dir ".git")))
     ;; check using cargo workspace first
@@ -843,8 +840,10 @@
   (global-set-key (kbd "C-y") #'editutil-yank)
   (global-set-key (kbd "C-w") #'editutil-kill-region)
 
-  (global-set-key (kbd "M-a") #'editutil-forward-char)
-  (global-set-key (kbd "M-A") #'editutil-backward-char)
+  (global-set-key (kbd "M-F") #'editutil-next-word)
+  (global-set-key (kbd "M-B") #'editutil-previous-word)
+  (global-set-key (kbd "M-e") #'editutil-forward-char)
+  (global-set-key (kbd "M-E") #'editutil-backward-char)
   (global-set-key (kbd "M-o") #'editutil-edit-next-line)
   (global-set-key (kbd "M-O") #'editutil-edit-previous-line)
   (global-set-key (kbd "M-w") #'editutil-kill-ring-save)
@@ -873,20 +872,14 @@
   (global-set-key (kbd "M-g .") #'editutil-grep)
 
   ;; programming utilities
-  (global-set-key (kbd "M-e") editutil-prog-prefix)
-  (define-key editutil-prog-prefix "f" #'editutil-format-buffer)
-  (define-key editutil-prog-prefix "l" #'editutil-lint-buffer)
-  (define-key editutil-prog-prefix "t" #'editutil-run-test)
-  (define-key editutil-prog-prefix "c" #'compile)
-  (define-key editutil-prog-prefix "r" #'recompile)
-  (define-key editutil-prog-prefix "e" #'editutil-show-current-line-diagnostic)
-  (define-key editutil-prog-prefix "n" #'editutil-cycle-next-buffer)
-  (define-key editutil-prog-prefix "p" #'editutil-cycle-previous-buffer)
+  (global-set-key (kbd "M-g M-c") #'compile)
+  (global-set-key (kbd "M-g M-r") #'recompile)
 
   ;; flymake
   (global-set-key (kbd "M-g M-n") #'editutil-next-error)
   (global-set-key (kbd "M-g M-p") #'editutil-previous-error)
   (global-set-key (kbd "C-h l") #'flymake-show-buffer-diagnostics)
+  (global-set-key (kbd "C-h i") #'editutil-show-current-line-diagnostic)
 
   ;; help
   (global-set-key (kbd "C-h F") #'find-function)
@@ -899,11 +892,7 @@
   (global-set-key (kbd "M-g l") #'windmove-right)
 
   ;; search-map
-  (define-key search-map (kbd "l") #'editutil-next-word)
-  (define-key search-map (kbd "h") #'editutil-previous-word)
-  (define-key search-map (kbd "f") #'editutil-next-char)
-  (define-key search-map (kbd "b") #'editutil-previous-char)
-  (define-key search-map (kbd "SPC") #'register-to-point)
+  (define-key search-map (kbd "SPC") #'point-to-register)
   (define-key search-map (kbd "j") #'jump-to-register)
   (define-key search-map (kbd "i") #'insert-register)
   (define-key search-map (kbd "c") #'copy-to-register)
@@ -911,6 +900,11 @@
   (define-key search-map (kbd "b") #'bookmark-jump)
   (define-key search-map (kbd "B") #'bookmark-bmenu-list)
   (define-key search-map (kbd "M-s") #'editutil-swap-point)
+  (define-key search-map (kbd "[") #'editutil-cycle-next-buffer)
+  (define-key search-map (kbd "]") #'editutil-cycle-previous-buffer)
+  (define-key search-map (kbd "f") #'editutil-format-buffer)
+  (define-key search-map (kbd "l") #'editutil-lint-buffer)
+  (define-key search-map (kbd "t") #'editutil-run-test)
 
   ;; ctrl-q
   (define-key global-map (kbd "C-q") editutil-ctrl-q-map)
