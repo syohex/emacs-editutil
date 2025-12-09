@@ -355,6 +355,13 @@
   (interactive "P")
   (editutil--kill-command-common arg 'kill-region 'symbol))
 
+(defun editutil-copy-line (arg)
+  (interactive "p")
+  (save-excursion
+    (let ((start (line-beginning-position)))
+      (forward-line arg)
+      (kill-ring-save start (point)))))
+
 (defun editutil-copy-region-to-clipboard ()
   (interactive)
   (unless (use-region-p)
@@ -851,6 +858,7 @@
   (global-set-key (kbd "C-x M-w") #'editutil-copy-region-to-clipboard)
   (global-set-key (kbd "C-x k") #'editutil-kill-this-buffer)
   (global-set-key (kbd "C-x \"") #'editutil-wrap-double-quote)
+  (global-set-key (kbd "C-x l") #'editutil-copy-line)
 
   (global-set-key (kbd "C-x r N") #'editutil-number-rectangle)
 
