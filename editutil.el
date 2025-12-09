@@ -247,24 +247,6 @@
       (skip-chars-backward " \t\n")
       (skip-chars-backward "^ \t\n"))))
 
-(defun editutil-next-char (ch)
-  (interactive
-   (list (read-char)))
-  (let ((orig (point)))
-    (forward-char 1)
-    (if (search-forward (char-to-string ch) (line-end-position) t)
-        (backward-char 1)
-      (goto-char orig))))
-
-(defun editutil-previous-char (ch)
-  (interactive
-   (list (read-char)))
-  (let ((orig (point)))
-    (when (= (char-after) ch)
-      (backward-char 1))
-    (unless (search-backward (char-to-string ch) (line-beginning-position) t)
-      (goto-char orig))))
-
 (defun editutil-swap-point ()
   (interactive)
   (let ((old-point (mark t)))
