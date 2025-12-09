@@ -253,6 +253,11 @@
     (when old-point
       (goto-char old-point))))
 
+(defun editutil-set-last-region ()
+  (interactive)
+  (let ((last-mark (mark t)))
+    (push-mark last-mark t t)))
+
 (defun editutil-other-window (arg)
   (interactive "p")
   (when (one-window-p)
@@ -882,6 +887,7 @@
   (define-key search-map (kbd "b") #'bookmark-jump)
   (define-key search-map (kbd "B") #'bookmark-bmenu-list)
   (define-key search-map (kbd "M-s") #'editutil-swap-point)
+  (define-key search-map (kbd "M-w") #'editutil-set-last-region)
   (define-key search-map (kbd "[") #'editutil-cycle-next-buffer)
   (define-key search-map (kbd "]") #'editutil-cycle-previous-buffer)
   (define-key search-map (kbd "f") #'editutil-format-buffer)
