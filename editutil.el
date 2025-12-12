@@ -28,7 +28,8 @@
 
 (eval-when-compile
   (defvar paredit-mode-map)
-  (defvar utop-command))
+  (defvar utop-command)
+  (defvar sh-shell))
 
 (require 'cl-lib)
 (require 'subr-x)
@@ -758,6 +759,10 @@
     (save-excursion
       (call-interactively #'comment-line))))
 
+(defun editutil--sh-set-shell-hook ()
+  (setq-local mode-line-process ""
+              mode-name (format "%s[%s]" major-mode sh-shell)))
+
 ;;
 ;; vc
 ;;
@@ -921,6 +926,7 @@
 
   (add-hook 'rust-ts-mode-hook #'editutil-rust-mode-hook)
   (add-hook 'utop-minor-mode-hook #'editutil-utop-minor-hook)
+  (add-hook 'sh-set-shell-hook #'editutil--sh-set-shell-hook)
 
   (run-at-time t 600 #'editutil-recentf-save-list)
 
