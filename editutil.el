@@ -776,7 +776,8 @@
  (defun editutil-vc-dir ()
    (interactive)
    (if current-prefix-arg
-       (call-interactively #'vc-dir)
+       (let ((current-prefix-arg nil))
+         (call-interactively #'project-vc-dir))
     (vc-dir (editutil--find-vc-dir))))
 
 ;;
