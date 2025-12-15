@@ -780,6 +780,10 @@
          (call-interactively #'project-vc-dir))
     (vc-dir (editutil--find-vc-dir))))
 
+(defun editutil--log-edit-done-hook ()
+  (when-let* ((buf (get-buffer "*vc-diff*")))
+    (kill-buffer buf)))
+
 ;;
 ;; eshell
 ;;
@@ -932,6 +936,7 @@
   (run-at-time t 600 #'editutil-recentf-save-list)
 
   ;; vc
+  (add-hook 'log-edit-done-hook #'editutil--log-edit-done-hook)
   (global-set-key (kbd "C-x v d") #'editutil-vc-dir)
 
   (editutil-global-minor-mode +1)
