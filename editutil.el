@@ -92,6 +92,17 @@
   (let ((case-fold-search nil))
     (search-backward (char-to-string char) (line-beginning-position) t arg)))
 
+(defun editutil-mark-to-char (arg char)
+  (interactive
+   (list
+    (prefix-numeric-value current-prefix-arg)
+    (read-char)))
+  (push-mark
+   (save-excursion
+     (editutil-forward-char arg char)
+     (point))
+   nil t))
+
 (defun editutil-edit-next-line (arg)
   (interactive "p")
   (if (>= arg 0)
@@ -848,6 +859,7 @@
   (global-set-key (kbd "M-B") #'editutil-previous-word)
   (global-set-key (kbd "M-e") #'editutil-forward-char)
   (global-set-key (kbd "M-E") #'editutil-backward-char)
+  (global-set-key (kbd "M-h") #'editutil-mark-to-char)
   (global-set-key (kbd "M-o") #'editutil-edit-next-line)
   (global-set-key (kbd "M-O") #'editutil-edit-previous-line)
   (global-set-key (kbd "M-w") #'editutil-kill-ring-save)
