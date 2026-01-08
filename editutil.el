@@ -621,6 +621,9 @@
           (forward-whitespace +1)
           (delete-region orig-point (point)))))))
 
+(defun editutil--fido-mode-setup ()
+  (setq-local completion-styles '(substring basic partial-completion emacs22)))
+
 ;;
 ;; Buffer utilities
 ;;
@@ -959,6 +962,9 @@
   (add-hook 'sh-set-shell-hook #'editutil--sh-set-shell-hook)
 
   (run-at-time t 600 #'editutil-recentf-save-list)
+
+  ;; override `completion-styles' from 'flex'
+  (advice-add 'icomplete--fido-mode-setup :after #'editutil--fido-mode-setup)
 
   ;; vc
   (add-hook 'log-edit-done-hook #'editutil--log-edit-done-hook)
