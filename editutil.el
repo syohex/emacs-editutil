@@ -622,7 +622,7 @@
           (delete-region orig-point (point)))))))
 
 (defun editutil--fido-mode-setup ()
-  (setq-local completion-styles '(substring basic)))
+  (setq-local completion-styles '(substring flex)))
 
 ;;
 ;; Buffer utilities
