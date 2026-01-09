@@ -622,7 +622,7 @@
           (delete-region orig-point (point)))))))
 
 (defun editutil--fido-mode-setup ()
-  (setq-local completion-styles '(substring basic partial-completion emacs22)))
+  (setq-local completion-styles '(substring basic)))
 
 ;;
 ;; Buffer utilities
