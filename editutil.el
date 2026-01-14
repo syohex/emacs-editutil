@@ -407,20 +407,13 @@
       (call-interactively #'flymake-goto-prev-error)
     (call-interactively #'previous-error)))
 
-(defvar editutil--colors
-  (if window-system
-      '((vc-mode-line . "DarkOrange")
-        (evil-normal-mode . "SeaGreen1")
-        (evil-insert-mode . "maroon1")
-        (evil-visual-mode . "MediumPurple1")
-        (evil-other-mode . "yellow2")
-        (mode-name . "turquoise1"))
-    '((vc-mode-line . "color-202")
-      (evil-normal-mode . "color-40")
-      (evil-insert-mode . "color-198")
-      (evil-visual-mode . "color-141")
-      (evil-other-mode . "color-227")
-      (mode-name . "color-81"))))
+(defconst editutil--colors
+  '((vc-mode-line . "DarkOrange")
+    (evil-normal-mode . "SeaGreen1")
+    (evil-insert-mode . "maroon1")
+    (evil-visual-mode . "MediumPurple1")
+    (evil-other-mode . "yellow2")
+    (mode-name . "turquoise1")))
 
 (defvar editutil-vc-mode-line
   `(:propertize
