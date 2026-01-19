@@ -851,7 +851,7 @@
 
   (editutil--init-mode-line)
 
-  (keymap-substitute 'global-map 'backward-kill-word #'editutil-backward-delete-word)
+  (keymap-substitute global-map 'backward-kill-word #'editutil-backward-delete-word)
   (keymap-global-set "RET" #'editutil-newline)
 
   (keymap-global-set "C-j" #'editutil-newline-and-maybe-indent)
