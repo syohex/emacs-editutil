@@ -923,6 +923,7 @@
   (keymap-global-set "C-x w |" #'window-layout-flip-leftright)
   (keymap-global-set "C-x w _" #'window-layout-flip-topdown)
   (keymap-global-set "M-j" #'repeat)
+  (keymap-global-unset "C-\\")
 
   ;; help
   (keymap-global-set "C-h F" #'find-function)
