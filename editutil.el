@@ -907,7 +907,6 @@
   (keymap-global-set "C-s" #'isearch-forward-regexp)
   (keymap-global-set "C-r" #'isearch-backward-regexp)
   (keymap-global-set "C-M-c" #'duplicate-dwim)
-  (keymap-global-set "C-x !" #'eglot-rename)
   (keymap-global-set "C-h m" #'eldoc-doc-buffer)
   (keymap-global-set "C-x C-i" #'imenu)
   (keymap-global-set "C-x C-x" #'find-file)
