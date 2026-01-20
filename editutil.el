@@ -955,6 +955,8 @@
   (keymap-set editutil-ctrl-q-map "C-q" 'quoted-insert)
   (keymap-set editutil-ctrl-q-map "l" 'display-line-numbers-mode)
   (keymap-set editutil-ctrl-q-map "s" 'scratch-buffer)
+  (keymap-set editutil-ctrl-q-map "e" 'evil-mode)
+  (keymap-set editutil-ctrl-q-map "p" 'project-prefix-map)
 
   (dolist (hook '(prog-mode-hook text-mode-hook markdown-mode-hook))
     (add-hook hook #'editutil--add-watchwords))
