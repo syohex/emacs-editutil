@@ -735,11 +735,11 @@
         (insert (format "Command: %s\n\n" (string-join command-list " ")))
         (let ((status (apply #'process-file cmd nil t t args)))
           (ansi-color-apply-on-region (point-min) (point-max))
-          (goto-char (point-min))
           (compilation-mode)
           (setq-local mode-line-process (if (zerop status)
                                             (propertize "Success" 'face 'compilation-mode-line-exit)
                                           (propertize "Failed" 'face 'compilation-mode-line-fail)))
+          (goto-char (point-min))
           (pop-to-buffer (current-buffer)))))))
 
 (defun editutil-lint-buffer ()
