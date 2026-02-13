@@ -43,6 +43,8 @@
 (require 'recentf)
 
 (declare-function eshell/cd "em-dirs")
+(declare-function eshell-parse-command "esh-cmd")
+(declare-function eshell-do-eval "esh-cmd")
 
 (defgroup editutil nil
   "My own editing utilities"
@@ -803,6 +805,20 @@
 ;; eshell
 ;;
 
+(defun editutil--eshell-run-command (command-line)
+  (let ((cmd (car command-line))
+        (args (cdr command-line)))
+    (unless (executable-find cmd)
+      (user-error "command '%s' is not installed" cmd))
+    (eshell-do-eval (eshell-parse-command cmd args) t)
+    nil))
+
+(defun eshell/s (&rest args)
+  (editutil--eshell-run-command `("git" "-c" "color.status=always" "status" "-sb" ,@args)))
+
+(defun eshell/v (&rest _args)
+  (editutil-vc-dir))
+
 (defun eshell/d (&rest args)
   (let ((arg (car-safe args)))
     (save-selected-window
@@ -828,6 +844,38 @@
                               (other-window 1)
                               default-directory)))
     (eshell/cd next-to-window-dir)))
+
+(defun editutil--project-language ()
+  (let ((rules '(("Cargo.toml" . rust)
+                 ("go.mod" . golang)
+                 ("Makefile" . make))))
+    (cl-loop for (file . lang) in rules
+             when (locate-dominating-file default-directory file)
+             return lang
+             finally
+             (user-error "unsupport testing in this project"))))
+
+(defun eshell/t (&rest args)
+  (let ((command (cl-case (editutil--project-language)
+                   (rust `("cargo" "test" "--color=always",@args) )
+                   (golang `("go" "test" ,@args))
+                   (make '("make" "test"))
+                   (otherwise (user-error "unsupport testing in this project")))))
+    (editutil--eshell-run-command command)))
+
+(defun eshell/l (&rest args)
+  (let ((command (cl-case (editutil--project-language)
+                   (rust `("cargo" "clippy" "--color=always",@args) )
+                   (golang `("staticcheck" ,@args))
+                   (otherwise (user-error "unsupport linting in this project")))))
+    (editutil--eshell-run-command command)))
+
+(defun eshell/f (&rest args)
+  (let ((command (cl-case (editutil--project-language)
+                   (rust `("cargo" "fmt" ,@args) )
+                   (golang `("go" "fmt" ,@args))
+                   (otherwise (user-error "unsupport formatting in this project")))))
+    (editutil--eshell-run-command command))  )
 
 ;;
 ;; Ctrl-q
