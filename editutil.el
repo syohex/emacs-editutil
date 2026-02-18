@@ -272,12 +272,15 @@
   (let ((last-mark (mark t)))
     (push-mark last-mark t t)))
 
-(defun editutil-other-window (arg)
-  (interactive "p")
+(defun editutil--split-window ()
   (when (one-window-p)
     (if (> (window-width) 120)
         (split-window-right)
-      (split-window-below)))
+      (split-window-below))))
+
+(defun editutil-other-window (arg)
+  (interactive "p")
+  (editutil--split-window)
   (unless (>= (prefix-numeric-value current-prefix-arg) 16)
     (other-window arg)))
 
@@ -805,6 +808,12 @@
 ;; eshell
 ;;
 
+(defun editutil-run-eshell ()
+  (interactive)
+  (editutil--split-window)
+  (other-window 1)
+  (call-interactively #'eshell))
+
 (defun editutil--eshell-run-command (command-line)
   (let ((cmd (car command-line))
         (args (cdr command-line)))
@@ -958,7 +967,7 @@
   (keymap-global-set "C-h m" #'eldoc-doc-buffer)
   (keymap-global-set "C-x C-i" #'imenu)
   (keymap-global-set "C-x C-x" #'find-file)
-  (keymap-global-set "C-x \\" #'eshell)
+  (keymap-global-set "C-x \\" #'editutil-run-eshell)
   (keymap-global-set "C-x M-." #'xref-find-references)
   (keymap-global-set "C-x C-b" #'ibuffer)
   (keymap-global-set "C-x C-r" #'recentf-open)
