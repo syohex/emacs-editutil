@@ -626,25 +626,9 @@
 ;; Buffer utilities
 ;;
 
-(defun editutil--cycle-buffer-common ()
-  (set-transient-map
-   (let ((m (make-sparse-keymap)))
-     (keymap-set m "[" #'editutil-cycle-next-buffer)
-     (keymap-set m "]" #'editutil-cycle-previous-buffer)
-     m)))
-
-(defun editutil-cycle-next-buffer ()
-  (interactive)
-  (bs-cycle-next)
-  (editutil--cycle-buffer-common))
-
-(defun editutil-cycle-previous-buffer ()
-  (interactive)
-  (bs-cycle-previous)
-  (editutil--cycle-buffer-common))
-
 (defun editutil-kill-this-buffer ()
   (interactive)
+  ;; call the function to avoid yes/no prompt
   (kill-current-buffer))
 
 ;;
@@ -937,7 +921,6 @@
   (keymap-global-set "C-M-d" #'editutil-down-list)
   (keymap-global-set "C-M-s" #'editutil-forward-symbol-at-point)
 
-  (keymap-global-set "C-x $" 'server-edit)
   (keymap-global-set "C-x M-w" #'editutil-copy-region-to-clipboard)
   (keymap-global-set "C-x k" #'editutil-kill-this-buffer)
   (keymap-global-set "C-x \"" #'editutil-wrap-double-quote)
@@ -945,9 +928,11 @@
 
   (keymap-global-set "C-x r N" #'editutil-number-rectangle)
 
-  (keymap-global-set "M-g [" #'editutil-cycle-next-buffer)
-  (keymap-global-set "M-g ]" #'editutil-cycle-previous-buffer)
   (keymap-global-set "M-g ." #'editutil-grep)
+
+  ;; buffer switch
+  (keymap-global-set "C-t" #'bs-cycle-next)
+  (keymap-global-set "M-t" #'bs-cycle-previous)
 
   ;; programming utilities
   (keymap-global-set "M-g M-c" #'compile)
@@ -1002,8 +987,6 @@
   (keymap-set search-map "B" #'bookmark-bmenu-list)
   (keymap-set search-map "M-s" #'editutil-swap-point)
   (keymap-set search-map "M-w" #'editutil-set-last-region)
-  (keymap-set search-map "[" #'editutil-cycle-next-buffer)
-  (keymap-set search-map "]" #'editutil-cycle-previous-buffer)
   (keymap-set search-map "f" #'editutil-format-buffer)
   (keymap-set search-map "l" #'editutil-lint-buffer)
   (keymap-set search-map "t" #'editutil-run-test)
