@@ -794,9 +794,11 @@
 
 (defun editutil-run-eshell ()
   (interactive)
-  (editutil--split-window)
-  (other-window 1)
-  (call-interactively #'eshell))
+  (let ((should-move (one-window-p)))
+    (editutil--split-window)
+    (when should-move
+      (other-window 1))
+    (call-interactively #'eshell)))
 
 (defun editutil--eshell-run-command (command-line)
   (let ((cmd (car command-line))
