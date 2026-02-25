@@ -885,13 +885,13 @@
       (not (eobp)))))
 
 (defun editutil--eshell-prompt ()
-  (let* ((dir (abbreviate-file-name default-directory))
+  (let* ((dir (directory-file-name (abbreviate-file-name default-directory)))
          (branch (editutil--git-branch))
          (git-info (when branch
                      (concat
                       (propertize (concat " (" branch ")") 'face '(:foreground "#ff00ff"))
                       (when (editutil--git-dirty-p)
-                        (propertize " ✱" 'face '(:foreground "orange"))))))
+                        (propertize " !" 'face '(:foreground "orange" :weight bold))))))
          (prompt-char (if (= (file-user-uid) 0) "#" "%")))
     (concat (propertize dir 'face 'dired-directory)
             (or git-info "")
