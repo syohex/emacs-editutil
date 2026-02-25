@@ -872,6 +872,33 @@
                    (otherwise (user-error "unsupport formatting in this project")))))
     (editutil--eshell-run-command command))  )
 
+(defun editutil--git-branch ()
+  (with-temp-buffer
+    (when (zerop (process-file "git" nil t t "rev-parse" "--abbrev-ref" "HEAD"))
+      (goto-char (point-min))
+      (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
+
+(defun editutil--git-dirty-p ()
+  (with-temp-buffer
+    (when (zerop (process-file "git" nil t t "status" "--porcelain"))
+      (goto-char (point-min))
+      (not (eobp)))))
+
+(defun editutil--eshell-prompt ()
+  (let* ((dir (abbreviate-file-name default-directory))
+         (branch (editutil--git-branch))
+         (git-info (when branch
+                     (concat
+                      (propertize (concat " (" branch ")") 'face '(:foreground "#ff00ff"))
+                      (when (editutil--git-dirty-p)
+                        (propertize " ✱" 'face '(:foreground "orange"))))))
+         (prompt-char (if (= (file-user-uid) 0) "#" "%")))
+    (concat (propertize dir 'face 'dired-directory)
+            (or git-info "")
+            "\n"
+            (propertize prompt-char 'face 'eshell-prompt)
+            " ")))
+
 ;;
 ;; Ctrl-q
 ;;
@@ -1026,6 +1053,10 @@
   (keymap-global-set "C-x v d" #'editutil-vc-dir)
 
   (editutil-global-minor-mode +1)
+
+  ;; eshell
+  (setopt eshell-prompt-regexp "^[%#] "
+          eshell-prompt-function #'editutil--eshell-prompt)
 
   t)
 
