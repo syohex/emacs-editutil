@@ -29,6 +29,7 @@
 (eval-when-compile
   (defvar paredit-mode-map)
   (defvar utop-command)
+  (defvar eshell-last-command-status)
   (defvar sh-shell))
 
 (require 'cl-lib)
@@ -891,10 +892,13 @@
                      (concat
                       (propertize (concat " (" branch ")") 'face '(:foreground "#ff00ff"))
                       (when (editutil--git-dirty-p)
-                        (propertize " !" 'face '(:foreground "orange" :weight bold))))))
+                        (propertize "!" 'face '(:foreground "orange" :weight bold))))))
+         (err-code (unless (zerop eshell-last-command-status)
+                     (propertize (format " err=%d" eshell-last-command-status) 'face 'error)))
          (prompt-char (if (= (file-user-uid) 0) "#" "%")))
     (concat (propertize dir 'face 'dired-directory)
             (or git-info "")
+            err-code
             "\n"
             (propertize prompt-char 'face 'eshell-prompt)
             " ")))
