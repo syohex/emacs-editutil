@@ -947,6 +947,7 @@
   (keymap-global-set "M-u" #'editutil-upcase)
   (keymap-global-set "M-\\" #'editutil-delete-following-spaces)
   (keymap-global-set "M-/" #'editutil-comment-dwim)
+  (keymap-global-set "M-z" #'suspend-emacs)
 
   (keymap-global-set "C-M-o" #'editutil-other-window)
   (keymap-global-set "C-M-u" #'editutil-backward-up)
