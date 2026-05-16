@@ -401,6 +401,15 @@
       (error "failed to copy region to clipboard"))
     (deactivate-mark)))
 
+(defun editutil-kill-region-to-register ()
+  (interactive)
+  (unless (use-region-p)
+    (user-error "region is not specified"))
+  (let ((start (region-beginning))
+        (end (region-end)))
+    (call-interactively #'copy-to-register)
+    (delete-region start end)))
+
 (defun editutil-next-error ()
   (interactive)
   (if flymake-mode
@@ -1024,6 +1033,7 @@
   (keymap-set search-map "f" #'editutil-format-buffer)
   (keymap-set search-map "l" #'editutil-lint-buffer)
   (keymap-set search-map "t" #'editutil-run-test)
+  (keymap-set search-map "k" #'editutil-kill-region-to-register)
 
   ;; ctrl-q
   (keymap-set global-map "C-q" editutil-ctrl-q-map)
