@@ -389,7 +389,8 @@
       ;; if the region contains multi-byte characters then it should be converted into UTF-16
       (let ((input (buffer-substring-no-properties (region-beginning) (region-end)))
             (cmd "/mnt/c/Windows/System32/clip.exe")
-            (windows-encoding 'utf-16le))
+            (windows-encoding 'utf-16le-with-signature)
+            (process-connection-type nil))
         (deactivate-mark)
         (with-temp-buffer
           (set-buffer-file-coding-system windows-encoding)
