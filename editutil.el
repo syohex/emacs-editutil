@@ -657,9 +657,11 @@
     (with-current-buffer buf
       (setq buffer-read-only nil)
       (erase-buffer)
-      (unless (zerop (apply #'process-file "rg" nil t nil
-                            "--vimgrep" "--color=always" args))
-        (user-error "failed to execute 'rg'"))
+      (let ((ret (apply #'process-file "rg" nil t nil "--vimgrep" "--color=always" args)))
+        (cl-case ret
+          (0 t)
+          (1 (user-error "no match was found (pattern=`%s')" (string-join args)))
+          (otherwise (user-error "failed to execute 'rg'"))))
       (ansi-color-apply-on-region (point-min) (point-max))
       (goto-char (point-min))
       (grep-mode)
