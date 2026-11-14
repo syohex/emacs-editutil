@@ -5,7 +5,7 @@
 ;; Author: Shohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-editutil
 ;; Version: 0.01
-;; Package-Requires: ((emacs "30"))
+;; Package-Requires: ((emacs "31"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -811,7 +811,8 @@
     (editutil--split-window)
     (when should-move
       (other-window 1))
-    (call-interactively #'eshell)))
+    (call-interactively #'eshell)
+    (goto-char (point-max))))
 
 (defun editutil--eshell-run-command (command-line)
   (let ((cmd (car command-line))
