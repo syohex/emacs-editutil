@@ -646,29 +646,36 @@
 ;; grep utilities
 ;;
 
+(defconst editutil--grep-buffer-name "*editutil-grep*")
+
 (defun editutil-grep ()
   (interactive)
-  (let ((grep-buffer-name "*editutil-grep*"))
-    (when-let* ((buf (get-buffer grep-buffer-name)))
-      (kill-buffer buf))
-    (let* ((initial (thing-at-point 'symbol))
-           (pattern (read-string "Pattern: " initial))
-           (buf (get-buffer-create grep-buffer-name))
-           (args (if (string-prefix-p "-" pattern)
-                     (split-string pattern " " t)
-                   (list pattern))))
-      (with-current-buffer buf
-        (setq buffer-read-only nil)
-        (erase-buffer)
-        (let ((ret (apply #'process-file "rg" nil t nil "--vimgrep" "--color=always" args)))
-          (cl-case ret
-            (0 t)
-            (1 (user-error "no match was found (pattern=`%s')" (string-join args)))
-            (otherwise (user-error "failed to execute 'rg'"))))
-        (ansi-color-apply-on-region (point-min) (point-max))
-        (goto-char (point-min))
-        (grep-mode)
-        (pop-to-buffer (current-buffer))))))
+  (when-let* ((buf (get-buffer editutil--grep-buffer-name)))
+    (kill-buffer buf))
+  (let* ((initial (thing-at-point 'symbol))
+         (pattern (read-string "Pattern: " initial))
+         (buf (get-buffer-create editutil--grep-buffer-name))
+         (args (if (string-prefix-p "-" pattern)
+                   (split-string pattern " " t)
+                 (list pattern))))
+    (with-current-buffer buf
+      (setq buffer-read-only nil)
+      (erase-buffer)
+      (let ((ret (apply #'process-file "rg" nil t nil "--vimgrep" "--color=always" args)))
+        (cl-case ret
+          (0 t)
+          (1 (user-error "no match was found (pattern=`%s')" (string-join args)))
+          (otherwise (user-error "failed to execute 'rg'"))))
+      (ansi-color-apply-on-region (point-min) (point-max))
+      (goto-char (point-min))
+      (grep-mode)
+      (pop-to-buffer (current-buffer)))))
+
+(defun editutil-last-grep-buffer ()
+  (interactive)
+  (if-let* ((buf (get-buffer editutil--grep-buffer-name)))
+      (pop-to-buffer buf)
+    (user-error "no grep-buffer '%s'" editutil--grep-buffer-name)))
 
 ;;
 ;; Programming utilities
@@ -979,6 +986,7 @@
   (keymap-global-set "C-x r N" #'editutil-number-rectangle)
 
   (keymap-global-set "M-g ." #'editutil-grep)
+  (keymap-global-set "M-g ," #'editutil-last-grep-buffer)
 
   ;; buffer switch
   (keymap-global-set "C-t" #'bs-cycle-next)
