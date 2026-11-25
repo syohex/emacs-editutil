@@ -633,6 +633,11 @@
 (defun editutil--fido-mode-setup ()
   (setq-local completion-styles '(substring flex)))
 
+(defun editutil-project-root ()
+  (interactive)
+  (when-let* ((proj (project-current)))
+    (find-file (project-root proj))))
+
 ;;
 ;; Buffer utilities
 ;;
@@ -1081,6 +1086,9 @@
   ;; vc
   (add-hook 'log-edit-done-hook #'editutil--log-edit-done-hook)
   (keymap-global-set "C-x v d" #'editutil-vc-dir)
+
+  ;; project
+  (keymap-set project-prefix-map "q" #'editutil-project-root)
 
   (editutil-global-minor-mode +1)
 
