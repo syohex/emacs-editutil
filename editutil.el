@@ -633,6 +633,11 @@
 (defun editutil--fido-mode-setup ()
   (setq-local completion-styles '(substring flex)))
 
+(defun editutil-project-switch ()
+  (interactive)
+  (when-let* ((proj-dir (funcall 'project-prompt-project-dir)))
+    (find-file proj-dir)))
+
 (defun editutil-project-root ()
   (interactive)
   (when-let* ((proj (project-current)))
@@ -1061,7 +1066,6 @@
   (keymap-set editutil-ctrl-q-map "l" 'display-line-numbers-mode)
   (keymap-set editutil-ctrl-q-map "s" 'scratch-buffer)
   (keymap-set editutil-ctrl-q-map "e" 'evil-mode)
-  (keymap-set editutil-ctrl-q-map "p" project-prefix-map)
 
   (dolist (hook '(prog-mode-hook text-mode-hook markdown-mode-hook))
     (add-hook hook #'editutil--add-watchwords))
@@ -1088,6 +1092,7 @@
   (keymap-global-set "C-x v d" #'editutil-vc-dir)
 
   ;; project
+  (keymap-set project-prefix-map "p" #'editutil-project-switch)
   (keymap-set project-prefix-map "q" #'editutil-project-root)
 
   (editutil-global-minor-mode +1)
