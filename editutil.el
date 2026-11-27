@@ -1065,7 +1065,7 @@
   (keymap-set tab-prefix-map "k" #'tab-close)
   (keymap-set tab-prefix-map "b" #'tab-switch)
   (keymap-global-set "C-x ]" #'tab-next)
-  (keymap-global-set "C-x [" #'tab-previous)n
+  (keymap-global-set "C-x [" #'tab-previous)
 
   ;; ctrl-q
   (keymap-set global-map "C-q" editutil-ctrl-q-map)
