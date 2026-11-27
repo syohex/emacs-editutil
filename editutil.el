@@ -1059,13 +1059,13 @@
   (keymap-set search-map "l" #'editutil-lint-buffer)
   (keymap-set search-map "t" #'editutil-run-test)
   (keymap-set search-map "k" #'editutil-kill-region-to-register)
+  (keymap-set search-map "]" #'tab-next)
+  (keymap-set search-map "[" #'tab-previous)
 
   ;; tab
   (keymap-set tab-prefix-map "n" #'tab-new)
   (keymap-set tab-prefix-map "k" #'tab-close)
   (keymap-set tab-prefix-map "b" #'tab-switch)
-  (keymap-global-set "C-x ]" #'tab-next)
-  (keymap-global-set "C-x [" #'tab-previous)
 
   ;; ctrl-q
   (keymap-set global-map "C-q" editutil-ctrl-q-map)
