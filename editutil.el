@@ -1060,6 +1060,13 @@
   (keymap-set search-map "t" #'editutil-run-test)
   (keymap-set search-map "k" #'editutil-kill-region-to-register)
 
+  ;; tab
+  (keymap-set tab-prefix-map "n" #'tab-new)
+  (keymap-set tab-prefix-map "k" #'tab-close)
+  (keymap-set tab-prefix-map "b" #'tab-switch)
+  (keymap-global-set "C-x ]" #'tab-next)
+  (keymap-global-set "C-x [" #'tab-previous)n
+
   ;; ctrl-q
   (keymap-set global-map "C-q" editutil-ctrl-q-map)
   (keymap-set editutil-ctrl-q-map "C-q" 'quoted-insert)
